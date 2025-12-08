@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ProductCard Layout
+  
+  React Component: src/components/nike/ProductCard.tsx
+  Backend API: GET /api/v1/products
+  
+  Features:
+  - Product image với aspect ratio 4:5
+  - "Hàng Mới" badge
+  - Discount percentage badge
+  - Best Seller label
+  - Product name, subtitle
+  - Available colors count
+  - Price (original + discounted)
+-->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardProduct"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="0dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Product Image Container with AspectRatio -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f6f6f6">
+
+            <!-- Product Image -->
+            <ImageView
+                android:id="@+id/ivProductImage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="Product Image"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintDimensionRatio="4:5" />
+
+            <!-- New Badge (Top Left) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/badgeNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hàng Mới"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Discount Badge (Top Right) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/badgeDiscount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#d32f2f"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/tvDiscountPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-20%"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp" />
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Product Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <!-- Best Seller Label -->
+            <TextView
+                android:id="@+id/tvBestSeller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Best Seller"
+                android:textSize="12sp"
+                android:textColor="#9e3500"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Product Name -->
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nike Air Max 90"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Product Subtitle -->
+            <TextView
+                android:id="@+id/tvProductSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Giày Thể Thao Nam"
+                android:textSize="14sp"
+                android:textColor="@color/gray_600"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Available Colors Count -->
+            <TextView
+                android:id="@+id/tvColorsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 Màu sắc"
+                android:textSize="14sp"
+                android:textColor="@color/gray_600"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Price Container -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Current Price -->
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2.999.000₫"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Original Price (Strike-through) -->
+                <TextView
+                    android:id="@+id/tvOriginalPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3.999.000₫"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray_400"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

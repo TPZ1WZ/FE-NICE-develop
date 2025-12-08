@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- AppBar với Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:elevation="4dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white">
+
+            <!-- NIKE Logo -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NIKE"
+                android:textSize="24sp"
+                android:textStyle="bold|italic"
+                android:textColor="@color/black"
+                android:letterSpacing="0.1" />
+
+            <!-- Menu Icon -->
+            <ImageView
+                android:id="@+id/ivMenu"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_menu"
+                android:contentDescription="Menu" />
+
+            <!-- Profile Icon -->
+            <ImageView
+                android:id="@+id/ivProfile"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="56dp"
+                android:src="@drawable/ic_profile"
+                android:contentDescription="Profile" />
+
+            <!-- Cart Icon -->
+            <ImageView
+                android:id="@+id/ivCart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="96dp"
+                android:src="@drawable/ic_shopping_bag"
+                android:contentDescription="Cart" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Hero Section - Full Width -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:background="#D1D5DB"
+                android:padding="32dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MỚI VỀ"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#374151"
+                        android:letterSpacing="0.3"
+                        android:layout_marginBottom="24dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NIKE AIR MAX"
+                        android:textSize="56sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@color/black"
+                        android:letterSpacing="-0.02"
+                        android:gravity="center"
+                        android:layout_marginBottom="24dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Trải nghiệm tương lai của sự thoải mái với sản phẩm mới nhất của chúng tôi."
+                        android:textSize="18sp"
+                        android:textColor="#4B5563"
+                        android:gravity="center"
+                        android:paddingHorizontal="48dp"
+                        android:layout_marginBottom="32dp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <Button
+                            android:id="@+id/btnShopShoes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="56dp"
+                            android:text="Mua Giày"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textAllCaps="false"
+                            android:background="@drawable/btn_rounded_black"
+                            android:paddingHorizontal="40dp"
+                            android:layout_marginEnd="16dp" />
+
+                        <Button
+                            android:id="@+id/btnViewAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="56dp"
+                            android:text="Xem Tất Cả"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textAllCaps="false"
+                            android:background="@drawable/btn_rounded_outline"
+                            android:paddingHorizontal="40dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <!-- Featured Categories Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NỔI BẬT"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- Featured Products Grid -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFeaturedProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="1dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/gray_100"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <!-- Product Image - Smaller, Square -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/gray_200"
+            app:cardBackgroundColor="@color/gray_50">
+
+            <ImageView
+                android:id="@+id/ivProductImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/placeholder"
+                android:contentDescription="Product Image" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Product Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nike Air Max 90"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvProductSku"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SKU: AM90-001"
+                    android:textSize="11sp"
+                    android:textColor="#6B7280" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="•"
+                    android:textSize="11sp"
+                    android:textColor="#6B7280" />
+
+                <TextView
+                    android:id="@+id/tvProductCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lifestyle"
+                    android:textSize="11sp"
+                    android:textColor="#6B7280" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvProductPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3.500.000₫"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#111827" />
+
+                <TextView
+                    android:id="@+id/tvProductSalePrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="2.800.000₫"
+                    android:textSize="12sp"
+                    android:textColor="#9CA3AF"
+                    android:visibility="gone" />
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="1dp" />
+
+                <TextView
+                    android:id="@+id/tvProductStock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kho: 45"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#111827" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hiển thị"
+                    android:textSize="11sp"
+                    app:chipBackgroundColor="#DCFCE7"
+                    app:chipStrokeWidth="0dp"
+                    android:textColor="#166534"
+                    app:chipMinHeight="24dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp" />
+
+                <ImageButton
+                    android:id="@+id/btnEdit"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="4dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_edit"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Edit"
+                    android:tint="#6B7280" />
+
+                <ImageButton
+                    android:id="@+id/btnDelete"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_delete"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Delete"
+                    android:tint="#DC2626" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
