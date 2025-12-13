@@ -7,7 +7,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
+import com.google.android.material.textfield.TextInputEditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,18 +31,23 @@ import retrofit2.Response;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etEmail, etPassword;
+    private TextInputEditText etEmail, etPassword;
     private TextView tvEmailError, tvPasswordError;
     private CheckBox cbRememberMe;
     private Button btnLogin, btnGoogle;
     private TextView tvForgotPassword, tvRegister;
-    
+
     private AuthApi authApi;
     private RetrofitClient retrofitClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Force light mode
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
+                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+
         setContentView(R.layout.activity_login);
 
         // Khởi tạo Retrofit
@@ -64,6 +69,9 @@ public class LoginActivity extends AppCompatActivity {
         btnGoogle = findViewById(R.id.btnGoogle);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegister = findViewById(R.id.tvRegister);
+
+        // Request focus on email
+        etEmail.requestFocus();
     }
 
     private void setupListeners() {
@@ -128,13 +136,13 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     // Login thành công
                     LoginResponse loginResponse = response.body();
-                    
+
                     // Lưu token
                     retrofitClient.saveToken(loginResponse.getAccessToken());
-                    
+
                     // Hiển thị thông báo
                     Toast.makeText(LoginActivity.this, "Chào mừng trở lại!", Toast.LENGTH_SHORT).show();
-                    
+
                     // Chuyển sang MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -155,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 setLoading(false);
-                
+
                 // Xử lý lỗi kết nối
                 String errorMessage = "Không thể kết nối đến server. Kiểm tra:\n" +
                         "1. Backend đang chạy tại localhost:8080\n" +

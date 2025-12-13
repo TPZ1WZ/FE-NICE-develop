@@ -37,7 +37,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private ImageView ivMenu, ivNotifications;
     private TextView tvTotalRevenue, tvTotalOrders, tvTotalUsers, tvProductsInStock, tvProductsOutOfStock;
     private TextView tvOrderCompleted, tvOrderConfirmed, tvOrderShipping, tvOrderPending, tvOrderCanceled;
-    private LinearLayout menuDashboard, menuProducts, menuOrders, menuUsers, menuReviews, menuCoupons, menuSettings, menuLogout;
+    private LinearLayout menuDashboard, menuProducts, menuOrders, menuUsers, menuCategories, menuReviews, menuCoupons, menuSettings, menuLogout;
     private FrameLayout layoutLoading;
     private LinearLayout layoutContent;
     
@@ -80,6 +80,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             menuProducts = findViewById(R.id.menuProducts);
             menuOrders = findViewById(R.id.menuOrders);
             menuUsers = findViewById(R.id.menuUsers);
+            menuCategories = findViewById(R.id.menuCategories);
             menuReviews = findViewById(R.id.menuReviews);
             menuCoupons = findViewById(R.id.menuCoupons);
             menuSettings = findViewById(R.id.menuSettings);
@@ -153,7 +154,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         if (menuOrders != null) {
             menuOrders.setOnClickListener(v -> {
                 drawerLayout.closeDrawer(GravityCompat.START);
-                Toast.makeText(this, "Tính năng Đơn hàng đang phát triển", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, AdminOrdersActivity.class);
+                startActivity(intent);
             });
         }
         
@@ -161,6 +163,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
             menuUsers.setOnClickListener(v -> {
                 drawerLayout.closeDrawer(GravityCompat.START);
                 Toast.makeText(this, "Tính năng Người dùng đang phát triển", Toast.LENGTH_SHORT).show();
+            });
+        }
+        
+        if (menuCategories != null) {
+            menuCategories.setOnClickListener(v -> {
+                drawerLayout.closeDrawer(GravityCompat.START);
+                Intent intent = new Intent(this, AdminCategoriesActivity.class);
+                startActivity(intent);
             });
         }
         

@@ -60,26 +60,24 @@
                     android:gravity="center"
                     android:layout_marginBottom="24dp" />
 
-                <!-- Email Label -->
-                <TextView
+                <!-- Email Input Wrapper -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textSize="14sp"
-                    android:textColor="#000000"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
+                    android:layout_marginBottom="4dp"
+                    android:hint="Email"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-                <!-- Email Input -->
-                <EditText
-                    android:id="@+id/etEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="email@example.com"
-                    android:inputType="textEmailAddress"
-                    android:padding="12dp"
-                    android:background="@android:drawable/edit_text"
-                    android:layout_marginBottom="4dp" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:textColor="#000000"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Email Error -->
                 <TextView
@@ -91,26 +89,27 @@
                     android:visibility="gone"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Password Label -->
-                <TextView
+                <!-- Password Label (removed separate label as TIL has hint) -->
+
+                <!-- Password Input Wrapper -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Mật khẩu"
-                    android:textSize="14sp"
-                    android:textColor="#000000"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
+                    android:layout_marginBottom="4dp"
+                    android:hint="Mật khẩu"
+                    app:endIconMode="password_toggle"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-                <!-- Password Input -->
-                <EditText
-                    android:id="@+id/etPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="••••••••"
-                    android:inputType="textPassword"
-                    android:padding="12dp"
-                    android:background="@android:drawable/edit_text"
-                    android:layout_marginBottom="4dp" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="#000000"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Password Error -->
                 <TextView

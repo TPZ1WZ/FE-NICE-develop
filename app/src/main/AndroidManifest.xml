@@ -18,15 +18,28 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         
-        <!-- LoginActivity - Màn hình đăng nhập (LAUNCHER) -->
+        <!-- SplashActivity - Splash Screen (LAUNCHER) -->
         <activity
-            android:name=".ui.auth.LoginActivity"
-            android:exported="true">
+            android:name=".ui.intro.SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- OnboardingActivity - Onboarding Screens -->
+        <activity
+            android:name=".ui.intro.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        
+        <!-- LoginActivity - Màn hình đăng nhập -->
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false" />
 
         <!-- RegisterActivity - Màn hình đăng ký -->
         <activity
@@ -36,7 +49,8 @@
         <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Nikefe" />
         
         <!-- ProductListActivity - Danh sách sản phẩm -->
         <activity
@@ -91,6 +105,26 @@
         <!-- AdminProductFormActivity - Add/Edit Product -->
         <activity
             android:name=".ui.admin.AdminProductFormActivity"
+            android:exported="false" />
+        
+        <!-- AdminCategoriesActivity - Admin Category Management -->
+        <activity
+            android:name=".ui.admin.AdminCategoriesActivity"
+            android:exported="false" />
+        
+        <!-- AdminCategoryFormActivity - Add/Edit Category -->
+        <activity
+            android:name=".ui.admin.AdminCategoryFormActivity"
+            android:exported="false" />
+        
+        <!-- AdminOrdersActivity - Admin Order Management -->
+        <activity
+            android:name=".ui.admin.AdminOrdersActivity"
+            android:exported="false" />
+        
+        <!-- AdminOrderDetailActivity - Order Detail with Actions -->
+        <activity
+            android:name=".ui.admin.AdminOrderDetailActivity"
             android:exported="false" />
     </application>
 

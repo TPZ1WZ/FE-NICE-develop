@@ -1,10 +1,13 @@
 package com.example.nike_fe.data.model;
 
+import java.util.List;
+
 public class Product {
     private Long id;
     private String name;
     private Double price;
     private String thumbnail;
+    private List<String> images;
 
     public Product() {
     }
@@ -41,10 +44,22 @@ public class Product {
     }
 
     public String getThumbnail() {
+        // Fallback to first image if thumbnail is null
+        if (thumbnail == null && images != null && !images.isEmpty()) {
+            return images.get(0);
+        }
         return thumbnail;
     }
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 }

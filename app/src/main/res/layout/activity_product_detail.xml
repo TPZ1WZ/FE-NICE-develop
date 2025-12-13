@@ -26,208 +26,280 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_arrow_left"
-                android:contentDescription="Back"
                 android:layout_gravity="start" />
 
-            <ImageView
-                android:id="@+id/ivFavorite"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_heart"
-                android:contentDescription="Favorite"
-                android:layout_gravity="end"
-                android:layout_marginEnd="16dp" />
-
-            <ImageView
-                android:id="@+id/ivCart"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_shopping_bag"
-                android:contentDescription="Cart"
-                android:layout_gravity="end" />
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Product Details"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_gravity="center"/>
+                
         </androidx.appcompat.widget.Toolbar>
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="100dp">
 
-            <!-- Image Gallery ViewPager2 -->
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vpProductImages"
+            <!-- Image Gallery -->
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:background="#f6f6f6" />
+                android:layout_height="wrap_content">
+                
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpProductImages"
+                    android:layout_width="match_parent"
+                    android:layout_height="320dp"
+                    android:background="#FAFAFA" />
+                    
+                <LinearLayout
+                    android:id="@+id/llImageIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/vpProductImages"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="4dp"/>
+            </RelativeLayout>
 
-            <!-- Image Indicator -->
-            <LinearLayout
-                android:id="@+id/llImageIndicator"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:padding="16dp" />
-
-            <!-- Product Info Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
-                <!-- Product Name -->
-                <TextView
-                    android:id="@+id/tvProductName"
+                <!-- Title and Heart -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nike Air Max 90"
-                    android:textSize="24sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:orientation="horizontal"
+                    android:gravity="top">
 
-                <!-- Subtitle -->
-                <TextView
-                    android:id="@+id/tvProductSubtitle"
+                    <TextView
+                        android:id="@+id/tvProductName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Air Jordan 3 Retro"
+                        android:textSize="24sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivFavorite"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_heart_outline"
+                        app:tint="@color/black" />
+                </LinearLayout>
+                
+                <!-- Stats Row: Sold count & Rating -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Giày Thể Thao Nam"
-                    android:textSize="16sp"
-                    android:textColor="@color/gray_600"
-                    android:layout_marginBottom="16dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+                    
+                    <TextView
+                         android:id="@+id/tvSold"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="6,378 sold"
+                         android:textSize="12sp"
+                         android:textColor="#555555"
+                         android:background="@drawable/bg_sold_badge"
+                         android:paddingStart="8dp"
+                         android:paddingEnd="8dp"
+                         android:paddingTop="4dp"
+                         android:paddingBottom="4dp"/>
+                         
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_star_filled"
+                        app:tint="#FFC107"
+                        android:layout_marginStart="16dp"/>
+                        
+                    <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="4.9 (6,573 reviews)"
+                         android:textSize="14sp"
+                         android:textColor="#555555"
+                         android:layout_marginStart="4dp"/>
+                </LinearLayout>
 
-                <!-- Price -->
-                <TextView
-                    android:id="@+id/tvPrice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2.999.000₫"
-                    android:textSize="20sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Stock Status -->
-                <TextView
-                    android:id="@+id/tvStock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Còn hàng: 50"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray_600"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Size Selection -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Chọn size"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupSizes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    app:singleSelection="true"
-                    app:selectionRequired="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip38"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="38" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip39"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="39" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip40"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="40" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip41"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="41"
-                        android:checked="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip42"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="42" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip43"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="43" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip44"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="44" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip45"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="45" />
-                </com.google.android.material.chip.ChipGroup>
-
-                <!-- Description Section -->
+                <!-- Description -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Mô tả sản phẩm"
+                    android:text="Description"
                     android:textSize="18sp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="8dp" />
 
                 <TextView
                     android:id="@+id/tvDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Mô tả chi tiết sản phẩm..."
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et view more.."
                     android:textSize="14sp"
-                    android:textColor="@color/gray_700"
+                    android:textColor="#757575"
                     android:lineSpacingExtra="4dp"
-                    android:layout_marginBottom="24dp" />
+                    android:maxLines="3"
+                    android:ellipsize="end" />
+
+                <!-- Size Selection -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Size"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="8dp"/>
+                        
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupSizes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true"
+                        app:selectionRequired="true"
+                        app:chipSpacingHorizontal="8dp">
+
+                        <!-- Circular Chips created programmatically or included here -->
+                         <com.google.android.material.chip.Chip
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:text="40"
+                            android:textAlignment="center"
+                            app:chipCornerRadius="25dp"
+                            android:textColor="@color/black"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeWidth="1dp"
+                            app:chipStrokeColor="#E0E0E0"/>
+
+                         <com.google.android.material.chip.Chip
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:text="41"
+                            android:textAlignment="center"
+                            app:chipCornerRadius="25dp"
+                            android:textColor="@color/black"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeWidth="1dp"
+                            app:chipStrokeColor="#E0E0E0"
+                            android:checked="true"/>
+
+                         <com.google.android.material.chip.Chip
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:text="42"
+                            android:textAlignment="center"
+                            app:chipCornerRadius="25dp"
+                            android:textColor="@color/black"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeWidth="1dp"
+                            app:chipStrokeColor="#E0E0E0"/>
+                            
+                         <com.google.android.material.chip.Chip
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:text="43"
+                            android:textAlignment="center"
+                            app:chipCornerRadius="25dp"
+                            android:textColor="@color/black"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeWidth="1dp"
+                            app:chipStrokeColor="#E0E0E0"/>
+                            
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+
+                <!-- Quantity Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="24dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quantity"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_marginEnd="16dp"/>
+                        
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/bg_gray_rounded_small"
+                        android:gravity="center_vertical"
+                        android:padding="4dp">
+                        
+                        <ImageView
+                            android:id="@+id/btnMinus"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_remove"
+                            app:tint="@color/black"
+                            android:padding="8dp"/>
+                        
+                        <TextView
+                            android:id="@+id/tvQuantity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="12dp"/>
+                            
+                        <ImageView
+                            android:id="@+id/btnPlus"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_add"
+                            app:tint="@color/black"
+                            android:padding="8dp"/>
+                    </LinearLayout>
+                </LinearLayout>
 
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Add to Cart Bar -->
+    <!-- Bottom Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -235,18 +307,60 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:background="#FFFFFF"
-        android:elevation="8dp">
-
-        <Button
-            android:id="@+id/btnAddToCart"
+        android:elevation="16dp"
+        android:gravity="center_vertical">
+        
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Thêm vào giỏ hàng"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:background="@drawable/btn_rounded_black" />
+            android:orientation="vertical">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total price"
+                android:textSize="12sp"
+                android:textColor="#757575"/>
+                
+            <TextView
+                android:id="@+id/tvTotalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$105.00"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
+        </LinearLayout>
+
+        <LinearLayout
+             android:id="@+id/btnAddToCart"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:background="@drawable/btn_rounded_black"
+             android:orientation="horizontal"
+             android:gravity="center"
+             android:paddingStart="24dp"
+             android:paddingEnd="24dp"
+             android:paddingTop="12dp"
+             android:paddingBottom="12dp"
+             android:minWidth="180dp">
+             
+             <ImageView
+                 android:layout_width="20dp"
+                 android:layout_height="20dp"
+                 android:src="@drawable/ic_shopping_bag"
+                 app:tint="@color/white"
+                 android:layout_marginEnd="8dp"/>
+                 
+             <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="Add to Cart"
+                 android:textColor="@color/white"
+                 android:textStyle="bold"
+                 android:textSize="16sp"/>
+        </LinearLayout>
 
     </LinearLayout>
 
