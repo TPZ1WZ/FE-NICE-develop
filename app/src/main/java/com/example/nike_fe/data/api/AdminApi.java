@@ -1,5 +1,6 @@
 package com.example.nike_fe.data.api;
 
+import com.example.nike_fe.data.model.Category;
 import com.example.nike_fe.data.model.DashboardStats;
 import com.example.nike_fe.data.model.Order;
 import com.example.nike_fe.data.model.OrderStatusDistribution;
@@ -11,9 +12,13 @@ import com.example.nike_fe.data.model.User;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -50,6 +55,12 @@ public interface AdminApi {
         @Query("status") String status
     );
     
+    @GET("api/v1/admin/orders/{id}")
+    Call<Order> getOrderById(
+        @Header("Authorization") String token,
+        @Path("id") Long orderId
+    );
+    
     @PATCH("api/v1/admin/orders/{id}/status")
     Call<Order> updateOrderStatus(
         @Header("Authorization") String token,
@@ -59,4 +70,27 @@ public interface AdminApi {
     
     @GET("api/v1/admin/users")
     Call<List<User>> getAllUsers(@Header("Authorization") String token);
+    
+    // Category APIs
+    @GET("api/categories")
+    Call<List<Category>> getAllCategories(@Header("Authorization") String token);
+    
+    @POST("api/admin/categories")
+    Call<Category> createCategory(
+        @Header("Authorization") String token,
+        @Body Category category
+    );
+    
+    @PUT("api/admin/categories/{id}")
+    Call<Category> updateCategory(
+        @Header("Authorization") String token,
+        @Path("id") Long id,
+        @Body Category category
+    );
+    
+    @DELETE("api/admin/categories/{id}")
+    Call<Void> deleteCategory(
+        @Header("Authorization") String token,
+        @Path("id") Long id
+    );
 }

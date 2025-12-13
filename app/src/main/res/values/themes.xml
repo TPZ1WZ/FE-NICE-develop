@@ -2,8 +2,20 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Nikefe" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.Nikefe" parent="Base.Theme.Nikefe" />
+    
+    <!-- Splash Screen Theme with blue background -->
+    <style name="Theme.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:statusBarColor">@color/splash_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>

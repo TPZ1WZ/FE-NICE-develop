@@ -24,4 +24,7 @@
     
     <!-- Orange colors -->
     <color name="orange_600">#EA580C</color>
+    
+    <!-- Splash colors -->
+    <color name="splash_blue">#1E88E5</color>
 </resources>

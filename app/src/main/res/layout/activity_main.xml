@@ -1,190 +1,331 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-
-    <!-- AppBar với Toolbar -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:elevation="4dp">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/white">
-
-            <!-- NIKE Logo -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="NIKE"
-                android:textSize="24sp"
-                android:textStyle="bold|italic"
-                android:textColor="@color/black"
-                android:letterSpacing="0.1" />
-
-            <!-- Menu Icon -->
-            <ImageView
-                android:id="@+id/ivMenu"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_menu"
-                android:contentDescription="Menu" />
-
-            <!-- Profile Icon -->
-            <ImageView
-                android:id="@+id/ivProfile"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="56dp"
-                android:src="@drawable/ic_profile"
-                android:contentDescription="Profile" />
-
-            <!-- Cart Icon -->
-            <ImageView
-                android:id="@+id/ivCart"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="96dp"
-                android:src="@drawable/ic_shopping_bag"
-                android:contentDescription="Cart" />
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
+    tools:openDrawer="start">
 
     <!-- Main Content -->
-    <androidx.core.widget.NestedScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <LinearLayout
+        android:background="#F8F9FA">
+    
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="80dp"
+            android:background="@color/white"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <!-- Hero Section - Full Width -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:background="#D1D5DB"
-                android:padding="32dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MỚI VỀ"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="#374151"
-                        android:letterSpacing="0.3"
-                        android:layout_marginBottom="24dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="NIKE AIR MAX"
-                        android:textSize="56sp"
-                        android:textStyle="bold|italic"
-                        android:textColor="@color/black"
-                        android:letterSpacing="-0.02"
-                        android:gravity="center"
-                        android:layout_marginBottom="24dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Trải nghiệm tương lai của sự thoải mái với sản phẩm mới nhất của chúng tôi."
-                        android:textSize="18sp"
-                        android:textColor="#4B5563"
-                        android:gravity="center"
-                        android:paddingHorizontal="48dp"
-                        android:layout_marginBottom="32dp" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
-
-                        <Button
-                            android:id="@+id/btnShopShoes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="56dp"
-                            android:text="Mua Giày"
-                            android:textColor="@color/white"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:textAllCaps="false"
-                            android:background="@drawable/btn_rounded_black"
-                            android:paddingHorizontal="40dp"
-                            android:layout_marginEnd="16dp" />
-
-                        <Button
-                            android:id="@+id/btnViewAll"
-                            android:layout_width="wrap_content"
-                            android:layout_height="56dp"
-                            android:text="Xem Tất Cả"
-                            android:textColor="@color/black"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:textAllCaps="false"
-                            android:background="@drawable/btn_rounded_outline"
-                            android:paddingHorizontal="40dp" />
-                    </LinearLayout>
-                </LinearLayout>
-            </RelativeLayout>
-
-            <!-- Featured Categories Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:paddingBottom="24dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="NỔI BẬT"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:letterSpacing="0.1"
-                    android:layout_marginBottom="24dp" />
-
-                <!-- Featured Products Grid -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFeaturedProducts"
+                <!-- Header Section -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clipToPadding="false" />
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/ivHeaderAvatar"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/img_placeholder_shoe"
+                        app:civ_border_width="0dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Good Morning 👋"
+                            android:textColor="#757575"
+                            android:textSize="14sp"/>
+
+                        <TextView
+                            android:id="@+id/tvHeaderName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Andrew Ainsley"
+                            android:textColor="@color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/btnNotification"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_notification"
+                        app:tint="@color/black"
+                        android:layout_marginEnd="16dp"/>
+
+                    <ImageView
+                        android:id="@+id/btnWishlist"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_heart_outline"
+                        app:tint="@color/black"/>
+                </LinearLayout>
+
+                <!-- Search Bar & Filter Button Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginBottom="24dp">
+
+                    <!-- Search Input -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/bg_search_bar"
+                        android:gravity="center_vertical"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp">
+                    
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_search"
+                            app:tint="#BDBDBD"/>
+
+                        <EditText
+                            android:id="@+id/etSearch"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="8dp"
+                            android:background="@null"
+                            android:hint="Looking for shoes"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            android:maxLines="1"
+                            android:inputType="text"/>
+                    </LinearLayout>
+                    
+                    <!-- Filter Button -->
+                    <FrameLayout
+                        android:id="@+id/btnFilter"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_circle_black"
+                        android:backgroundTint="#007BFF"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+                        
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_filter"
+                            app:tint="@color/white"/>
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!-- Special Offers Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Special Offers"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See All"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Special Offers Banner -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="@drawable/bg_special_offer"
+                    android:layout_marginBottom="24dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center_vertical"
+                        android:paddingStart="24dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25%"
+                            android:textColor="@color/white"
+                            android:textSize="48sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Today's Special!"
+                            android:textColor="@color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Get discount for every\norder, only valid for today"
+                            android:textColor="#E0E0E0"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="140dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/img_placeholder_shoe"
+                        android:rotation="-15"/>
+                </FrameLayout>
+
+                <!-- Brand Categories -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvBrands"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:paddingHorizontal="8dp"
+                    android:overScrollMode="never"/>
+
+                <!-- Most Popular Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Most Popular"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See All"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Filter Chips -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFilters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:paddingHorizontal="16dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_home_category"/> <!-- Reusing for preview -->
+
+                <!-- Product Grid -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvProductGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="8dp"
+                    android:overScrollMode="never"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:listitem="@layout/item_home_product"/>
+
             </LinearLayout>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
+    
+        <!-- Bottom App Bar -->
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/white"
+            app:fabAlignmentMode="center"
+            app:fabCradleMargin="8dp"
+            app:fabCradleRoundedCornerRadius="24dp"
+            app:hideOnScroll="true">
+    
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent"
+                app:menu="@menu/bottom_nav_menu"
+                app:elevation="0dp"
+                app:labelVisibilityMode="unlabeled" />
+                
+        </com.google.android.material.bottomappbar.BottomAppBar>
+    
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabCart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_shopping_bag"
+            app:tint="@color/white"
+            app:backgroundTint="@color/splash_blue"
+            app:layout_anchor="@id/bottomAppBar"
+            app:maxImageSize="32dp" />
+            
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/white"
-        app:menu="@menu/bottom_nav_menu"
-        app:labelVisibilityMode="labeled" />
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@drawable/bg_category_selector"
+        android:backgroundTint="#03A9F4"
+        android:fitsSystemWindows="true"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
