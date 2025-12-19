@@ -19,6 +19,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.example.nike_fe.R;
 import com.example.nike_fe.adapter.ImageGalleryAdapter;
 import com.example.nike_fe.data.api.CartApi;
+import com.example.nike_fe.data.api.FavoriteApi;
 import com.example.nike_fe.data.api.ProductApi;
 import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.model.AddToCartRequest;
@@ -57,7 +58,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     private ImageGalleryAdapter imageAdapter;
     private ProductApi productApi;
     private CartApi cartApi;
+    private FavoriteApi favoriteApi;
     private String token;
+    private boolean isFavorite = false;
     private Long productId;
     private ProductDetail productDetail;
 
@@ -105,27 +108,40 @@ public class ProductDetailActivity extends AppCompatActivity {
         // Retrofit
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         productApi = retrofitClient.getProductApi();
+        favoriteApi = retrofitClient.getFavoriteApi();
         cartApi = retrofitClient.getCartApi();
-        token = retrofitClient.getToken();
+        String rawToken = retrofitClient.getToken();
+        token = (rawToken != null && !rawToken.startsWith("Bearer ")) ? "Bearer " + rawToken : rawToken;
     }
 
     private void setupListeners() {
         ivBack.setOnClickListener(v -> onBackPressed());
 
         ivFavorite.setOnClickListener(v -> {
-            Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show();
-            ivFavorite.setImageResource(R.drawable.ic_heart_filled); // visual feedback
-            ivFavorite.setColorFilter(getResources().getColor(android.R.color.holo_red_dark));
-        });
-
-        btnAddToCart.setOnClickListener(v -> {
             if (token == null || token.isEmpty()) {
-                Toast.makeText(this, "Please login to add to cart", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, com.example.nike_fe.ui.auth.LoginActivity.class));
                 return;
             }
-            if (productDetail == null)
+            toggleFavorite();
+        });
+
+        btnAddToCart.setOnClickListener(v -> {
+            android.util.Log.d("ProductDetail", "🔘 Add to Cart button clicked");
+            android.util.Log.d("ProductDetail", "🔐 Token status: " + (token != null ? "Present" : "NULL"));
+            android.util.Log.d("ProductDetail", "📦 Product Detail status: " + (productDetail != null ? "Loaded" : "NULL"));
+            
+            if (token == null || token.isEmpty()) {
+                android.util.Log.w("ProductDetail", "⚠️ No token found, redirecting to login");
+                Toast.makeText(this, "Vui lòng đăng nhập để mua hàng", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, com.example.nike_fe.ui.auth.LoginActivity.class));
                 return;
+            }
+            if (productDetail == null) {
+                android.util.Log.w("ProductDetail", "⚠️ Product detail not loaded yet");
+                Toast.makeText(this, "Vui lòng đợi sản phẩm tải xong", Toast.LENGTH_SHORT).show();
+                return;
+            }
             addToCart();
         });
 
@@ -221,11 +237,80 @@ public class ProductDetailActivity extends AppCompatActivity {
             imageAdapter.setImages(placeholderImages);
         }
 
-        // Dynamically add size chips if they were dynamic, but for now they are static
-        // XML
+        // Dynamically add size chips
+        chipGroupSizes.removeAllViews();
+        List<String> sizes = productDetail.getSizes();
+        if (sizes == null || sizes.isEmpty()) {
+            sizes = new ArrayList<>();
+            sizes.add("40");
+            sizes.add("41");
+            sizes.add("42");
+            sizes.add("43");
+        }
+
+        for (String size : sizes) {
+            addSizeChip(size);
+        }
+
+        // Auto-select first size
+        if (chipGroupSizes.getChildCount() > 0) {
+            ((Chip) chipGroupSizes.getChildAt(0)).setChecked(true);
+        }
+    }
+
+    private void addSizeChip(String size) {
+        Chip chip = new Chip(this);
+        chip.setId(View.generateViewId());
+        chip.setText(size);
+        chip.setCheckable(true);
+        chip.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        // Basic Styling
+        chip.setTextColor(android.graphics.Color.BLACK);
+        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE));
+
+        // Corner Radius (25dp)
+        float cornerRadiusPx = dpToPx(25);
+        chip.setChipCornerRadius(cornerRadiusPx);
+
+        // Stroke
+        chip.setChipStrokeWidth((int) dpToPx(1));
+        chip.setChipStrokeColor(
+                android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E0E0E0")));
+
+        // Layout: 45dp x 45dp
+        int sizePx = (int) dpToPx(45);
+        ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(sizePx, sizePx);
+        chip.setLayoutParams(params);
+
+        // Center text
+        chip.setGravity(android.view.Gravity.CENTER);
+
+        // Checked State Logic
+        chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.BLACK));
+                chip.setTextColor(android.graphics.Color.WHITE);
+            } else {
+                chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE));
+                chip.setTextColor(android.graphics.Color.BLACK);
+            }
+        });
+
+        chipGroupSizes.addView(chip);
+    }
+
+    private float dpToPx(int dp) {
+        return dp * getResources().getDisplayMetrics().density;
     }
 
     private void addToCart() {
+        // Check if product detail is loaded
+        if (productDetail == null) {
+            Toast.makeText(this, "Vui lòng đợi sản phẩm tải xong", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         int selectedChipId = chipGroupSizes.getCheckedChipId();
         String selectedSize = "41"; // Default fall back
         if (selectedChipId != -1) {
@@ -233,24 +318,55 @@ public class ProductDetailActivity extends AppCompatActivity {
             selectedSize = selectedChip.getText().toString();
         }
 
-        AddToCartRequest request = new AddToCartRequest(productId, quantity, selectedSize);
+        // Use productDetail.getId() to ensure we have the correct ID
+        Long actualProductId = productDetail.getId();
+        if (actualProductId == null) {
+            actualProductId = productId; // Fallback to intent ID
+        }
+
+        AddToCartRequest request = new AddToCartRequest(actualProductId, quantity, selectedSize);
+        
+        android.util.Log.d("ProductDetail", "🛒 Adding to cart - ProductId: " + actualProductId + ", Quantity: " + quantity + ", Size: " + selectedSize);
+        android.util.Log.d("ProductDetail", "📝 Token: " + (token != null ? "Present (length: " + token.length() + ")" : "NULL"));
+        android.util.Log.d("ProductDetail", "📦 Request Body: productId=" + actualProductId + ", quantity=" + quantity + ", size=" + selectedSize);
 
         // Disable button momentarily
         btnAddToCart.setEnabled(false);
         btnAddToCart.setAlpha(0.7f);
 
-        cartApi.addToCart("Bearer " + token, request).enqueue(new Callback<java.util.Map<String, String>>() {
+        cartApi.addToCart(token, request).enqueue(new Callback<java.util.Map<String, String>>() {
             @Override
             public void onResponse(Call<java.util.Map<String, String>> call,
                     Response<java.util.Map<String, String>> response) {
                 btnAddToCart.setEnabled(true);
                 btnAddToCart.setAlpha(1.0f);
+                
+                android.util.Log.d("ProductDetail", "📦 Add to cart response: " + response.code());
+                android.util.Log.d("ProductDetail", "🔗 Request URL: " + call.request().url());
+                
                 if (response.isSuccessful()) {
-                    Toast.makeText(ProductDetailActivity.this, "✅ Added to Cart", Toast.LENGTH_SHORT).show();
+                    android.util.Log.d("ProductDetail", "✅ Successfully added to cart");
+                    if (response.body() != null) {
+                        android.util.Log.d("ProductDetail", "Response body: " + response.body());
+                    }
+                    Toast.makeText(ProductDetailActivity.this, "✅ Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                     // Optional: Navigate to Cart
                     // startActivity(new Intent(ProductDetailActivity.this, CartActivity.class));
                 } else {
-                    Toast.makeText(ProductDetailActivity.this, "Failed to add to cart", Toast.LENGTH_SHORT).show();
+                    android.util.Log.e("ProductDetail", "❌ Add to cart failed: " + response.code());
+                    android.util.Log.e("ProductDetail", "❌ Response message: " + response.message());
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorBody = response.errorBody().string();
+                            android.util.Log.e("ProductDetail", "Error body: " + errorBody);
+                            Toast.makeText(ProductDetailActivity.this, "Lỗi: " + errorBody, Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(ProductDetailActivity.this, "Thêm vào giỏ thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        android.util.Log.e("ProductDetail", "Error reading error body", e);
+                        Toast.makeText(ProductDetailActivity.this, "Thêm vào giỏ thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -258,6 +374,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             public void onFailure(Call<java.util.Map<String, String>> call, Throwable t) {
                 btnAddToCart.setEnabled(true);
                 btnAddToCart.setAlpha(1.0f);
+                android.util.Log.e("ProductDetail", "💥 Add to cart failure", t);
                 Toast.makeText(ProductDetailActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -287,6 +404,81 @@ public class ProductDetailActivity extends AppCompatActivity {
                 // Inactive color (Light Gray)
                 dot.getBackground().setTint(getResources().getColor(android.R.color.darker_gray));
             }
+        }
+    }
+
+    private boolean isTogglingFavorite = false;
+
+    /**
+     * Toggle favorite status (add/remove)
+     */
+    private void toggleFavorite() {
+        if (productDetail == null || isTogglingFavorite)
+            return;
+
+        isTogglingFavorite = true;
+
+        if (isFavorite) {
+            // Remove from favorites
+            favoriteApi.removeFromFavorites(productDetail.getId(), token)
+                    .enqueue(new Callback<java.util.Map<String, Object>>() {
+                        @Override
+                        public void onResponse(Call<java.util.Map<String, Object>> call,
+                                Response<java.util.Map<String, Object>> response) {
+                            isTogglingFavorite = false;
+                            if (response.isSuccessful()) {
+                                isFavorite = false;
+                                updateFavoriteUI();
+                                Toast.makeText(ProductDetailActivity.this,
+                                        "Đã xóa khỏi yêu thích", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                            isTogglingFavorite = false;
+                            Toast.makeText(ProductDetailActivity.this,
+                                    "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            // Add to favorites
+            favoriteApi.addToFavorites(productDetail.getId(), token)
+                    .enqueue(new Callback<java.util.Map<String, Object>>() {
+
+                        @Override
+                        public void onResponse(Call<java.util.Map<String, Object>> call,
+                                Response<java.util.Map<String, Object>> response) {
+                            isTogglingFavorite = false;
+                            if (response.isSuccessful()) {
+                                isFavorite = true;
+                                updateFavoriteUI();
+                                Toast.makeText(ProductDetailActivity.this,
+                                        "Đã thêm vào yêu thích", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                            isTogglingFavorite = false;
+                            Toast.makeText(ProductDetailActivity.this,
+                                    "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                        }
+
+                    });
+        }
+    }
+
+    /**
+     * Update favorite icon based on status
+     */
+    private void updateFavoriteUI() {
+        if (isFavorite) {
+            ivFavorite.setImageResource(R.drawable.ic_heart_filled);
+            ivFavorite.setColorFilter(getResources().getColor(android.R.color.holo_red_dark));
+        } else {
+            ivFavorite.setImageResource(R.drawable.ic_heart_outline);
+            ivFavorite.clearColorFilter();
         }
     }
 }

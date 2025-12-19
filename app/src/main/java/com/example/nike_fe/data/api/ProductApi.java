@@ -1,5 +1,6 @@
 package com.example.nike_fe.data.api;
 
+import com.example.nike_fe.data.model.Category;
 import com.example.nike_fe.data.model.Product;
 import com.example.nike_fe.data.model.ProductDetail;
 
@@ -21,4 +22,10 @@ public interface ProductApi {
     
     @GET("/api/v1/products/{id}")
     Call<ProductDetail> getProductById(@Path("id") Long id);
+    
+    @GET("/api/v1/products/brands")
+    Call<List<String>> getBrands();
+    
+    @GET("/api/v1/products/categories")
+    Call<List<Category>> getCategories();
 }

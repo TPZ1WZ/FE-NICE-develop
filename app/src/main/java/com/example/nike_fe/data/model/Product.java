@@ -7,6 +7,7 @@ public class Product {
     private String name;
     private Double price;
     private String thumbnail;
+    private java.util.List<String> sizes;
     private List<String> images;
 
     public Product() {
@@ -53,6 +54,14 @@ public class Product {
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public java.util.List<String> getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(java.util.List<String> sizes) {
+        this.sizes = sizes;
     }
 
     public List<String> getImages() {

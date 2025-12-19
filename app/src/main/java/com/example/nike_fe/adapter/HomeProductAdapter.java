@@ -23,6 +23,7 @@ import java.util.Locale;
 public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.ProductViewHolder> {
 
     private List<Product> products = new ArrayList<>();
+    private List<Product> originalProducts = new ArrayList<>();
     private Context context;
     private OnProductClickListener listener;
 
@@ -43,10 +44,28 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     public HomeProductAdapter(Context context, List<Product> products) {
         this.context = context;
         this.products = products;
+        this.originalProducts = new ArrayList<>(products);
     }
 
     public void setProducts(List<Product> products) {
         this.products = products;
+        this.originalProducts = new ArrayList<>(products);
+        notifyDataSetChanged();
+    }
+
+    public void filter(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            products = new ArrayList<>(originalProducts);
+        } else {
+            List<Product> filteredList = new ArrayList<>();
+            String lowerCaseQuery = query.toLowerCase().trim();
+            for (Product product : originalProducts) {
+                if (product.getName().toLowerCase().contains(lowerCaseQuery)) {
+                    filteredList.add(product);
+                }
+            }
+            products = filteredList;
+        }
         notifyDataSetChanged();
     }
 
@@ -130,16 +149,45 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             // Load image
             if (product.getThumbnail() != null && !product.getThumbnail().isEmpty()) {
                 String imageUrl = product.getThumbnail();
-                if (!imageUrl.startsWith("http")) {
+                
+                // Xử lý base64 image data
+                if (imageUrl.startsWith("data:image")) {
+                    // Base64 image - load trực tiếp
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.img_placeholder_shoe)
+                            .error(R.drawable.img_placeholder_shoe)
+                            .centerInside()
+                            .into(ivProductImage);
+                } 
+                // URL đầy đủ
+                else if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.img_placeholder_shoe)
+                            .error(R.drawable.img_placeholder_shoe)
+                            .centerInside()
+                            .into(ivProductImage);
+                } 
+                // Relative URL
+                else if (imageUrl.startsWith("/")) {
                     imageUrl = "http://10.0.2.2:8080" + imageUrl;
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.img_placeholder_shoe)
+                            .error(R.drawable.img_placeholder_shoe)
+                            .centerInside()
+                            .into(ivProductImage);
+                } 
+                else {
+                    // Fallback
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.img_placeholder_shoe)
+                            .error(R.drawable.img_placeholder_shoe)
+                            .centerInside()
+                            .into(ivProductImage);
                 }
-
-                Glide.with(context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.img_placeholder_shoe)
-                        .error(R.drawable.img_placeholder_shoe)
-                        .centerInside()
-                        .into(ivProductImage);
             } else {
                 ivProductImage.setImageResource(R.drawable.img_placeholder_shoe);
             }

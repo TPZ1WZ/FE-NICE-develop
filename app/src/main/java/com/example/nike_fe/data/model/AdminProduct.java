@@ -15,6 +15,9 @@ public class AdminProduct {
     @SerializedName("category")
     private String category;
     
+    @SerializedName("categoryId")
+    private Long categoryId;
+    
     @SerializedName("price")
     private double price;
     
@@ -30,8 +33,14 @@ public class AdminProduct {
     @SerializedName("image")
     private String image;
     
+    @SerializedName("images")
+    private java.util.List<String> images;
+    
     @SerializedName("description")
     private String description;
+    
+    @SerializedName("sizes")
+    private java.util.List<String> sizes;
     
     @SerializedName("createdAt")
     private String createdAt;
@@ -70,6 +79,14 @@ public class AdminProduct {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public double getPrice() {
@@ -112,6 +129,14 @@ public class AdminProduct {
         this.image = image;
     }
 
+    public java.util.List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(java.util.List<String> images) {
+        this.images = images;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -126,6 +151,14 @@ public class AdminProduct {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public java.util.List<String> getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(java.util.List<String> sizes) {
+        this.sizes = sizes;
     }
     
     public boolean isLowStock() {

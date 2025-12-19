@@ -2,20 +2,20 @@ package com.example.nike_fe.ui.cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.card.MaterialCardView;
-
+import com.bumptech.glide.Glide;
 import com.example.nike_fe.R;
 import com.example.nike_fe.adapter.CartAdapter;
 import com.example.nike_fe.data.api.CartApi;
@@ -24,6 +24,7 @@ import com.example.nike_fe.data.model.AddToCartRequest;
 import com.example.nike_fe.data.model.CartItem;
 import com.example.nike_fe.data.model.CartResponse;
 import com.example.nike_fe.ui.product.ProductListActivity;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -34,28 +35,29 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CartActivity extends AppCompatActivity {
-    
+
     private RecyclerView rvCartItems;
     private Button btnCheckout, btnContinueShopping;
     private TextView tvTotalQuantity, tvTotalPrice;
     private FrameLayout layoutLoading;
     private LinearLayout layoutEmptyCart;
-    private MaterialCardView cardOrderSummary;
-    
+    // private MaterialCardView cardOrderSummary; // Removed from UI
+
     private CartAdapter adapter;
     private CartApi cartApi;
     private String token;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-        
+
         initViews();
         setupToolbar();
         setupRecyclerView();
         loadCart();
     }
+
     private void initViews() {
         rvCartItems = findViewById(R.id.rvCartItems);
         btnCheckout = findViewById(R.id.btnCheckout);
@@ -64,15 +66,16 @@ public class CartActivity extends AppCompatActivity {
         tvTotalPrice = findViewById(R.id.tvTotal);
         layoutLoading = findViewById(R.id.layoutLoading);
         layoutEmptyCart = findViewById(R.id.layoutEmptyCart);
-        cardOrderSummary = findViewById(R.id.cardOrderSummary);
-        
+        // cardOrderSummary = findViewById(R.id.cardOrderSummary);
+
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         cartApi = retrofitClient.getCartApi();
         token = retrofitClient.getToken();
-        
+
         // Debug log
-        android.util.Log.d("CartActivity", "Token: " + (token != null ? "exists (length=" + token.length() + ")" : "null"));
-        
+        android.util.Log.d("CartActivity",
+                "Token: " + (token != null ? "exists (length=" + token.length() + ")" : "null"));
+
         if (token == null || token.isEmpty()) {
             Toast.makeText(this, "Vui lòng đăng nhập để xem giỏ hàng", Toast.LENGTH_LONG).show();
             // Redirect to login
@@ -83,163 +86,236 @@ public class CartActivity extends AppCompatActivity {
             return;
         }
     }
-    
+
     private void setupToolbar() {
         btnCheckout.setOnClickListener(v -> navigateToCheckout());
-        
+
         btnContinueShopping.setOnClickListener(v -> {
             Intent intent = new Intent(this, ProductListActivity.class);
             startActivity(intent);
         });
     }
-    
+
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvCartItems.setLayoutManager(layoutManager);
-        
+
         adapter = new CartAdapter(this, new CartAdapter.OnCartItemListener() {
             @Override
             public void onQuantityChanged(CartItem item, int newQuantity) {
                 updateCartItemQuantity(item, newQuantity);
             }
-            
+
             @Override
             public void onItemRemoved(CartItem item) {
                 showDeleteConfirmation(item);
             }
         });
-        
+
         rvCartItems.setAdapter(adapter);
     }
-    
+
     private void loadCart() {
         layoutLoading.setVisibility(View.VISIBLE);
-        
+        android.util.Log.d("CartActivity", "🛒 Loading cart with token: Bearer " + token.substring(0, Math.min(20, token.length())) + "...");
+
         cartApi.getCart("Bearer " + token).enqueue(new Callback<CartResponse>() {
             @Override
             public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
                 layoutLoading.setVisibility(View.GONE);
-                
+                android.util.Log.d("CartActivity", "📦 Cart response code: " + response.code());
+
                 if (response.isSuccessful() && response.body() != null) {
                     CartResponse cart = response.body();
+                    android.util.Log.d("CartActivity", "✅ Cart loaded - Items count: " + 
+                        (cart.getItems() != null ? cart.getItems().size() : "null") + 
+                        ", Total quantity: " + cart.getTotalQuantity());
                     displayCart(cart);
                 } else {
-                    Toast.makeText(CartActivity.this, 
-                            "Lỗi tải giỏ hàng: " + response.code(), 
+                    android.util.Log.e("CartActivity", "❌ Cart load failed: " + response.code() + " - " + response.message());
+                    try {
+                        if (response.errorBody() != null) {
+                            android.util.Log.e("CartActivity", "Error body: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        android.util.Log.e("CartActivity", "Error reading error body", e);
+                    }
+                    Toast.makeText(CartActivity.this,
+                            "Lỗi tải giỏ hàng: " + response.code(),
                             Toast.LENGTH_SHORT).show();
                 }
             }
-            
+
             @Override
             public void onFailure(Call<CartResponse> call, Throwable t) {
                 layoutLoading.setVisibility(View.GONE);
-                Toast.makeText(CartActivity.this, 
+                android.util.Log.e("CartActivity", "💥 Cart load failure", t);
+                Toast.makeText(CartActivity.this,
                         "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-    
+
     private void displayCart(CartResponse cart) {
+        android.util.Log.d("CartActivity", "📊 displayCart called - Items: " + 
+            (cart.getItems() != null ? cart.getItems().size() : "null") + 
+            ", isEmpty: " + (cart.getItems() == null || cart.getItems().isEmpty()));
+        
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
             // Show empty cart
+            android.util.Log.d("CartActivity", "🛒 Showing empty cart");
             layoutEmptyCart.setVisibility(View.VISIBLE);
             rvCartItems.setVisibility(View.GONE);
-            cardOrderSummary.setVisibility(View.GONE);
+            // cardOrderSummary.setVisibility(View.GONE);
             tvTotalQuantity.setText("Sản phẩm (0)");
-            tvTotalPrice.setText("0₫");
+            tvTotalPrice.setText("$0.00");
         } else {
             // Show cart items
+            android.util.Log.d("CartActivity", "✅ Showing cart with " + cart.getItems().size() + " items");
             layoutEmptyCart.setVisibility(View.GONE);
             rvCartItems.setVisibility(View.VISIBLE);
-            cardOrderSummary.setVisibility(View.VISIBLE);
-            
+            // cardOrderSummary.setVisibility(View.VISIBLE);
+
             adapter.setCartItems(cart.getItems());
-            
+
             // Update summary
             tvTotalQuantity.setText("Sản phẩm (" + cart.getTotalQuantity() + ")");
-            
-            NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
-            String formattedPrice = formatter.format(cart.getTotalPrice()) + "₫";
+
+            NumberFormat formatter = NumberFormat.getInstance(new Locale("en", "US"));
+            // Keeping US currency format to match image (or change to VN if preferable, but
+            // image has $)
+            // Actually image has $. The original code had VN locale. The user's locale is
+            // likely VN but the design is English ($).
+            // I'll stick to $ if matching image, but logic might be VND. The original code
+            // used VND.
+            // I will use VN format but maybe prefix with specific value if needed.
+            // Wait, original code was: NumberFormat.getInstance(new Locale("vi", "VN"));
+            // Image shows "$105.00".
+            // I should respect the IMAGE since user asked to "fix the interface".
+            // But if the backend sends VND values (2999000), showing $2,999,000 is weird.
+            // I will check the adapter or original value.
+            // Original `item_cart.xml` had "2.999.000₫".
+            // Image has "$105.00".
+            // I'll assume for this UI update I should try to match the image style, BUT the
+            // data is paramount.
+            // If data is VND, I must display VND.
+            // I'll stick to the previous formatter (Vietnam) to be safe with data, unless I
+            // know for sure.
+            // BUT I will style the text size/color as in image.
+
+            NumberFormat vnFormatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+            String formattedPrice = vnFormatter.format(cart.getTotalPrice()) + "₫";
             tvTotalPrice.setText(formattedPrice);
         }
     }
-    
+
     private void updateCartItemQuantity(CartItem item, int newQuantity) {
         AddToCartRequest request = new AddToCartRequest(
                 item.getProduct().getId(),
                 newQuantity,
-                item.getSize()
-        );
-        
+                item.getSize());
+
         cartApi.updateQuantity("Bearer " + token, request)
                 .enqueue(new Callback<Map<String, String>>() {
-            @Override
-            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
-                if (response.isSuccessful()) {
-                    loadCart(); // Reload cart
-                } else {
-                    Toast.makeText(CartActivity.this, 
-                            "Lỗi cập nhật số lượng", Toast.LENGTH_SHORT).show();
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                Toast.makeText(CartActivity.this, 
-                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
+                        if (response.isSuccessful()) {
+                            loadCart(); // Reload cart
+                        } else {
+                            Toast.makeText(CartActivity.this,
+                                    "Lỗi cập nhật số lượng", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                        Toast.makeText(CartActivity.this,
+                                "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
-    
+
     private void showDeleteConfirmation(CartItem item) {
-        new AlertDialog.Builder(this)
-                .setTitle("Xóa sản phẩm")
-                .setMessage("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")
-                .setPositiveButton("Xóa", (dialog, which) -> removeCartItem(item))
-                .setNegativeButton("Hủy", null)
-                .show();
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
+        View bottomSheetView = LayoutInflater.from(this).inflate(
+                R.layout.layout_bottom_sheet_remove_cart,
+                findViewById(R.id.layoutBottomBar) // Root view in activity, can be null or just use null
+        );
+
+        // Bind data to bottom sheet view
+        ImageView ivProductImage = bottomSheetView.findViewById(R.id.ivProductImage);
+        TextView tvProductName = bottomSheetView.findViewById(R.id.tvProductName);
+        TextView tvSize = bottomSheetView.findViewById(R.id.tvSize);
+        TextView tvPrice = bottomSheetView.findViewById(R.id.tvPrice);
+        TextView tvQuantity = bottomSheetView.findViewById(R.id.tvQuantity);
+
+        tvProductName.setText(item.getProduct().getName());
+        tvSize.setText("Size = " + item.getSize()); // Adjust format if needed
+
+        NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+        tvPrice.setText(formatter.format(item.getTotalPrice()) + "₫");
+
+        tvQuantity.setText(String.valueOf(item.getQuantity()));
+
+        if (item.getProduct().getImages() != null && !item.getProduct().getImages().isEmpty()) {
+            Glide.with(this).load(item.getProduct().getImages().get(0)).into(ivProductImage);
+        }
+
+        // Handle buttons
+        Button btnCancel = bottomSheetView.findViewById(R.id.btnCancel);
+        Button btnConfirmRemove = bottomSheetView.findViewById(R.id.btnConfirmRemove);
+
+        btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
+
+        btnConfirmRemove.setOnClickListener(v -> {
+            removeCartItem(item);
+            bottomSheetDialog.dismiss();
+        });
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
     }
-    
+
     private void removeCartItem(CartItem item) {
         cartApi.removeItem("Bearer " + token, item.getProduct().getId(), item.getSize())
                 .enqueue(new Callback<Map<String, String>>() {
-            @Override
-            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(CartActivity.this, "Đã xóa sản phẩm", Toast.LENGTH_SHORT).show();
-                    loadCart(); // Reload cart
-                } else {
-                    Toast.makeText(CartActivity.this, 
-                            "Lỗi xóa sản phẩm", Toast.LENGTH_SHORT).show();
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                Toast.makeText(CartActivity.this, 
-                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(CartActivity.this, "Đã xóa sản phẩm", Toast.LENGTH_SHORT).show();
+                            loadCart(); // Reload cart
+                        } else {
+                            Toast.makeText(CartActivity.this,
+                                    "Lỗi xóa sản phẩm", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                        Toast.makeText(CartActivity.this,
+                                "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
-    
+
     private void navigateToCheckout() {
         if (adapter == null || adapter.getItemCount() == 0) {
             Toast.makeText(this, "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+
         // Calculate subtotal from cart items
         double subtotal = 0.0;
         for (int i = 0; i < adapter.getItemCount(); i++) {
             CartItem item = adapter.getItems().get(i);
             subtotal += item.getTotalPrice();
         }
-        
+
         Intent intent = new Intent(this, com.example.nike_fe.ui.checkout.CheckoutActivity.class);
         intent.putExtra("subtotal", subtotal);
         startActivity(intent);
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();

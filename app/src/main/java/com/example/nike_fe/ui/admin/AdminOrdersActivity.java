@@ -39,7 +39,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
     
     private AdminApi adminApi;
     private String token;
-    private String currentStatus = "";
+    private String currentStatus = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +51,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
             initViews();
             setupSpinner();
             setupRecyclerView();
-            // loadOrders(currentStatus); // Disabled để test
-            
-            // Test: hiển thị empty state
-            progressBar.setVisibility(View.GONE);
-            tvEmpty.setVisibility(View.VISIBLE);
-            tvTotalOrders.setText("Tổng: 0 đơn");
+            loadOrders(currentStatus);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Lỗi khởi tạo: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -107,7 +102,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    case 0: currentStatus = ""; break;
+                    case 0: currentStatus = null; break;
                     case 1: currentStatus = "pending"; break;
                     case 2: currentStatus = "confirmed"; break;
                     case 3: currentStatus = "shipping"; break;
@@ -145,6 +140,17 @@ public class AdminOrdersActivity extends AppCompatActivity {
                 
                 if (response.isSuccessful() && response.body() != null) {
                     List<Order> orders = response.body();
+                    
+                    // Debug logging
+                    if (!orders.isEmpty()) {
+                        Order firstOrder = orders.get(0);
+                        android.util.Log.d("AdminOrders", "First order: ID=" + firstOrder.getId() 
+                            + ", userName=" + firstOrder.getUserName()
+                            + ", finalAmount=" + firstOrder.getFinalAmount()
+                            + ", totalAmount=" + firstOrder.getTotalAmount()
+                            + ", paymentMethod=" + firstOrder.getPaymentMethod());
+                    }
+                    
                     tvTotalOrders.setText("Tổng: " + orders.size() + " đơn");
                     
                     if (orders.isEmpty()) {

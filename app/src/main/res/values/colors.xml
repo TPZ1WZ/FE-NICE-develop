@@ -27,4 +27,9 @@
     
     <!-- Splash colors -->
     <color name="splash_blue">#1E88E5</color>
+    
+    <!-- Nike New UI Colors -->
+    <color name="nike_black">#000000</color>
+    <color name="nike_dark_gray">#1C1C1E</color>
+    <color name="nike_blue">#1E88E5</color> <!-- Using consistent blue -->
 </resources>

@@ -68,6 +68,15 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
     public int getItemCount() {
         return filters.size();
     }
+    
+    /**
+     * Cập nhật danh sách filters mới từ API
+     */
+    public void updateFilters(List<String> newFilters) {
+        this.filters = newFilters;
+        this.selectedPosition = 0; // Reset về "All"
+        notifyDataSetChanged();
+    }
 
     public static class FilterViewHolder extends RecyclerView.ViewHolder {
         TextView tvFilterName;

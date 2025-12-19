@@ -5,115 +5,126 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#1C1C1E"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="16dp">
 
         <!-- Product Image -->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivProductImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
-            android:contentDescription="Product Image"
-            android:background="#f6f6f6" />
+            android:background="@color/nike_black"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
-        <!-- Product Info -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Product Info Container -->
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="16dp"
+            android:minHeight="80dp">
+
+            <!-- Delete Button (Top Right) -->
+            <ImageView
+                android:id="@+id/ivDelete"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_delete"
+                android:contentDescription="Delete"
+                app:tint="@color/white"
+                android:background="?attr/selectableItemBackgroundBorderless" />
 
             <!-- Product Name -->
             <TextView
                 android:id="@+id/tvProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/ivDelete"
+                android:layout_marginEnd="8dp"
                 android:text="Nike Air Max 90"
                 android:textSize="16sp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textStyle="bold"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:ellipsize="end" />
 
-            <!-- Size -->
+            <!-- Size/Color -->
             <TextView
                 android:id="@+id/tvSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Size: 42"
+                android:layout_below="@id/tvProductName"
+                android:text="Black | Size = 42"
                 android:textSize="14sp"
-                android:textColor="@color/gray_600"
+                android:textColor="@color/gray_500"
                 android:layout_marginTop="4dp" />
 
-            <!-- Price -->
+            <!-- Price (Bottom Left) -->
             <TextView
                 android:id="@+id/tvPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2.999.000₫"
-                android:textSize="16sp"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:layout_marginTop="4dp" />
+                android:layout_below="@id/tvSize"
+                android:layout_marginTop="16dp"
+                android:text="$105.00"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
-            <!-- Quantity Controls -->
+            <!-- Quantity Controls (Bottom Right) -->
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@id/tvPrice"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="8dp">
+                android:background="@drawable/bg_quantity_selector"
+                android:paddingHorizontal="4dp">
 
                 <ImageView
                     android:id="@+id/ivDecrease"
                     android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_height="match_parent"
                     android:src="@drawable/ic_remove"
-                    android:padding="4dp"
+                    android:padding="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white"
                     android:contentDescription="Decrease" />
 
                 <TextView
                     android:id="@+id/tvQuantity"
-                    android:layout_width="40dp"
+                    android:layout_width="30dp"
                     android:layout_height="wrap_content"
                     android:text="1"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_marginHorizontal="8dp" />
+                    android:gravity="center" />
 
                 <ImageView
                     android:id="@+id/ivIncrease"
                     android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_height="match_parent"
                     android:src="@drawable/ic_add"
-                    android:padding="4dp"
+                    android:padding="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white"
                     android:contentDescription="Increase" />
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <!-- Delete Button -->
-        <ImageView
-            android:id="@+id/ivDelete"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_delete"
-            android:contentDescription="Delete"
-            android:layout_gravity="top"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+        </RelativeLayout>
 
     </LinearLayout>
 

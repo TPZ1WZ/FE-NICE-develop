@@ -31,7 +31,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Product Details"
+                android:text="Chi tiết sản phẩm"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
@@ -117,7 +117,7 @@
                          android:id="@+id/tvSold"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:text="6,378 sold"
+                         android:text="6,378 đã bán"
                          android:textSize="12sp"
                          android:textColor="#555555"
                          android:background="@drawable/bg_sold_badge"
@@ -136,7 +136,7 @@
                     <TextView
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:text="4.9 (6,573 reviews)"
+                         android:text="4.9 (6,573 đánh giá)"
                          android:textSize="14sp"
                          android:textColor="#555555"
                          android:layout_marginStart="4dp"/>
@@ -146,7 +146,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Description"
+                    android:text="Mô tả"
                     android:textSize="18sp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
@@ -174,7 +174,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Size"
+                        android:text="Kích cỡ"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -252,7 +252,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Quantity"
+                        android:text="Số lượng"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -319,7 +319,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total price"
+                android:text="Tổng tiền"
                 android:textSize="12sp"
                 android:textColor="#757575"/>
                 
@@ -356,7 +356,7 @@
              <TextView
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
-                 android:text="Add to Cart"
+                 android:text="Thêm vào giỏ"
                  android:textColor="@color/white"
                  android:textStyle="bold"
                  android:textSize="16sp"/>

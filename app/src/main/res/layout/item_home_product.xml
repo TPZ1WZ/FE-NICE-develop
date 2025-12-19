@@ -7,7 +7,7 @@
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="@color/nike_dark_gray">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -61,7 +61,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:text="Nike Jordan"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
             android:maxLines="1"
@@ -78,7 +78,7 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="4dp"
             android:text="$302.00"
-            android:textColor="@color/black"
+            android:textColor="@color/nike_blue"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"

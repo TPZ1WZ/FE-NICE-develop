@@ -212,8 +212,8 @@ public class CheckoutActivity extends AppCompatActivity {
     private void showOrderSuccess() {
         Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
         
-        // Navigate back to MainActivity and clear cart
-        Intent intent = new Intent(this, com.example.nike_fe.MainActivity.class);
+        // Navigate to Order History to see order waiting for confirmation
+        Intent intent = new Intent(this, com.example.nike_fe.ui.order.OrderHistoryActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

@@ -57,18 +57,45 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
         }
         
         public void bind(String imageUrl) {
-            // If URL is relative, prepend base URL
             if (imageUrl != null && !imageUrl.isEmpty()) {
-                if (!imageUrl.startsWith("http")) {
-                    imageUrl = "http://10.0.2.2:8080" + imageUrl;
+                // Xử lý base64 image data
+                if (imageUrl.startsWith("data:image")) {
+                    // Đây là base64 image, load trực tiếp
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_products)
+                            .error(R.drawable.ic_products)
+                            .centerCrop()
+                            .into(ivProductImage);
+                } 
+                // Xử lý URL từ server
+                else if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_products)
+                            .error(R.drawable.ic_products)
+                            .centerCrop()
+                            .into(ivProductImage);
+                } 
+                // Xử lý relative URL
+                else if (imageUrl.startsWith("/")) {
+                    String fullUrl = "http://10.0.2.2:8080" + imageUrl;
+                    Glide.with(context)
+                            .load(fullUrl)
+                            .placeholder(R.drawable.ic_products)
+                            .error(R.drawable.ic_products)
+                            .centerCrop()
+                            .into(ivProductImage);
+                } 
+                else {
+                    // Fallback - thử load như URL bình thường
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_products)
+                            .error(R.drawable.ic_products)
+                            .centerCrop()
+                            .into(ivProductImage);
                 }
-                
-                Glide.with(context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_products)
-                        .error(R.drawable.ic_products)
-                        .centerCrop()
-                        .into(ivProductImage);
             } else {
                 ivProductImage.setImageResource(R.drawable.ic_products);
             }

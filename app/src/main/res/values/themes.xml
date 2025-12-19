@@ -2,20 +2,31 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Nikefe" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:navigationBarColor">@color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/nike_black</item>
+        <item name="android:statusBarColor">@color/nike_black</item>
+        <item name="android:navigationBarColor">@color/nike_black</item>
+        <item name="android:windowLightStatusBar">false</item> <!-- White text on black status bar -->
+        <item name="colorSurface">@color/nike_black</item>
+        <item name="colorOnSurface">@color/white</item>
     </style>
 
     <style name="Theme.Nikefe" parent="Base.Theme.Nikefe" />
     
     <!-- Splash Screen Theme with blue background -->
-    <style name="Theme.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.Splash" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
         <item name="android:statusBarColor">@color/splash_blue</item>
         <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Custom Bottom Sheet Theme -->
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>

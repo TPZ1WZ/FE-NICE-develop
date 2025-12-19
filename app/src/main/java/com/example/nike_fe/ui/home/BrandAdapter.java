@@ -17,17 +17,18 @@ import java.util.List;
 public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHolder> {
 
     private Context context;
-    private List<String> brandNames;
+    private List<com.example.nike_fe.data.model.Category> categories;
 
     private OnBrandClickListener listener;
 
     public interface OnBrandClickListener {
-        void onBrandClick(String brandName);
+        void onBrandClick(com.example.nike_fe.data.model.Category category);
     }
 
-    public BrandAdapter(Context context, List<String> brandNames, OnBrandClickListener listener) {
+    public BrandAdapter(Context context, List<com.example.nike_fe.data.model.Category> categories,
+            OnBrandClickListener listener) {
         this.context = context;
-        this.brandNames = brandNames;
+        this.categories = categories;
         this.listener = listener;
     }
 
@@ -40,19 +41,19 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
 
     @Override
     public void onBindViewHolder(@NonNull BrandViewHolder holder, int position) {
-        String name = brandNames.get(position);
-        holder.tvBrandName.setText(name);
+        com.example.nike_fe.data.model.Category category = categories.get(position);
+        holder.tvBrandName.setText(category.getName());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onBrandClick(name);
+                listener.onBrandClick(category);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return brandNames.size();
+        return categories != null ? categories.size() : 0;
     }
 
     public static class BrandViewHolder extends RecyclerView.ViewHolder {

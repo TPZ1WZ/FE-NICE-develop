@@ -1,36 +1,17 @@
 package com.example.nike_fe.data.model;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 public class OrderItem {
     
-    @SerializedName("id")
     private Long id;
-    
-    @SerializedName("product_id")
     private Long productId;
-    
-    @SerializedName("product_name")
     private String productName;
-    
-    @SerializedName("product_images")
     private List<String> productImages;
-    
-    @SerializedName("quantity")
     private Integer quantity;
-    
-    @SerializedName("product_price")
     private Double productPrice;
-    
-    @SerializedName("total_price")
     private Double totalPrice;
-    
-    @SerializedName("size")
     private String size;
-    
-    @SerializedName("reviewed")
     private boolean reviewed;
     
     // Getters and Setters

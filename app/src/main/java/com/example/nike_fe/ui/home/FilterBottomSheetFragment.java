@@ -55,17 +55,33 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
         setupListeners();
     }
 
+    // Interface for callback
+    public interface OnApplyFilterListener {
+        void onApplyFilter(float minPrice, float maxPrice);
+    }
+
+    private OnApplyFilterListener listener;
+
+    public void setOnApplyFilterListener(OnApplyFilterListener listener) {
+        this.listener = listener;
+    }
+
     private void setupListeners() {
         // Set initial values programmatically to avoid XML inflation issues
         if (sliderPrice != null) {
-            sliderPrice.setValues(0f, 500f);
+            sliderPrice.setValues(0f, 10000000f);
+            sliderPrice.setLabelFormatter(value -> {
+                java.text.DecimalFormat formatter = new java.text.DecimalFormat("#,###đ");
+                return formatter.format(value);
+            });
             sliderPrice.addOnChangeListener(new RangeSlider.OnChangeListener() {
                 @Override
                 public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
                     List<Float> values = slider.getValues();
                     if (values.size() == 2) {
-                        tvMinPrice.setText(String.format("$%.0f", values.get(0)));
-                        tvMaxPrice.setText(String.format("$%.0f", values.get(1)));
+                        java.text.DecimalFormat formatter = new java.text.DecimalFormat("#,###đ");
+                        tvMinPrice.setText(formatter.format(values.get(0)));
+                        tvMaxPrice.setText(formatter.format(values.get(1)));
                     }
                 }
             });
@@ -81,31 +97,28 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
             if (cgSort != null)
                 cgSort.clearCheck();
             if (sliderPrice != null)
-                sliderPrice.setValues(0f, 500f);
+                sliderPrice.setValues(0f, 10000000f);
+
+            // Optional: Auto-apply reset or just wait for Apply click?
+            // Usually wait for Apply.
         });
 
         btnApply.setOnClickListener(v -> {
-            // Collect data
-            String appliedFilters = "Filters Applied:\n";
-
-            // Just for demo, gather some info
-            if (cgSort != null && cgSort.getCheckedChipId() != -1) {
-                Chip c = cgSort.findViewById(cgSort.getCheckedChipId());
-                if (c != null)
-                    appliedFilters += "Sort: " + c.getText() + "\n";
-            }
-
             // Collect Price
+            float min = 0f;
+            float max = 10000000f;
+
             if (sliderPrice != null) {
                 List<Float> values = sliderPrice.getValues();
                 if (values.size() == 2) {
-                    appliedFilters += String.format("Price: $%.0f - $%.0f\n", values.get(0), values.get(1));
+                    min = values.get(0);
+                    max = values.get(1);
                 }
             }
 
-            // ... collect others ...
-
-            Toast.makeText(getContext(), appliedFilters, Toast.LENGTH_SHORT).show();
+            if (listener != null) {
+                listener.onApplyFilter(min, max);
+            }
             dismiss();
         });
     }

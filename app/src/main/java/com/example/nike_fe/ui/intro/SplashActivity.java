@@ -19,15 +19,10 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Force light mode BEFORE super.onCreate
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
-            androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-        );
-        
         super.onCreate(savedInstanceState);
-        
-        // Don't set content view - let the theme window background show
-        // setContentView(R.layout.activity_splash);
+
+        // Set content view - robust way to show splash
+        setContentView(R.layout.activity_splash);
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             navigateToNextScreen();

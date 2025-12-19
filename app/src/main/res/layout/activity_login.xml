@@ -74,9 +74,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress"
-                        android:textColor="#000000"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true" />
+                        android:textColor="#000000" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Email Error -->
@@ -106,9 +104,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
-                        android:textColor="#000000"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true" />
+                        android:textColor="#000000" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Password Error -->

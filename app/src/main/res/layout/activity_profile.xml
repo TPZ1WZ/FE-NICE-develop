@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Profile"
+            android:text="Hồ sơ"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/black"/>
@@ -63,7 +63,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your Name"
+        android:text="Tên của bạn"
         android:textColor="@color/gray_500"
         android:layout_marginBottom="8dp"/>
 
@@ -81,7 +81,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email Address"
+        android:text="Địa chỉ Email"
         android:textColor="@color/gray_500"
         android:layout_marginBottom="8dp"/>
 
@@ -100,7 +100,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Password"
+        android:text="Mật khẩu"
         android:textColor="@color/gray_500"
         android:layout_marginBottom="8dp"/>
 
@@ -120,7 +120,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:text="Recovery Password"
+        android:text="Khôi phục mật khẩu"
         android:textColor="@color/gray_500"
         android:textSize="12sp"
         android:layout_marginBottom="32dp"/>
@@ -129,9 +129,20 @@
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Save Now"
+        android:text="Lưu thay đổi"
         android:textAllCaps="false"
         android:backgroundTint="@color/splash_blue"
+        app:cornerRadius="12dp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnMyOrders"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Đơn hàng của tôi"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:backgroundTint="#FF6B00"
         app:cornerRadius="12dp"
         android:layout_marginBottom="16dp"/>
 
@@ -139,7 +150,7 @@
         android:id="@+id/btnAdminDashboard"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Admin Dashboard"
+        android:text="Trang quản trị"
         android:textColor="@color/white"
         android:textAllCaps="false"
         android:backgroundTint="#4CAF50"
@@ -153,7 +164,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Sign Out"
+        android:text="Đăng xuất"
         android:textColor="#EF4444"
         android:textSize="16sp"
         android:textStyle="bold"

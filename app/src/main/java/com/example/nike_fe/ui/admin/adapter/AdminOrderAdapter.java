@@ -80,8 +80,10 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
                 NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                 
                 tvOrderId.setText("#" + (order.getId() != null ? order.getId() : "N/A"));
-                tvCustomer.setText(order.getShippingAddress() != null ? order.getShippingAddress() : "N/A");
-                tvPhone.setText(order.getPhone() != null ? order.getPhone() : "N/A");
+                tvCustomer.setText(order.getUserName() != null && !order.getUserName().isEmpty() 
+                    ? order.getUserName() : (order.getShippingAddress() != null ? order.getShippingAddress() : "N/A"));
+                tvPhone.setText(order.getPhone() != null && !order.getPhone().isEmpty() 
+                    ? order.getPhone() : "N/A");
                 
                 String status = order.getStatus() != null ? order.getStatus() : "pending";
                 tvStatus.setText(getStatusText(status));
@@ -109,7 +111,8 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
         }
         
         private String getStatusText(String status) {
-            switch (status) {
+            if (status == null) return "N/A";
+            switch (status.toLowerCase()) {
                 case "pending": return "Chờ xác nhận";
                 case "confirmed": return "Đã xác nhận";
                 case "shipping": return "Đang giao";
@@ -120,7 +123,8 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
         }
         
         private int getStatusBackground(String status) {
-            switch (status) {
+            if (status == null) return R.drawable.status_pending;
+            switch (status.toLowerCase()) {
                 case "pending": return R.drawable.status_pending;
                 case "confirmed": return R.drawable.status_confirmed;
                 case "shipping": return R.drawable.status_shipping;

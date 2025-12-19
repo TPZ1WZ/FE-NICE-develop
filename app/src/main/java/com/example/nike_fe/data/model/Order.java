@@ -1,45 +1,22 @@
 package com.example.nike_fe.data.model;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 public class Order {
     
-    @SerializedName("id")
     private Long id;
-    
-    @SerializedName("total_amount")
+    private String userName;
+    private String email;
     private Double totalAmount;
-    
-    @SerializedName("total_discount")
     private Double totalDiscount;
-    
-    @SerializedName("final_amount")
     private Double finalAmount;
-    
-    @SerializedName("quantity")
     private Integer quantity;
-    
-    @SerializedName("phone")
     private String phone;
-    
-    @SerializedName("status")
     private String status;
-    
-    @SerializedName("payment_method")
     private String paymentMethod;
-    
-    @SerializedName("shipping_address")
     private String shippingAddress;
-    
-    @SerializedName("txn_id")
     private String txnId;
-    
-    @SerializedName("items")
     private List<OrderItem> items;
-    
-    @SerializedName("created_at")
     private String createdAt;
     
     // Getters and Setters
@@ -50,6 +27,22 @@ public class Order {
     
     public void setId(Long id) {
         this.id = id;
+    }
+    
+    public String getUserName() {
+        return userName;
+    }
+    
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
     
     public Double getTotalAmount() {

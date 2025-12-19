@@ -72,7 +72,7 @@ public interface AdminApi {
     Call<List<User>> getAllUsers(@Header("Authorization") String token);
     
     // Category APIs
-    @GET("api/categories")
+    @GET("api/admin/categories")
     Call<List<Category>> getAllCategories(@Header("Authorization") String token);
     
     @POST("api/admin/categories")

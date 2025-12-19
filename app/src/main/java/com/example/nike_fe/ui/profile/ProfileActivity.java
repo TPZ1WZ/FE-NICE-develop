@@ -35,7 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private CircleImageView ivAvatar;
     private EditText etName, etEmail, etPassword;
-    private Button btnSave, btnAdminDashboard;
+    private Button btnSave, btnMyOrders, btnAdminDashboard;
     private TextView tvLogout;
 
     private UserApi userApi;
@@ -82,6 +82,7 @@ public class ProfileActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnSave = findViewById(R.id.btnSave);
+        btnMyOrders = findViewById(R.id.btnMyOrders);
         btnAdminDashboard = findViewById(R.id.btnAdminDashboard);
         tvLogout = findViewById(R.id.tvLogout);
 
@@ -105,6 +106,11 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         btnSave.setOnClickListener(v -> updateProfile());
+
+        btnMyOrders.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, com.example.nike_fe.ui.order.OrderHistoryActivity.class);
+            startActivity(intent);
+        });
 
         btnAdminDashboard.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, AdminDashboardActivity.class);

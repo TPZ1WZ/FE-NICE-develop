@@ -140,7 +140,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
             
             tvOrderId.setText("Đơn hàng #" + (order.getId() != null ? order.getId() : "N/A"));
             
-            String status = order.getStatus() != null ? order.getStatus() : "pending";
+            // Chuyển status về lowercase để xử lý thống nhất
+            String status = order.getStatus() != null ? order.getStatus().toLowerCase() : "pending";
             tvStatus.setText(getStatusText(status));
             tvStatus.setBackgroundResource(getStatusColor(status));
             
@@ -180,18 +181,25 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         btnComplete.setVisibility(View.GONE);
         btnCancel.setVisibility(View.VISIBLE);
         
-        switch (status) {
+        // Chuyển về lowercase để so sánh
+        String statusLower = status != null ? status.toLowerCase() : "";
+        
+        switch (statusLower) {
             case "pending":
+                // Chờ xác nhận -> Hiển thị nút "Xác nhận"
                 btnConfirm.setVisibility(View.VISIBLE);
                 break;
             case "confirmed":
+                // Đã xác nhận -> Hiển thị nút "Giao hàng"
                 btnShipping.setVisibility(View.VISIBLE);
                 break;
             case "shipping":
+                // Đang giao -> Hiển thị nút "Hoàn thành"
                 btnComplete.setVisibility(View.VISIBLE);
                 break;
             case "completed":
             case "canceled":
+                // Đã hoàn thành hoặc đã hủy -> Ẩn tất cả các nút
                 btnCancel.setVisibility(View.GONE);
                 layoutActions.setVisibility(View.GONE);
                 break;
@@ -243,7 +251,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     }
     
     private String getStatusText(String status) {
-        switch (status) {
+        String statusLower = status != null ? status.toLowerCase() : "";
+        switch (statusLower) {
             case "pending": return "Chờ xác nhận";
             case "confirmed": return "Đã xác nhận";
             case "shipping": return "Đang giao";
@@ -254,7 +263,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     }
     
     private int getStatusColor(String status) {
-        switch (status) {
+        String statusLower = status != null ? status.toLowerCase() : "";
+        switch (statusLower) {
             case "pending": return R.drawable.status_pending;
             case "confirmed": return R.drawable.status_confirmed;
             case "shipping": return R.drawable.status_shipping;

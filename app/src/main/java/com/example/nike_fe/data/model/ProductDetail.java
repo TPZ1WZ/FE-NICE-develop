@@ -11,6 +11,7 @@ public class ProductDetail {
     private Double price;
     private Integer stock;
     private List<String> images;
+    private List<String> sizes;
     private List<Long> categoryId;
     private Long reviewId;
     private Boolean isFavorite;
@@ -18,9 +19,9 @@ public class ProductDetail {
     public ProductDetail() {
     }
 
-    public ProductDetail(Long id, String name, String slug, String subTitle, String description, 
-                        Double price, Integer stock, List<String> images, List<Long> categoryId, 
-                        Long reviewId, Boolean isFavorite) {
+    public ProductDetail(Long id, String name, String slug, String subTitle, String description,
+            Double price, Integer stock, List<String> images, List<String> sizes, List<Long> categoryId,
+            Long reviewId, Boolean isFavorite) {
         this.id = id;
         this.name = name;
         this.slug = slug;
@@ -29,6 +30,7 @@ public class ProductDetail {
         this.price = price;
         this.stock = stock;
         this.images = images;
+        this.sizes = sizes;
         this.categoryId = categoryId;
         this.reviewId = reviewId;
         this.isFavorite = isFavorite;
@@ -96,6 +98,14 @@ public class ProductDetail {
 
     public void setImages(List<String> images) {
         this.images = images;
+    }
+
+    public List<String> getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(List<String> sizes) {
+        this.sizes = sizes;
     }
 
     public List<Long> getCategoryId() {

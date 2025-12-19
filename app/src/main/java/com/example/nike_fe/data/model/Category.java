@@ -5,30 +5,28 @@ import com.google.gson.annotations.SerializedName;
 public class Category {
     @SerializedName("id")
     private Long id;
-    
+
     @SerializedName("name")
     private String name;
-    
+
     @SerializedName("description")
     private String description;
-    
-    @SerializedName("isDelete")
-    private Boolean isDelete;
-    
+
     @SerializedName("createdAt")
     private String createdAt;
-    
+
     @SerializedName("updatedAt")
     private String updatedAt;
+
+    @SerializedName("isDelete")
+    private Boolean isDelete;
 
     public Category() {
     }
 
-    public Category(Long id, String name, String description) {
+    public Category(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.description = description;
-        this.isDelete = false;
     }
 
     public Long getId() {
@@ -55,14 +53,6 @@ public class Category {
         this.description = description;
     }
 
-    public Boolean getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Boolean isDelete) {
-        this.isDelete = isDelete;
-    }
-    
     public String getCreatedAt() {
         return createdAt;
     }
@@ -77,5 +67,13 @@ public class Category {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Boolean getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Boolean isDelete) {
+        this.isDelete = isDelete;
     }
 }

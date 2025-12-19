@@ -11,8 +11,8 @@
     <!-- Default state -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/white" />
-            <corners android:radius="8dp" />
+            <solid android:color="@color/nike_dark_gray" />
+            <corners android:radius="24dp" />
             <!-- Optional shadow hint via padding/margin or elevation in layout -->
         </shape>
     </item>

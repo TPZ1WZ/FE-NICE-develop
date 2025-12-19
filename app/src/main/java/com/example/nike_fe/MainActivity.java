@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.example.nike_fe.adapter.HomeProductAdapter;
 import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.api.UserApi;
+import com.example.nike_fe.data.model.Category;
 import com.example.nike_fe.data.model.Product;
 import com.example.nike_fe.data.model.User;
 import com.example.nike_fe.ui.auth.LoginActivity;
@@ -50,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CircleImageView ivHeaderAvatar;
     private ImageView btnNotification, btnWishlist;
     private User currentUser;
+    private HomeProductAdapter productAdapter; // Promoted to class level
+    private FilterAdapter filterAdapter; // Để cập nhật brands động
+    private String currentBrandQuery = null;
+    private java.util.Map<String, Category> categoryMap = new java.util.HashMap<>(); // Map tên -> Category
 
     // Bottom Navigation
     private BottomNavigationView bottomNavigation;
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNavigationDrawer();
         setupRecyclerViews();
         setupBottomNavigation();
+        setupBottomNavigation();
+        fetchCategories();
         fetchProducts(null);
         loadUserProfile();
     }
@@ -90,8 +97,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (btnFilter != null) {
             btnFilter.setOnClickListener(v -> {
                 com.example.nike_fe.ui.home.FilterBottomSheetFragment filterFragment = new com.example.nike_fe.ui.home.FilterBottomSheetFragment();
+                filterFragment.setOnApplyFilterListener((min, max) -> {
+                    fetchProducts(currentBrandQuery, (double) min, (double) max);
+                });
                 filterFragment.show(getSupportFragmentManager(), "filter_dialog");
-                Toast.makeText(this, "Opening Filters...", Toast.LENGTH_SHORT).show(); // Debug toast
+            });
+        }
+
+        // ... (rest of initViews) ...
+        // Note: Search Logic should update currentBrandQuery too?
+        // Yes, but for now let's just make sure filter works with brands.
+        // If search is used, reset brand query to search text.
+
+        // Search Logic
+        android.widget.EditText etSearch = findViewById(R.id.etSearch);
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // Local filtering for search as implemented before...
+                    // Or should we call API? The original code did local filtering on adapter.
+                    if (productAdapter != null) {
+                        productAdapter.filter(s.toString());
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(android.text.Editable s) {
+                }
             });
         }
 
@@ -101,6 +138,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (drawerLayout != null)
                     drawerLayout.openDrawer(GravityCompat.START);
             });
+        }
+    }
+
+    private void setupBottomNavigation() {
+        if (bottomNavigation != null) {
+            bottomNavigation.setBackground(null); // Clear background for FAB curve
+            bottomNavigation.getMenu().getItem(2).setEnabled(false); // Disable placeholder item for FAB
+
+            bottomNavigation.setOnItemSelectedListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.nav_home) {
+                    return true;
+                } else if (id == R.id.nav_favorites) {
+                    startActivity(new Intent(this, com.example.nike_fe.ui.favorite.FavoriteActivity.class));
+                    return true;
+                } else if (id == R.id.nav_notifications) {
+                    Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (id == R.id.nav_profile) {
+                    startActivity(new Intent(this, ProfileActivity.class));
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        if (fabCart != null) {
+            fabCart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
         }
     }
 
@@ -121,41 +186,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void setupBottomNavigation() {
-        if (bottomNavigation != null) {
-            bottomNavigation.setBackground(null); // Clear background for FAB curve
-            bottomNavigation.getMenu().getItem(2).setEnabled(false); // Disable placeholder item for FAB
-
-            bottomNavigation.setOnItemSelectedListener(item -> {
-                int id = item.getItemId();
-                if (id == R.id.nav_home) {
-                    return true;
-                } else if (id == R.id.nav_favorites) {
-                    Toast.makeText(this, "Wishlist", Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if (id == R.id.nav_notifications) {
-                    Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if (id == R.id.nav_profile) {
-                    startActivity(new Intent(this, ProfileActivity.class));
-                    return true;
-                }
-                return false;
-            });
-        }
-
-        if (fabCart != null) {
-            fabCart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
-        }
-    }
-
     private void setupRecyclerViews() {
         // 1. Brands
-        List<String> brands = Arrays.asList("Nike", "Adidas", "Puma", "Asics", "Reebok", "New Balance", "Converse",
-                "More..");
-        BrandAdapter brandAdapter = new BrandAdapter(this, brands, brandName -> {
-            Toast.makeText(this, "Filter: " + brandName, Toast.LENGTH_SHORT).show();
-            fetchProducts(brandName.equals("More..") ? null : brandName);
+        BrandAdapter brandAdapter = new BrandAdapter(this, new java.util.ArrayList<>(), category -> {
+            // Update current query
+            currentBrandQuery = category.getName();
+            Toast.makeText(this, "Filter: " + category.getName(), Toast.LENGTH_SHORT).show();
+            fetchProducts(currentBrandQuery, null, null);
         });
 
         if (rvBrands != null) {
@@ -163,36 +200,93 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             rvBrands.setAdapter(brandAdapter);
         }
 
-        // 2. Filters
-        List<String> filters = Arrays.asList("All", "Nike", "Adidas", "Puma", "Asics", "Reebok");
-        FilterAdapter filterAdapter = new FilterAdapter(this, filters, filter -> {
-            fetchProducts(filter.equals("All") ? null : filter);
+        // 2. Filters - Load từ API
+        List<String> initialFilters = Arrays.asList("All"); // Chỉ có "All" ban đầu
+        filterAdapter = new FilterAdapter(this, initialFilters, filter -> {
+            if (filter.equals("All")) {
+                // Hiển thị tất cả sản phẩm
+                fetchProducts(null, null, null);
+            } else {
+                // Filter theo category - vẫn dùng name search vì API hiện tại chưa hỗ trợ tốt
+                // Nhưng với null sẽ lấy tất cả
+                fetchProducts(null, null, null);
+            }
         });
 
         if (rvFilters != null) {
             rvFilters.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvFilters.setAdapter(filterAdapter);
         }
+        
+        // Load categories từ API
+        loadCategoriesFromApi();
 
-        // 3. Product Grid
-        if (rvProductGrid != null) {
-            rvProductGrid.setLayoutManager(new GridLayoutManager(this, 2));
-            rvProductGrid.setNestedScrollingEnabled(false); // Let the parent NestedScrollView handle scrolling
-        }
+        // ... (rest of setupRecyclerViews)
     }
 
+    /**
+     * Load danh sách danh mục từ API backend
+     */
+    private void loadCategoriesFromApi() {
+        RetrofitClient.getInstance(this).getProductApi().getCategories()
+                .enqueue(new Callback<List<Category>>() {
+                    @Override
+                    public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<Category> categories = response.body();
+                            
+                            // Lưu category map
+                            categoryMap.clear();
+                            
+                            // Chuyển thành danh sách tên danh mục
+                            List<String> filters = new java.util.ArrayList<>();
+                            filters.add("All");
+                            for (Category category : categories) {
+                                filters.add(category.getName());
+                                categoryMap.put(category.getName(), category);
+                            }
+                            
+                            // Cập nhật adapter
+                            if (filterAdapter != null) {
+                                filterAdapter.updateFilters(filters);
+                            }
+                            
+                            Log.d("MainActivity", "Loaded " + categories.size() + " categories from API");
+                        } else {
+                            Log.e("MainActivity", "Failed to load categories: " + response.code());
+                            Toast.makeText(MainActivity.this, "Không thể tải danh sách danh mục", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    
+                    @Override
+                    public void onFailure(Call<List<Category>> call, Throwable t) {
+                        Log.e("MainActivity", "Error loading categories: " + t.getMessage());
+                        // Giữ nguyên danh sách "All" nếu lỗi
+                    }
+                });
+    }
+    
+    // Overload for backward compatibility if needed, or just update calls.
     private void fetchProducts(String brandQuery) {
-        // Log querying for debug
-        Log.d("MainActivity", "Fetching products for: " + brandQuery);
+        fetchProducts(brandQuery, null, null);
+    }
 
-        RetrofitClient.getInstance(this).getProductApi().getProducts(brandQuery, null, null)
+    private void fetchProducts(String brandQuery, Double minPrice, Double maxPrice) {
+        // Log querying for debug
+        Log.d("MainActivity", "Fetching products for: " + brandQuery + ", Price: " + minPrice + "-" + maxPrice);
+
+        RetrofitClient.getInstance(this).getProductApi().getProducts(brandQuery, minPrice, maxPrice)
                 .enqueue(new Callback<List<Product>>() {
                     @Override
                     public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             List<Product> products = response.body();
+                            
+                            // Log số lượng sản phẩm nhận được
+                            Log.d("MainActivity", "Received " + products.size() + " products from API");
+                            Toast.makeText(MainActivity.this, "Tải được " + products.size() + " sản phẩm", Toast.LENGTH_SHORT).show();
 
-                            HomeProductAdapter adapter = new HomeProductAdapter(MainActivity.this,
+                            productAdapter = new HomeProductAdapter(MainActivity.this,
                                     new HomeProductAdapter.OnProductClickListener() {
                                         @Override
                                         public void onProductClick(Product product) {
@@ -203,25 +297,94 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                                         @Override
                                         public void onAddClick(Product product) {
-                                            Toast.makeText(MainActivity.this, "Added to cart", Toast.LENGTH_SHORT)
-                                                    .show();
+                                            String token = RetrofitClient.getInstance(MainActivity.this).getToken();
+                                            if (token == null) {
+                                                Toast.makeText(MainActivity.this, "Vui lòng đăng nhập trước",
+                                                        Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+
+                                            // Determine size: use first available or default "42"
+                                            String tempSize = "42";
+                                            if (product.getSizes() != null && !product.getSizes().isEmpty()) {
+                                                tempSize = product.getSizes().get(0);
+                                            }
+                                            final String selectedSize = tempSize;
+
+                                            int quantity = 1;
+
+                                            com.example.nike_fe.data.model.AddToCartRequest request = new com.example.nike_fe.data.model.AddToCartRequest(
+                                                    product.getId(), quantity, selectedSize);
+
+                                            RetrofitClient.getInstance(MainActivity.this).getCartApi()
+                                                    .addToCart("Bearer " + token, request)
+                                                    .enqueue(new Callback<java.util.Map<String, String>>() {
+                                                        @Override
+                                                        public void onResponse(Call<java.util.Map<String, String>> call,
+                                                                Response<java.util.Map<String, String>> response) {
+                                                            if (response.isSuccessful()) {
+                                                                Toast.makeText(MainActivity.this,
+                                                                        "Đã thêm vào giỏ (Size " + selectedSize + ")",
+                                                                        Toast.LENGTH_SHORT).show();
+                                                            } else {
+                                                                Toast.makeText(MainActivity.this,
+                                                                        "Thêm vào giỏ thất bại", Toast.LENGTH_SHORT)
+                                                                        .show();
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Call<java.util.Map<String, String>> call,
+                                                                Throwable t) {
+                                                            Toast.makeText(MainActivity.this,
+                                                                    "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT)
+                                                                    .show();
+                                                        }
+                                                    });
                                         }
                                     });
 
-                            adapter.useGridLayout(true);
-                            adapter.setProducts(products);
+                            productAdapter.useGridLayout(true);
+                            productAdapter.setProducts(products);
 
                             if (rvProductGrid != null) {
-                                rvProductGrid.setAdapter(adapter);
+                                rvProductGrid.setAdapter(productAdapter);
                             }
+                        } else {
+                            Toast.makeText(MainActivity.this, "No products found", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<Product>> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, "Error loading products", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Error loading products: " + t.getMessage(),
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void fetchCategories() {
+        RetrofitClient.getInstance(this).getCategoryApi().getCategories().enqueue(new Callback<List<Category>>() {
+            @Override
+            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Category> categories = response.body();
+
+                    BrandAdapter brandAdapter = new BrandAdapter(MainActivity.this, categories, category -> {
+                        fetchProducts(category.getName());
+                    });
+
+                    if (rvBrands != null) {
+                        rvBrands.setAdapter(brandAdapter);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Category>> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Failed to load categories", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadUserProfile() {
