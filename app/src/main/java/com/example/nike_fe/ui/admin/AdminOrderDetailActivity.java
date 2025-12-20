@@ -145,13 +145,30 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
             tvStatus.setText(getStatusText(status));
             tvStatus.setBackgroundResource(getStatusColor(status));
             
-            tvCustomerName.setText(order.getShippingAddress() != null ? order.getShippingAddress() : "N/A");
+            // Hiển thị tên người nhận hàng (không phải tên user account)
+            String receiverName = order.getReceiverName() != null ? order.getReceiverName() : "N/A";
+            
+            // Hiển thị thêm thông tin user account nếu cần
+            String email = order.getEmail() != null ? order.getEmail() : "";
+            if (!email.isEmpty()) {
+                tvCustomerName.setText(receiverName + " (" + email + ")");
+            } else {
+                tvCustomerName.setText(receiverName);
+            }
+            
             tvPhone.setText(order.getPhone() != null ? order.getPhone() : "N/A");
+            
+            // Địa chỉ đã được format: "address, district, city"
             tvAddress.setText(order.getShippingAddress() != null ? order.getShippingAddress() : "N/A");
-            tvPaymentMethod.setText(order.getPaymentMethod() != null ? order.getPaymentMethod() : "N/A");
+            
+            // Hiển thị phương thức thanh toán
+            String paymentMethod = order.getPaymentMethod() != null ? order.getPaymentMethod() : "N/A";
+            tvPaymentMethod.setText(paymentMethod);
+            
             tvCreatedAt.setText(order.getCreatedAt() != null ? order.getCreatedAt() : "N/A");
             tvQuantity.setText(String.valueOf(order.getQuantity() != null ? order.getQuantity() : 0));
             
+            // Hiển thị số tiền
             Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
             Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
             Double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;

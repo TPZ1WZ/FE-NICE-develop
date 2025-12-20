@@ -1,16 +1,20 @@
 package com.example.nike_fe.data.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Order {
     
     private Long id;
-    private String userName;
-    private String email;
+    
+    @SerializedName("user")
+    private UserInfo user;
+    
     private Double totalAmount;
     private Double totalDiscount;
     private Double finalAmount;
     private Integer quantity;
+    private String receiverName;  // Tên người nhận hàng
     private String phone;
     private String status;
     private String paymentMethod;
@@ -18,6 +22,55 @@ public class Order {
     private String txnId;
     private List<OrderItem> items;
     private String createdAt;
+    
+    // Nested class for user info
+    public static class UserInfo {
+        private Long id;
+        private String fullName;
+        private String email;
+        private String phone;
+        
+        public Long getId() {
+            return id;
+        }
+        
+        public void setId(Long id) {
+            this.id = id;
+        }
+        
+        public String getFullName() {
+            return fullName;
+        }
+        
+        public void setFullName(String fullName) {
+            this.fullName = fullName;
+        }
+        
+        public String getEmail() {
+            return email;
+        }
+        
+        public void setEmail(String email) {
+            this.email = email;
+        }
+        
+        public String getPhone() {
+            return phone;
+        }
+        
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+    }
+    
+    // Helper methods for backward compatibility
+    public String getUserName() {
+        return user != null ? user.getFullName() : null;
+    }
+    
+    public String getEmail() {
+        return user != null ? user.getEmail() : null;
+    }
     
     // Getters and Setters
     
@@ -29,20 +82,12 @@ public class Order {
         this.id = id;
     }
     
-    public String getUserName() {
-        return userName;
+    public UserInfo getUser() {
+        return user;
     }
     
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUser(UserInfo user) {
+        this.user = user;
     }
     
     public Double getTotalAmount() {
@@ -75,6 +120,14 @@ public class Order {
     
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+    
+    public String getReceiverName() {
+        return receiverName;
+    }
+    
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
     }
     
     public String getPhone() {

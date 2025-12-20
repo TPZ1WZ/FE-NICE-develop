@@ -125,13 +125,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvOrderDate.setText(formatDate(order.getCreatedAt()));
         tvOrderStatus.setText(getStatusText(order.getStatus()));
         
-        // Shipping info - parse address from shippingAddress string
+        // Display receiver name (not user account name)
+        String receiverName = order.getReceiverName() != null ? order.getReceiverName() : "N/A";
+        tvFullName.setText(receiverName);
+        
+        tvPhone.setText(order.getPhone() != null ? order.getPhone() : "N/A");
+        
+        // Shipping address (already formatted: "address, district, city")
         String shippingAddress = order.getShippingAddress();
         if (shippingAddress != null && !shippingAddress.isEmpty()) {
             tvAddress.setText(shippingAddress);
+        } else {
+            tvAddress.setText("N/A");
         }
-        
-        tvPhone.setText(order.getPhone() != null ? order.getPhone() : "");
         
         // Payment method
         String paymentMethod = order.getPaymentMethod();
@@ -140,7 +146,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         } else if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
             tvPaymentMethod.setText("Thanh toán qua VNPay");
         } else {
-            tvPaymentMethod.setText(paymentMethod);
+            tvPaymentMethod.setText(paymentMethod != null ? paymentMethod : "N/A");
         }
         
         // Order items

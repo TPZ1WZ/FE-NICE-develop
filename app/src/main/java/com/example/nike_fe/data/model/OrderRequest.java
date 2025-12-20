@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class OrderRequest {
     
+    @SerializedName("receiver_name")
+    private String receiverName;
+    
     @SerializedName("shipping_address")
     private String shippingAddress;
     
@@ -16,11 +19,20 @@ public class OrderRequest {
     @SerializedName("coupon_code")
     private String couponCode;
     
-    public OrderRequest(String shippingAddress, String paymentMethod, String phone, String couponCode) {
+    public OrderRequest(String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode) {
+        this.receiverName = receiverName;
         this.shippingAddress = shippingAddress;
         this.paymentMethod = paymentMethod;
         this.phone = phone;
         this.couponCode = couponCode;
+    }
+    
+    public String getReceiverName() {
+        return receiverName;
+    }
+    
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
     }
     
     public String getShippingAddress() {

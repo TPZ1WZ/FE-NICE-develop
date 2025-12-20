@@ -117,13 +117,29 @@
                     android:layout_marginBottom="12dp" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Họ tên:"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
                     android:id="@+id/tvFullName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nguyễn Văn A"
                     android:textSize="15sp"
                     android:textColor="@color/black"
-                    android:layout_marginBottom="4dp" />
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Số điện thoại:"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="2dp" />
 
                 <TextView
                     android:id="@+id/tvPhone"
@@ -132,7 +148,15 @@
                     android:text="0123456789"
                     android:textSize="15sp"
                     android:textColor="@color/black"
-                    android:layout_marginBottom="4dp" />
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Địa chỉ giao hàng:"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="2dp" />
 
                 <TextView
                     android:id="@+id/tvAddress"
