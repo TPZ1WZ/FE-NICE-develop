@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/gray_400"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_coupon"
+                app:tint="@color/black"
+                android:layout_marginEnd="12dp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvCouponCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CODE123"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:id="@+id/tvDiscountValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Giảm 10%"
+                    android:textSize="14sp"
+                    android:textColor="#4CAF50"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnApply"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Dùng ngay"
+                android:textSize="12sp"
+                app:backgroundTint="@color/black"/>
+        </LinearLayout>
+        
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mô tả mã giảm giá..."
+            android:textSize="12sp"
+            android:textColor="@color/gray_400"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/tvMinOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đơn tối thiểu: 200.000đ"
+            android:textSize="12sp"
+            android:textColor="@color/gray_400"
+            android:layout_marginTop="4dp"/>
+            
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -239,6 +239,85 @@
                 </RadioGroup>
             </LinearLayout>
 
+            <!-- Coupon Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:background="@drawable/card_border"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_coupon"
+                        app:tint="@color/black"
+                        android:layout_marginEnd="12dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MÃ GIẢM GIÁ"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:letterSpacing="0.1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilCoupon"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:boxStrokeColor="@color/black"
+                        app:hintEnabled="false"
+                        android:layout_marginEnd="12dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCouponCode"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:hint="Nhập mã giảm giá"
+                            android:textColor="@color/black"
+                            android:paddingHorizontal="16dp"
+                            android:background="@drawable/bg_edit_text"
+                            android:textAllCaps="true"
+                            android:inputType="textCapCharacters" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btnApplyCoupon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:text="Áp dụng"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="false"
+                        app:backgroundTint="@color/black"
+                        android:textColor="@color/white"
+                        app:cornerRadius="8dp"/>
+                </LinearLayout>
+                
+                <TextView
+                    android:id="@+id/tvCouponMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

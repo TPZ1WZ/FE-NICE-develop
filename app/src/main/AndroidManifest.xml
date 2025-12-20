@@ -146,6 +146,26 @@
         <activity
             android:name=".ui.admin.AdminOrderDetailActivity"
             android:exported="false" />
+
+        <!-- AdminUsersActivity - Admin User Management -->
+        <activity
+            android:name=".ui.admin.AdminUsersActivity"
+            android:exported="false" />
+
+        <!-- AdminUserDetailActivity - Admin User Detail -->
+        <activity
+            android:name=".ui.admin.AdminUserDetailActivity"
+            android:exported="false" />
+
+        <!-- AdminCouponsActivity - Admin Coupon Management -->
+        <activity
+            android:name=".ui.admin.AdminCouponsActivity"
+            android:exported="false" />
+
+        <!-- AdminCouponFormActivity - Add/Edit Coupon -->
+        <activity
+            android:name=".ui.admin.AdminCouponFormActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

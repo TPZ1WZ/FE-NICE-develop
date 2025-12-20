@@ -117,7 +117,8 @@ public class CartActivity extends AppCompatActivity {
 
     private void loadCart() {
         layoutLoading.setVisibility(View.VISIBLE);
-        android.util.Log.d("CartActivity", "🛒 Loading cart with token: Bearer " + token.substring(0, Math.min(20, token.length())) + "...");
+        android.util.Log.d("CartActivity",
+                "🛒 Loading cart with token: Bearer " + token.substring(0, Math.min(20, token.length())) + "...");
 
         cartApi.getCart("Bearer " + token).enqueue(new Callback<CartResponse>() {
             @Override
@@ -127,12 +128,13 @@ public class CartActivity extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     CartResponse cart = response.body();
-                    android.util.Log.d("CartActivity", "✅ Cart loaded - Items count: " + 
-                        (cart.getItems() != null ? cart.getItems().size() : "null") + 
-                        ", Total quantity: " + cart.getTotalQuantity());
+                    android.util.Log.d("CartActivity", "✅ Cart loaded - Items count: " +
+                            (cart.getItems() != null ? cart.getItems().size() : "null") +
+                            ", Total quantity: " + cart.getTotalQuantity());
                     displayCart(cart);
                 } else {
-                    android.util.Log.e("CartActivity", "❌ Cart load failed: " + response.code() + " - " + response.message());
+                    android.util.Log.e("CartActivity",
+                            "❌ Cart load failed: " + response.code() + " - " + response.message());
                     try {
                         if (response.errorBody() != null) {
                             android.util.Log.e("CartActivity", "Error body: " + response.errorBody().string());
@@ -156,11 +158,14 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
+    private CartResponse currentCart;
+
     private void displayCart(CartResponse cart) {
-        android.util.Log.d("CartActivity", "📊 displayCart called - Items: " + 
-            (cart.getItems() != null ? cart.getItems().size() : "null") + 
-            ", isEmpty: " + (cart.getItems() == null || cart.getItems().isEmpty()));
-        
+        this.currentCart = cart;
+        android.util.Log.d("CartActivity", "📊 displayCart called - Items: " +
+                (cart.getItems() != null ? cart.getItems().size() : "null") +
+                ", isEmpty: " + (cart.getItems() == null || cart.getItems().isEmpty()));
+
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
             // Show empty cart
             android.util.Log.d("CartActivity", "🛒 Showing empty cart");
@@ -178,33 +183,15 @@ public class CartActivity extends AppCompatActivity {
 
             adapter.setCartItems(cart.getItems());
 
-            // Update summary
-            tvTotalQuantity.setText("Sản phẩm (" + cart.getTotalQuantity() + ")");
+            updateCartSummaryUI();
+        }
+    }
 
-            NumberFormat formatter = NumberFormat.getInstance(new Locale("en", "US"));
-            // Keeping US currency format to match image (or change to VN if preferable, but
-            // image has $)
-            // Actually image has $. The original code had VN locale. The user's locale is
-            // likely VN but the design is English ($).
-            // I'll stick to $ if matching image, but logic might be VND. The original code
-            // used VND.
-            // I will use VN format but maybe prefix with specific value if needed.
-            // Wait, original code was: NumberFormat.getInstance(new Locale("vi", "VN"));
-            // Image shows "$105.00".
-            // I should respect the IMAGE since user asked to "fix the interface".
-            // But if the backend sends VND values (2999000), showing $2,999,000 is weird.
-            // I will check the adapter or original value.
-            // Original `item_cart.xml` had "2.999.000₫".
-            // Image has "$105.00".
-            // I'll assume for this UI update I should try to match the image style, BUT the
-            // data is paramount.
-            // If data is VND, I must display VND.
-            // I'll stick to the previous formatter (Vietnam) to be safe with data, unless I
-            // know for sure.
-            // BUT I will style the text size/color as in image.
-
+    private void updateCartSummaryUI() {
+        if (currentCart != null) {
+            tvTotalQuantity.setText("Sản phẩm (" + currentCart.getTotalQuantity() + ")");
             NumberFormat vnFormatter = NumberFormat.getInstance(new Locale("vi", "VN"));
-            String formattedPrice = vnFormatter.format(cart.getTotalPrice()) + "₫";
+            String formattedPrice = vnFormatter.format(currentCart.getTotalPrice()) + "₫";
             tvTotalPrice.setText(formattedPrice);
         }
     }
@@ -220,7 +207,7 @@ public class CartActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                         if (response.isSuccessful()) {
-                            loadCart(); // Reload cart
+                            loadCart(); // Reload cart for quantity updates as price calc is complex
                         } else {
                             Toast.makeText(CartActivity.this,
                                     "Lỗi cập nhật số lượng", Toast.LENGTH_SHORT).show();
@@ -239,7 +226,7 @@ public class CartActivity extends AppCompatActivity {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
         View bottomSheetView = LayoutInflater.from(this).inflate(
                 R.layout.layout_bottom_sheet_remove_cart,
-                findViewById(R.id.layoutBottomBar) // Root view in activity, can be null or just use null
+                null // Do not attach to root
         );
 
         // Bind data to bottom sheet view
@@ -250,7 +237,7 @@ public class CartActivity extends AppCompatActivity {
         TextView tvQuantity = bottomSheetView.findViewById(R.id.tvQuantity);
 
         tvProductName.setText(item.getProduct().getName());
-        tvSize.setText("Size = " + item.getSize()); // Adjust format if needed
+        tvSize.setText("Size: " + item.getSize()); // Adjust format if needed
 
         NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
         tvPrice.setText(formatter.format(item.getTotalPrice()) + "₫");
@@ -283,7 +270,31 @@ public class CartActivity extends AppCompatActivity {
                     public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                         if (response.isSuccessful()) {
                             Toast.makeText(CartActivity.this, "Đã xóa sản phẩm", Toast.LENGTH_SHORT).show();
-                            loadCart(); // Reload cart
+
+                            // Remove locally first for immediate feedback
+                            if (adapter != null && currentCart != null) {
+                                adapter.getItems().remove(item);
+                                adapter.notifyDataSetChanged();
+
+                                // Update summary locally
+                                double itemTotal = item.getTotalPrice();
+                                int itemQty = item.getQuantity();
+
+                                currentCart.setTotalPrice(currentCart.getTotalPrice() - itemTotal);
+                                currentCart.setTotalQuantity(currentCart.getTotalQuantity() - itemQty);
+
+                                updateCartSummaryUI();
+
+                                btnCheckout.setEnabled(adapter.getItemCount() > 0);
+
+                                // If cart empty //
+                                if (adapter.getItemCount() == 0) {
+                                    layoutEmptyCart.setVisibility(View.VISIBLE);
+                                    rvCartItems.setVisibility(View.GONE);
+                                }
+                            }
+
+                            // DO NOT call loadCart() here to avoid stale data
                         } else {
                             Toast.makeText(CartActivity.this,
                                     "Lỗi xóa sản phẩm", Toast.LENGTH_SHORT).show();

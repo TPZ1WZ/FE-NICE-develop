@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <FrameLayout
+        android:id="@+id/layoutLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:elevation="10dp"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/black"/>
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layoutContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="80dp">
+
+            <!-- Header -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_back"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="Back" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/ivBack"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true"
+                    android:text="Quản Lý Mã Giảm Giá"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabAddCoupon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_add"
+                    app:fabSize="mini"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"
+                    app:backgroundTint="@color/black"
+                    app:tint="@color/white"
+                    app:elevation="0dp" />
+            </RelativeLayout>
+
+            <!-- Search Bar -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#F3F4F6">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="#9CA3AF"/>
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="Tìm kiếm mã coupon..."
+                        android:textColorHint="#9CA3AF"
+                        android:textColor="#111827"
+                        android:textSize="14sp"
+                        android:maxLines="1"
+                        android:layout_marginStart="12dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Current Coupons Title -->
+             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Danh sách mã"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Coupons List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCoupons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingHorizontal="16dp"
+                android:nestedScrollingEnabled="false"/>
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/layoutEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="40dp"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_coupon"
+                    app:tint="#E5E7EB" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Chưa có mã giảm giá nào"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#374151" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -35,9 +35,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AdminProductsActivity extends AppCompatActivity {
-    
+
     private static final String TAG = "AdminProducts";
-    
+
     private ImageView ivBack;
     private FloatingActionButton fabAddProduct;
     private TextInputEditText etSearch;
@@ -45,24 +45,26 @@ public class AdminProductsActivity extends AppCompatActivity {
     private RecyclerView rvProducts;
     private FrameLayout layoutLoading;
     private LinearLayout layoutContent, layoutEmpty;
-    
+
     private AdminProductAdapter adapter;
     private AdminProductApi productApi;
     private String token;
     private Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
 
+    private boolean shouldScrollToTop = false; // Flag to control scrolling
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_products);
-        
+
         initViews();
         setupRecyclerView();
         setupClickListeners();
         loadData();
     }
-    
+
     private void initViews() {
         ivBack = findViewById(R.id.ivBack);
         fabAddProduct = findViewById(R.id.fabAddProduct);
@@ -74,29 +76,30 @@ public class AdminProductsActivity extends AppCompatActivity {
         layoutLoading = findViewById(R.id.layoutLoading);
         layoutContent = findViewById(R.id.layoutContent);
         layoutEmpty = findViewById(R.id.layoutEmpty);
-        
+
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         productApi = retrofitClient.getAdminProductApi();
         token = retrofitClient.getToken();
-        
+
         if (token == null || token.isEmpty()) {
             Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
     }
-    
+
     private void setupRecyclerView() {
         adapter = new AdminProductAdapter();
         rvProducts.setLayoutManager(new LinearLayoutManager(this));
         rvProducts.setAdapter(adapter);
-        
+
         adapter.setOnProductClickListener(new AdminProductAdapter.OnProductClickListener() {
             @Override
             public void onEditClick(AdminProduct product) {
                 try {
                     if (product == null || product.getId() == null) {
-                        Toast.makeText(AdminProductsActivity.this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminProductsActivity.this, "Lỗi: Không tìm thấy thông tin sản phẩm",
+                                Toast.LENGTH_SHORT).show();
                         return;
                     }
                     Intent intent = new Intent(AdminProductsActivity.this, AdminProductFormActivity.class);
@@ -108,12 +111,13 @@ public class AdminProductsActivity extends AppCompatActivity {
                     Toast.makeText(AdminProductsActivity.this, "Lỗi mở trang chỉnh sửa", Toast.LENGTH_SHORT).show();
                 }
             }
-            
+
             @Override
             public void onDeleteClick(AdminProduct product) {
                 try {
                     if (product == null) {
-                        Toast.makeText(AdminProductsActivity.this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminProductsActivity.this, "Lỗi: Không tìm thấy thông tin sản phẩm",
+                                Toast.LENGTH_SHORT).show();
                         return;
                     }
                     showDeleteConfirmDialog(product);
@@ -124,21 +128,23 @@ public class AdminProductsActivity extends AppCompatActivity {
             }
         });
     }
-    
+
     private void setupClickListeners() {
         ivBack.setOnClickListener(v -> onBackPressed());
-        
+
         fabAddProduct.setOnClickListener(v -> {
+            shouldScrollToTop = true; // Set flag when adding new product
             Intent intent = new Intent(this, AdminProductFormActivity.class);
             intent.putExtra("is_edit_mode", false);
             startActivity(intent);
         });
-        
+
         // Search with debounce
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (searchRunnable != null) {
@@ -147,17 +153,18 @@ public class AdminProductsActivity extends AppCompatActivity {
                 searchRunnable = () -> loadProducts(s.toString());
                 searchHandler.postDelayed(searchRunnable, 300);
             }
-            
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
-    
+
     private void loadData() {
         loadStats();
         loadProducts("");
     }
-    
+
     private void loadStats() {
         Log.d(TAG, "Loading stats...");
         productApi.getStats("Bearer " + token).enqueue(new Callback<ProductStats>() {
@@ -165,7 +172,8 @@ public class AdminProductsActivity extends AppCompatActivity {
             public void onResponse(Call<ProductStats> call, Response<ProductStats> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ProductStats stats = response.body();
-                    Log.d(TAG, "Stats loaded: total=" + stats.getTotal() + ", lowStock=" + stats.getLowStock() + ", outOfStock=" + stats.getOutOfStock());
+                    Log.d(TAG, "Stats loaded: total=" + stats.getTotal() + ", lowStock=" + stats.getLowStock()
+                            + ", outOfStock=" + stats.getOutOfStock());
                     tvTotalProducts.setText(String.valueOf(stats.getTotal()));
                     tvLowStock.setText(String.valueOf(stats.getLowStock()));
                     tvOutOfStock.setText(String.valueOf(stats.getOutOfStock()));
@@ -173,137 +181,149 @@ public class AdminProductsActivity extends AppCompatActivity {
                     Log.e(TAG, "Failed to load stats: " + response.code());
                 }
             }
-            
+
             @Override
             public void onFailure(Call<ProductStats> call, Throwable t) {
                 Log.e(TAG, "Error loading stats", t);
             }
         });
     }
-    
+
     private void loadProducts(String query) {
         Log.d(TAG, "Loading products with query: " + query);
         layoutLoading.setVisibility(View.VISIBLE);
         layoutContent.setVisibility(View.GONE);
-        
+
         productApi.getProducts("Bearer " + token, query).enqueue(new Callback<List<AdminProduct>>() {
             @Override
             public void onResponse(Call<List<AdminProduct>> call, Response<List<AdminProduct>> response) {
                 layoutLoading.setVisibility(View.GONE);
                 layoutContent.setVisibility(View.VISIBLE);
-                
+
                 if (response.isSuccessful() && response.body() != null) {
                     List<AdminProduct> products = response.body();
                     Log.d(TAG, "Products loaded: " + products.size());
-                    
+
                     if (products.isEmpty()) {
                         layoutEmpty.setVisibility(View.VISIBLE);
                         rvProducts.setVisibility(View.GONE);
                     } else {
                         layoutEmpty.setVisibility(View.GONE);
                         rvProducts.setVisibility(View.VISIBLE);
+                        // Sort by ID descending (newest first)
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                            products.sort((p1, p2) -> {
+                                Long id1 = p1.getId() != null ? p1.getId() : 0L;
+                                Long id2 = p2.getId() != null ? p2.getId() : 0L;
+                                return id2.compareTo(id1);
+                            });
+                        }
                         adapter.setProducts(products);
+
+                        // Check flag to scroll to top
+                        if (shouldScrollToTop) {
+                            rvProducts.scrollToPosition(0);
+                            shouldScrollToTop = false; // Reset flag
+                        }
                     }
                 } else {
                     Log.e(TAG, "Failed to load products: " + response.code());
-                    Toast.makeText(AdminProductsActivity.this, 
+                    Toast.makeText(AdminProductsActivity.this,
                             "Lỗi tải sản phẩm: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
-            
+
             @Override
             public void onFailure(Call<List<AdminProduct>> call, Throwable t) {
-                layoutLoading.setVisibility(View.GONE);
-                layoutContent.setVisibility(View.VISIBLE);
-                Log.e(TAG, "Error loading products", t);
-                Toast.makeText(AdminProductsActivity.this, 
-                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                // ...
             }
         });
     }
-    
+
     private void showDeleteConfirmDialog(AdminProduct product) {
         if (product == null) {
             Toast.makeText(this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+
         String productName = product.getName() != null ? product.getName() : "N/A";
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc chắn muốn xóa sản phẩm \"" + productName + "\"?\n\nHành động này không thể hoàn tác.")
+                .setMessage("Bạn có chắc chắn muốn xóa sản phẩm \"" + productName
+                        + "\"?\n\nHành động này không thể hoàn tác.")
                 .setPositiveButton("Xóa", (dialog, which) -> deleteProduct(product))
                 .setNegativeButton("Hủy", null)
                 .show();
     }
-    
+
     private void deleteProduct(AdminProduct product) {
         if (product == null || product.getId() == null) {
             Toast.makeText(this, "Lỗi: Không thể xóa sản phẩm", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+
         Log.d(TAG, "Deleting product: " + product.getId());
         layoutLoading.setVisibility(View.VISIBLE);
-        
+
         productApi.deleteProduct("Bearer " + token, product.getId()).enqueue(
                 new Callback<com.example.nike_fe.data.model.DeleteProductResponse>() {
-            @Override
-            public void onResponse(Call<com.example.nike_fe.data.model.DeleteProductResponse> call, 
-                                 Response<com.example.nike_fe.data.model.DeleteProductResponse> response) {
-                layoutLoading.setVisibility(View.GONE);
-                
-                if (response.isSuccessful() && response.body() != null) {
-                    com.example.nike_fe.data.model.DeleteProductResponse deleteResponse = response.body();
-                    
-                    if (deleteResponse.isSuccess()) {
-                        // Tạo thông báo chi tiết
-                        StringBuilder message = new StringBuilder("Đã xóa sản phẩm thành công");
-                        
-                        if (deleteResponse.getDetails() != null) {
-                            com.example.nike_fe.data.model.DeleteProductResponse.Details details = 
-                                    deleteResponse.getDetails();
-                            
-                            if (details.getCartItemsRemoved() > 0) {
-                                message.append("\n• Đã xóa khỏi ")
-                                       .append(details.getCartItemsRemoved())
-                                       .append(" giỏ hàng");
+                    @Override
+                    public void onResponse(Call<com.example.nike_fe.data.model.DeleteProductResponse> call,
+                            Response<com.example.nike_fe.data.model.DeleteProductResponse> response) {
+                        layoutLoading.setVisibility(View.GONE);
+
+                        if (response.isSuccessful() && response.body() != null) {
+                            com.example.nike_fe.data.model.DeleteProductResponse deleteResponse = response.body();
+
+                            if (deleteResponse.isSuccess()) {
+                                // Tạo thông báo chi tiết
+                                StringBuilder message = new StringBuilder("Đã xóa sản phẩm thành công");
+
+                                if (deleteResponse.getDetails() != null) {
+                                    com.example.nike_fe.data.model.DeleteProductResponse.Details details = deleteResponse
+                                            .getDetails();
+
+                                    if (details.getCartItemsRemoved() > 0) {
+                                        message.append("\n• Đã xóa khỏi ")
+                                                .append(details.getCartItemsRemoved())
+                                                .append(" giỏ hàng");
+                                    }
+
+                                    if (details.getFavoritesRemoved() > 0) {
+                                        message.append("\n• Đã xóa khỏi ")
+                                                .append(details.getFavoritesRemoved())
+                                                .append(" danh sách yêu thích");
+                                    }
+
+                                    if (details.isSoftDelete()) {
+                                        message.append("\n• Sản phẩm được ẩn do có trong đơn hàng");
+                                    }
+                                }
+
+                                Toast.makeText(AdminProductsActivity.this,
+                                        message.toString(), Toast.LENGTH_LONG).show();
+                                loadData(); // Reload all data
+                            } else {
+                                Toast.makeText(AdminProductsActivity.this,
+                                        deleteResponse.getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                            
-                            if (details.getFavoritesRemoved() > 0) {
-                                message.append("\n• Đã xóa khỏi ")
-                                       .append(details.getFavoritesRemoved())
-                                       .append(" danh sách yêu thích");
-                            }
-                            
-                            if (details.isSoftDelete()) {
-                                message.append("\n• Sản phẩm được ẩn do có trong đơn hàng");
-                            }
+                        } else {
+                            Toast.makeText(AdminProductsActivity.this,
+                                    "Xóa thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
                         }
-                        
-                        Toast.makeText(AdminProductsActivity.this, 
-                                message.toString(), Toast.LENGTH_LONG).show();
-                        loadData(); // Reload all data
-                    } else {
-                        Toast.makeText(AdminProductsActivity.this, 
-                                deleteResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(AdminProductsActivity.this, 
-                            "Xóa thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<com.example.nike_fe.data.model.DeleteProductResponse> call, Throwable t) {
-                layoutLoading.setVisibility(View.GONE);
-                Log.e(TAG, "Error deleting product", t);
-                Toast.makeText(AdminProductsActivity.this, 
-                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+                    @Override
+                    public void onFailure(Call<com.example.nike_fe.data.model.DeleteProductResponse> call,
+                            Throwable t) {
+                        layoutLoading.setVisibility(View.GONE);
+                        Log.e(TAG, "Error deleting product", t);
+                        Toast.makeText(AdminProductsActivity.this,
+                                "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();

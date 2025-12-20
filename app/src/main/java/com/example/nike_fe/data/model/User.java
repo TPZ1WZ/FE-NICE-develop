@@ -4,30 +4,36 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
     private Long id;
-    
+
     @SerializedName("fullName")
     private String fullName;
-    
+
+    @SerializedName("email")
     private String email;
+
+    @SerializedName("phone")
     private String phone;
+
+    @SerializedName("address")
     private String address;
-    
+
     @SerializedName("avatarUrl")
     private String avatarUrl;
-    
+
+    @SerializedName("role")
     private String role;
-    
-    @SerializedName("isActive")
+
+    @SerializedName(value = "isActive", alternate = { "active" })
     private Boolean isActive;
-    
+
     @SerializedName("createdAt")
     private String createdAt;
 
     public User() {
     }
 
-    public User(Long id, String fullName, String email, String phone, 
-                String address, String avatarUrl, String role, Boolean isActive, String createdAt) {
+    public User(Long id, String fullName, String email, String phone,
+            String address, String avatarUrl, String role, Boolean isActive, String createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;

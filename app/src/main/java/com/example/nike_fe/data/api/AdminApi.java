@@ -8,6 +8,7 @@ import com.example.nike_fe.data.model.Product;
 import com.example.nike_fe.data.model.RevenueChartData;
 import com.example.nike_fe.data.model.TopProductsResponse;
 import com.example.nike_fe.data.model.User;
+import com.example.nike_fe.data.model.UserListResponse;
 
 import java.util.List;
 
@@ -23,74 +24,82 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface AdminApi {
-    
-    @GET("api/admin/dashboard/statistics")
-    Call<DashboardStats> getDashboardStats(@Header("Authorization") String token);
-    
-    @GET("api/admin/dashboard/order-status")
-    Call<OrderStatusDistribution> getOrderStatusDistribution(@Header("Authorization") String token);
-    
-    @GET("api/admin/dashboard/top-products")
-    Call<TopProductsResponse> getTopProducts(
-        @Header("Authorization") String token,
-        @Query("limit") int limit
-    );
-    
-    @GET("api/admin/dashboard/charts/revenue")
-    Call<RevenueChartData> getRevenueChart(
-        @Header("Authorization") String token,
-        @Query("days") int days
-    );
-    
-    @GET("api/v1/admin/products")
-    Call<List<Product>> getAllProducts(
-        @Header("Authorization") String token,
-        @Query("page") int page,
-        @Query("size") int size
-    );
-    
-    @GET("api/v1/admin/orders")
-    Call<List<Order>> getAllOrders(
-        @Header("Authorization") String token,
-        @Query("status") String status
-    );
-    
-    @GET("api/v1/admin/orders/{id}")
-    Call<Order> getOrderById(
-        @Header("Authorization") String token,
-        @Path("id") Long orderId
-    );
-    
-    @PATCH("api/v1/admin/orders/{id}/status")
-    Call<Order> updateOrderStatus(
-        @Header("Authorization") String token,
-        @Path("id") Long orderId,
-        @Query("status") String status
-    );
-    
-    @GET("api/v1/admin/users")
-    Call<List<User>> getAllUsers(@Header("Authorization") String token);
-    
-    // Category APIs
-    @GET("api/admin/categories")
-    Call<List<Category>> getAllCategories(@Header("Authorization") String token);
-    
-    @POST("api/admin/categories")
-    Call<Category> createCategory(
-        @Header("Authorization") String token,
-        @Body Category category
-    );
-    
-    @PUT("api/admin/categories/{id}")
-    Call<Category> updateCategory(
-        @Header("Authorization") String token,
-        @Path("id") Long id,
-        @Body Category category
-    );
-    
-    @DELETE("api/admin/categories/{id}")
-    Call<Void> deleteCategory(
-        @Header("Authorization") String token,
-        @Path("id") Long id
-    );
+
+        @GET("api/admin/dashboard/statistics")
+        Call<DashboardStats> getDashboardStats(@Header("Authorization") String token);
+
+        @GET("api/admin/dashboard/order-status")
+        Call<OrderStatusDistribution> getOrderStatusDistribution(@Header("Authorization") String token);
+
+        @GET("api/admin/dashboard/top-products")
+        Call<TopProductsResponse> getTopProducts(
+                        @Header("Authorization") String token,
+                        @Query("limit") int limit);
+
+        @GET("api/admin/dashboard/charts/revenue")
+        Call<RevenueChartData> getRevenueChart(
+                        @Header("Authorization") String token,
+                        @Query("days") int days);
+
+        @GET("api/v1/admin/products")
+        Call<List<Product>> getAllProducts(
+                        @Header("Authorization") String token,
+                        @Query("page") int page,
+                        @Query("size") int size);
+
+        @GET("api/v1/admin/orders")
+        Call<List<Order>> getAllOrders(
+                        @Header("Authorization") String token,
+                        @Query("status") String status);
+
+        @GET("api/v1/admin/orders/{id}")
+        Call<Order> getOrderById(
+                        @Header("Authorization") String token,
+                        @Path("id") Long orderId);
+
+        @PATCH("api/v1/admin/orders/{id}/status")
+        Call<Order> updateOrderStatus(
+                        @Header("Authorization") String token,
+                        @Path("id") Long orderId,
+                        @Query("status") String status);
+
+        @GET("api/v1/admin/users")
+        Call<List<User>> getAllUsers(@Header("Authorization") String token);
+
+        // Category APIs
+        @GET("api/admin/categories")
+        Call<List<Category>> getAllCategories(@Header("Authorization") String token);
+
+        @POST("api/admin/categories")
+        Call<Category> createCategory(
+                        @Header("Authorization") String token,
+                        @Body Category category);
+
+        @PUT("api/admin/categories/{id}")
+        Call<Category> updateCategory(
+                        @Header("Authorization") String token,
+                        @Path("id") Long id,
+                        @Body Category category);
+
+        @DELETE("api/admin/categories/{id}")
+        Call<Void> deleteCategory(
+                        @Header("Authorization") String token,
+                        @Path("id") Long id);
+
+        // User Management APIs
+        @GET("api/admin/users")
+        Call<UserListResponse> getUsers(
+                        @Header("Authorization") String token,
+                        @Query("search") String search);
+
+        @GET("api/admin/users/{id}")
+        Call<User> getUserById(
+                        @Header("Authorization") String token,
+                        @Path("id") Long id);
+
+        @PUT("/api/admin/users/{id}")
+        Call<User> updateUser(
+                        @Header("Authorization") String token,
+                        @Path("id") Long id,
+                        @Body User user);
 }

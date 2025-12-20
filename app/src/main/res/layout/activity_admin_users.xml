@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F9FAFB">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:elevation="2dp">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#111827"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:text="Quản Lý Người Dùng"
+            android:textColor="#111827"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/ivFilter"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_filter"
+            app:tint="#6B7280"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+    </LinearLayout>
+
+    <!-- Search Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="16dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxBackgroundColor="#111827"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeWidth="0dp"
+            app:startIconDrawable="@drawable/ic_search"
+            app:startIconTint="#9CA3AF"
+            app:hintEnabled="false">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tìm kiếm theo tên hoặc email..."
+                android:textColor="@color/white"
+                android:textColorHint="#9CA3AF"
+                android:inputType="text"
+                android:paddingVertical="12dp"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <!-- Filter Chips (Visible when Filter clicked or separate logic) -->
+    <!-- Optional: Can be a HorizontalScrollView below search if requested -->
+    
+    <!-- Content Area -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvUsers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="16dp" />
+
+        <!-- Loading -->
+        <FrameLayout
+            android:id="@+id/layoutLoading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80FFFFFF"
+            android:visibility="gone">
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <!-- Empty State -->
+        <LinearLayout
+            android:id="@+id/layoutEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+            
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_search"
+                app:tint="#D1D5DB"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Không tìm thấy người dùng"
+                android:textColor="#6B7280"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

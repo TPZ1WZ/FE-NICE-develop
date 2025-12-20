@@ -44,6 +44,10 @@ public class RetrofitClient {
         return instance;
     }
 
+    public String getBaseUrl() {
+        return BASE_URL;
+    }
+
     public AuthApi getAuthApi() {
         return retrofit.create(AuthApi.class);
     }
@@ -58,6 +62,14 @@ public class RetrofitClient {
 
     public UserApi getUserApi() {
         return retrofit.create(UserApi.class);
+    }
+
+    public AdminCouponApi getAdminCouponApi() {
+        return retrofit.create(AdminCouponApi.class);
+    }
+
+    public UserCouponApi getUserCouponApi() {
+        return retrofit.create(UserCouponApi.class);
     }
 
     public OrderApi getOrderApi() {
