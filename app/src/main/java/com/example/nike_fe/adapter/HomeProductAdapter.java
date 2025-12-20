@@ -31,6 +31,8 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         void onProductClick(Product product);
 
         void onAddClick(Product product);
+
+        void onFavoriteClick(Product product);
     }
 
     private boolean isGridLayout = false;
@@ -73,6 +75,16 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         this.isGridLayout = useGrid;
     }
 
+    public void toggleFavorite(Long productId, boolean isFavorite) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getId().equals(productId)) {
+                products.get(i).setFavorite(isFavorite);
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -106,12 +118,23 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         // List specific
         TextView tvBestSeller;
         ImageButton btnAdd;
+        ImageView ivFavorite;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             // Common views
             ivProductImage = itemView.findViewById(R.id.ivProductImage);
             tvProductName = itemView.findViewById(R.id.tvProductName);
+            ivFavorite = itemView.findViewById(R.id.ivFavorite);
+
+            if (ivFavorite != null) {
+                ivFavorite.setOnClickListener(v -> {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null) {
+                        listener.onFavoriteClick(products.get(position));
+                    }
+                });
+            }
 
             // Layout specific views
             if (isGridLayout) {
@@ -141,6 +164,17 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         public void bind(Product product) {
             tvProductName.setText(product.getName());
 
+            // Handle Favorite Icon
+            if (ivFavorite != null) {
+                if (product.isFavorite()) {
+                    ivFavorite.setImageResource(R.drawable.ic_heart); // Or filled version if available
+                    ivFavorite.setColorFilter(android.graphics.Color.RED);
+                } else {
+                    ivFavorite.setImageResource(R.drawable.ic_heart_outline); // Or outline version
+                    ivFavorite.setColorFilter(android.graphics.Color.WHITE); // Or default color
+                }
+            }
+
             // Format price
             NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
             String formattedPrice = formatter.format(product.getPrice()) + " ₫";
@@ -149,7 +183,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             // Load image
             if (product.getThumbnail() != null && !product.getThumbnail().isEmpty()) {
                 String imageUrl = product.getThumbnail();
-                
+
                 // Xử lý base64 image data
                 if (imageUrl.startsWith("data:image")) {
                     // Base64 image - load trực tiếp
@@ -159,7 +193,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                             .error(R.drawable.img_placeholder_shoe)
                             .centerInside()
                             .into(ivProductImage);
-                } 
+                }
                 // URL đầy đủ
                 else if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
                     Glide.with(context)
@@ -168,7 +202,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                             .error(R.drawable.img_placeholder_shoe)
                             .centerInside()
                             .into(ivProductImage);
-                } 
+                }
                 // Relative URL
                 else if (imageUrl.startsWith("/")) {
                     imageUrl = "http://10.0.2.2:8080" + imageUrl;
@@ -178,8 +212,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                             .error(R.drawable.img_placeholder_shoe)
                             .centerInside()
                             .into(ivProductImage);
-                } 
-                else {
+                } else {
                     // Fallback
                     Glide.with(context)
                             .load(imageUrl)

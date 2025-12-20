@@ -9,6 +9,15 @@ public class Product {
     private String thumbnail;
     private java.util.List<String> sizes;
     private List<String> images;
+    private boolean isFavorite;
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
 
     public Product() {
     }

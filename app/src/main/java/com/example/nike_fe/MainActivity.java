@@ -30,6 +30,7 @@ import com.example.nike_fe.ui.home.FilterAdapter;
 import com.example.nike_fe.ui.profile.ProfileActivity;
 import com.example.nike_fe.ui.product.ProductDetailActivity;
 import com.example.nike_fe.ui.cart.CartActivity;
+import com.example.nike_fe.ui.notification.NotificationActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView rvBrands, rvFilters, rvProductGrid;
     private TextView tvHeaderName;
     private CircleImageView ivHeaderAvatar;
-    private ImageView btnNotification, btnWishlist;
+    private ImageView btnNotification;
     private User currentUser;
     private HomeProductAdapter productAdapter; // Promoted to class level
     private FilterAdapter filterAdapter; // Để cập nhật brands động
@@ -87,7 +88,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvHeaderName = findViewById(R.id.tvHeaderName);
         ivHeaderAvatar = findViewById(R.id.ivHeaderAvatar);
         btnNotification = findViewById(R.id.btnNotification);
-        btnWishlist = findViewById(R.id.btnWishlist);
+
+        // Notification button click
+        btnNotification.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+            startActivity(intent);
+        });
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
         fabCart = findViewById(R.id.fabCart);
@@ -207,9 +213,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Hiển thị tất cả sản phẩm
                 fetchProducts(null, null, null);
             } else {
-                // Filter theo category - vẫn dùng name search vì API hiện tại chưa hỗ trợ tốt
-                // Nhưng với null sẽ lấy tất cả
-                fetchProducts(null, null, null);
+                // Filter theo category - lấy category ID từ map
+                Category selectedCategory = categoryMap.get(filter);
+                if (selectedCategory != null) {
+                    fetchProductsByCategory(selectedCategory.getId(), null, null);
+                } else {
+                    fetchProducts(null, null, null);
+                }
             }
         });
 
@@ -217,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             rvFilters.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvFilters.setAdapter(filterAdapter);
         }
-        
+
         // Load categories từ API
         loadCategoriesFromApi();
 
@@ -234,10 +244,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             List<Category> categories = response.body();
-                            
+
                             // Lưu category map
                             categoryMap.clear();
-                            
+
                             // Chuyển thành danh sách tên danh mục
                             List<String> filters = new java.util.ArrayList<>();
                             filters.add("All");
@@ -245,19 +255,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 filters.add(category.getName());
                                 categoryMap.put(category.getName(), category);
                             }
-                            
+
                             // Cập nhật adapter
                             if (filterAdapter != null) {
                                 filterAdapter.updateFilters(filters);
                             }
-                            
+
                             Log.d("MainActivity", "Loaded " + categories.size() + " categories from API");
                         } else {
                             Log.e("MainActivity", "Failed to load categories: " + response.code());
-                            Toast.makeText(MainActivity.this, "Không thể tải danh sách danh mục", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Không thể tải danh sách danh mục", Toast.LENGTH_SHORT)
+                                    .show();
                         }
                     }
-                    
+
                     @Override
                     public void onFailure(Call<List<Category>> call, Throwable t) {
                         Log.e("MainActivity", "Error loading categories: " + t.getMessage());
@@ -265,7 +276,162 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 });
     }
-    
+
+    /**
+     * Cập nhật danh sách sản phẩm hiển thị
+     */
+    private void updateProductList(List<Product> products) {
+        productAdapter = new HomeProductAdapter(MainActivity.this,
+                new HomeProductAdapter.OnProductClickListener() {
+                    @Override
+                    public void onProductClick(Product product) {
+                        Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
+                        intent.putExtra("product_id", product.getId());
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onAddClick(Product product) {
+                        String token = RetrofitClient.getInstance(MainActivity.this).getToken();
+                        if (token == null) {
+                            Toast.makeText(MainActivity.this, "Vui lòng đăng nhập trước",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Determine size: use first available or default "42"
+                        String tempSize = "42";
+                        if (product.getSizes() != null && !product.getSizes().isEmpty()) {
+                            tempSize = product.getSizes().get(0);
+                        }
+                        final String selectedSize = tempSize;
+
+                        int quantity = 1;
+
+                        com.example.nike_fe.data.model.AddToCartRequest request = new com.example.nike_fe.data.model.AddToCartRequest(
+                                product.getId(), quantity, selectedSize);
+
+                        RetrofitClient.getInstance(MainActivity.this).getCartApi()
+                                .addToCart("Bearer " + token, request)
+                                .enqueue(new Callback<java.util.Map<String, String>>() {
+                                    @Override
+                                    public void onResponse(Call<java.util.Map<String, String>> call,
+                                            Response<java.util.Map<String, String>> response) {
+                                        if (response.isSuccessful()) {
+                                            Toast.makeText(MainActivity.this,
+                                                    "Đã thêm vào giỏ (Size " + selectedSize + ")",
+                                                    Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(MainActivity.this,
+                                                    "Thêm vào giỏ thất bại", Toast.LENGTH_SHORT)
+                                                    .show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<java.util.Map<String, String>> call,
+                                            Throwable t) {
+                                        Toast.makeText(MainActivity.this,
+                                                "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onFavoriteClick(Product product) {
+                        String token = RetrofitClient.getInstance(MainActivity.this).getToken();
+                        if (token == null) {
+                            Toast.makeText(MainActivity.this, "Vui lòng đăng nhập để yêu thích", Toast.LENGTH_SHORT)
+                                    .show();
+                            return;
+                        }
+
+                        // Check if favorite first
+                        RetrofitClient.getInstance(MainActivity.this).getFavoriteApi()
+                                .checkFavorite(product.getId(), "Bearer " + token)
+                                .enqueue(new Callback<java.util.Map<String, Object>>() {
+                                    @Override
+                                    public void onResponse(Call<java.util.Map<String, Object>> call,
+                                            Response<java.util.Map<String, Object>> response) {
+                                        if (response.isSuccessful() && response.body() != null) {
+                                            Boolean isFavorite = (Boolean) response.body().get("isFavorite");
+                                            if (isFavorite != null && isFavorite) {
+                                                // Remove
+                                                removeFromFavorite(product.getId(), token);
+                                            } else {
+                                                // Add
+                                                addToFavorite(product.getId(), token);
+                                            }
+                                        } else {
+                                            // Assume not favorite, try to add
+                                            addToFavorite(product.getId(), token);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                                        Toast.makeText(MainActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
+
+        productAdapter.useGridLayout(true);
+        productAdapter.setProducts(products);
+
+        if (rvProductGrid != null) {
+            rvProductGrid.setAdapter(productAdapter);
+        }
+    }
+
+    /**
+     * Load sản phẩm theo category ID
+     */
+    private void fetchProductsByCategory(Long categoryId, Double minPrice, Double maxPrice) {
+        Log.d("MainActivity", "=== Fetching products for categoryId: " + categoryId + " ===");
+
+        Call<List<Product>> call = RetrofitClient.getInstance(this).getProductApi().getProductsByCategory(categoryId,
+                minPrice, maxPrice);
+        Log.d("MainActivity", "API URL: " + call.request().url());
+
+        call
+                .enqueue(new Callback<List<Product>>() {
+                    @Override
+                    public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                        Log.d("MainActivity", "Response code: " + response.code());
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<Product> products = response.body();
+                            Log.d("MainActivity", "SUCCESS: Received " + products.size() + " products from API");
+                            if (products.isEmpty()) {
+                                Toast.makeText(MainActivity.this, "Danh mục này chưa có sản phẩm", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                            updateProductList(products);
+                        } else {
+                            Log.e("MainActivity", "ERROR: Response not successful. Code: " + response.code());
+                            try {
+                                String errorBody = response.errorBody() != null ? response.errorBody().string()
+                                        : "No error body";
+                                Log.e("MainActivity", "Error body: " + errorBody);
+                            } catch (Exception e) {
+                                Log.e("MainActivity", "Cannot read error body", e);
+                            }
+                            Toast.makeText(MainActivity.this, "Không tìm thấy sản phẩm (Lỗi: " + response.code() + ")",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Product>> call, Throwable t) {
+                        Log.e("MainActivity", "FAILURE: " + t.getMessage(), t);
+                        Toast.makeText(MainActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        // Fallback: load all products
+                        fetchProducts(null, null, null);
+                    }
+                });
+    }
+
     // Overload for backward compatibility if needed, or just update calls.
     private void fetchProducts(String brandQuery) {
         fetchProducts(brandQuery, null, null);
@@ -281,75 +447,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             List<Product> products = response.body();
-                            
+
                             // Log số lượng sản phẩm nhận được
                             Log.d("MainActivity", "Received " + products.size() + " products from API");
-                            Toast.makeText(MainActivity.this, "Tải được " + products.size() + " sản phẩm", Toast.LENGTH_SHORT).show();
 
-                            productAdapter = new HomeProductAdapter(MainActivity.this,
-                                    new HomeProductAdapter.OnProductClickListener() {
-                                        @Override
-                                        public void onProductClick(Product product) {
-                                            Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
-                                            intent.putExtra("product_id", product.getId());
-                                            startActivity(intent);
-                                        }
-
-                                        @Override
-                                        public void onAddClick(Product product) {
-                                            String token = RetrofitClient.getInstance(MainActivity.this).getToken();
-                                            if (token == null) {
-                                                Toast.makeText(MainActivity.this, "Vui lòng đăng nhập trước",
-                                                        Toast.LENGTH_SHORT).show();
-                                                return;
-                                            }
-
-                                            // Determine size: use first available or default "42"
-                                            String tempSize = "42";
-                                            if (product.getSizes() != null && !product.getSizes().isEmpty()) {
-                                                tempSize = product.getSizes().get(0);
-                                            }
-                                            final String selectedSize = tempSize;
-
-                                            int quantity = 1;
-
-                                            com.example.nike_fe.data.model.AddToCartRequest request = new com.example.nike_fe.data.model.AddToCartRequest(
-                                                    product.getId(), quantity, selectedSize);
-
-                                            RetrofitClient.getInstance(MainActivity.this).getCartApi()
-                                                    .addToCart("Bearer " + token, request)
-                                                    .enqueue(new Callback<java.util.Map<String, String>>() {
-                                                        @Override
-                                                        public void onResponse(Call<java.util.Map<String, String>> call,
-                                                                Response<java.util.Map<String, String>> response) {
-                                                            if (response.isSuccessful()) {
-                                                                Toast.makeText(MainActivity.this,
-                                                                        "Đã thêm vào giỏ (Size " + selectedSize + ")",
-                                                                        Toast.LENGTH_SHORT).show();
-                                                            } else {
-                                                                Toast.makeText(MainActivity.this,
-                                                                        "Thêm vào giỏ thất bại", Toast.LENGTH_SHORT)
-                                                                        .show();
-                                                            }
-                                                        }
-
-                                                        @Override
-                                                        public void onFailure(Call<java.util.Map<String, String>> call,
-                                                                Throwable t) {
-                                                            Toast.makeText(MainActivity.this,
-                                                                    "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT)
-                                                                    .show();
-                                                        }
-                                                    });
-                                        }
-                                    });
-
-                            productAdapter.useGridLayout(true);
-                            productAdapter.setProducts(products);
-
-                            if (rvProductGrid != null) {
-                                rvProductGrid.setAdapter(productAdapter);
-                            }
+                            updateProductList(products);
                         } else {
                             Toast.makeText(MainActivity.this, "No products found", Toast.LENGTH_SHORT).show();
                         }
@@ -371,7 +473,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     List<Category> categories = response.body();
 
                     BrandAdapter brandAdapter = new BrandAdapter(MainActivity.this, categories, category -> {
-                        fetchProducts(category.getName());
+                        // Fetch products by category ID
+                        fetchProductsByCategory(category.getId(), null, null);
+                        Toast.makeText(MainActivity.this, "Lọc theo: " + category.getName(), Toast.LENGTH_SHORT).show();
                     });
 
                     if (rvBrands != null) {
@@ -418,6 +522,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         }
+
+    }
+
+    private void addToFavorite(Long productId, String token) {
+        RetrofitClient.getInstance(this).getFavoriteApi().addToFavorites(productId, "Bearer " + token)
+                .enqueue(new Callback<java.util.Map<String, Object>>() {
+                    @Override
+                    public void onResponse(Call<java.util.Map<String, Object>> call,
+                            Response<java.util.Map<String, Object>> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "Đã thêm vào yêu thích ❤️", Toast.LENGTH_SHORT).show();
+                            if (productAdapter != null) {
+                                productAdapter.toggleFavorite(productId, true);
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "Thất bại: " + response.code(), Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                        Toast.makeText(MainActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void removeFromFavorite(Long productId, String token) {
+        RetrofitClient.getInstance(this).getFavoriteApi().removeFromFavorites(productId, "Bearer " + token)
+                .enqueue(new Callback<java.util.Map<String, Object>>() {
+                    @Override
+                    public void onResponse(Call<java.util.Map<String, Object>> call,
+                            Response<java.util.Map<String, Object>> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "Đã xóa khỏi yêu thích 💔", Toast.LENGTH_SHORT).show();
+                            if (productAdapter != null) {
+                                productAdapter.toggleFavorite(productId, false);
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "Thất bại: " + response.code(), Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                        Toast.makeText(MainActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -426,12 +579,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_profile) {
             startActivity(new Intent(this, ProfileActivity.class));
+        } else if (id == R.id.nav_cart) {
+            startActivity(new Intent(this, CartActivity.class));
+        } else if (id == R.id.nav_favorites) {
+            startActivity(new Intent(this, com.example.nike_fe.ui.favorite.FavoriteActivity.class));
+        } else if (id == R.id.nav_orders) {
+            startActivity(new Intent(this, com.example.nike_fe.ui.order.OrderHistoryActivity.class));
+        } else if (id == R.id.nav_notifications) {
+            startActivity(new Intent(this, com.example.nike_fe.ui.notification.NotificationActivity.class));
+        } else if (id == R.id.nav_settings) {
+            startActivity(new Intent(this, com.example.nike_fe.ui.settings.SettingsActivity.class));
         } else if (id == R.id.nav_sign_out) {
-            RetrofitClient.getInstance(this).clearToken();
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            showSignOutDialog();
         } else {
             Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show();
         }
@@ -439,5 +598,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawerLayout != null)
             drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showSignOutDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Đăng xuất")
+                .setMessage("Bạn có chắc chắn muốn đăng xuất?")
+                .setPositiveButton("Đăng xuất", (dialog, which) -> {
+                    RetrofitClient.getInstance(this).clearToken();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 }

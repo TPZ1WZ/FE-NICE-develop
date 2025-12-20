@@ -3,55 +3,56 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_50">
+    android:background="@color/white">
 
     <FrameLayout
         android:id="@+id/layoutLoading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
+        android:elevation="10dp"
         android:visibility="gone">
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/black"/>
     </FrameLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/layoutContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="80dp">
 
             <!-- Header -->
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:background="@color/white"
-                android:gravity="center_vertical"
-                android:elevation="2dp">
+                android:paddingHorizontal="20dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp">
 
                 <ImageView
                     android:id="@+id/ivBack"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_back"
-                    android:contentDescription="Back"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
+                    android:layout_centerVertical="true"
+                    android:contentDescription="Back" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_toEndOf="@id/ivBack"
                     android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true"
                     android:text="Quản Lý Sản Phẩm"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -61,185 +62,181 @@
                     android:id="@+id/fabAddProduct"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/ic_add"
-                    android:contentDescription="Add Product"
                     app:fabSize="mini"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"
                     app:backgroundTint="@color/black"
-                    app:tint="@color/white" />
-            </LinearLayout>
+                    app:tint="@color/white"
+                    app:elevation="0dp" />
+            </RelativeLayout>
 
-            <!-- Stats Cards -->
+            <!-- Stats Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="16dp"
-                android:weightSum="3">
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="24dp"
+                android:baselineAligned="false">
 
-                <!-- Total Products -->
-                <com.google.android.material.card.MaterialCardView
+                <!-- Total -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="#E3F2FD">
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_stat_card_blue"
+                    android:padding="16dp"
+                    android:layout_marginEnd="8dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_products"
+                        app:tint="#0288D1"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
+                        android:text="Tổng SP"
+                        android:textSize="12sp"
+                        android:textColor="#546E7A"
+                        android:layout_marginTop="8dp"/>
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/ic_products"
-                            android:tint="#1976D2" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Tổng SP"
-                            android:textSize="12sp"
-                            android:textColor="@color/gray_600" />
-
-                        <TextView
-                            android:id="@+id/tvTotalProducts"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="24sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:id="@+id/tvTotalProducts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="#0288D1"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
 
                 <!-- Low Stock -->
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="4dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFF3E0">
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_stat_card_orange"
+                    android:padding="16dp"
+                    android:layout_marginHorizontal="4dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_warning"
+                        app:tint="#F57C00"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
+                        android:text="Sắp hết"
+                        android:textSize="12sp"
+                        android:textColor="#546E7A"
+                        android:layout_marginTop="8dp"/>
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/ic_warning"
-                            android:tint="#F57C00" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Sắp hết"
-                            android:textSize="12sp"
-                            android:textColor="@color/gray_600" />
-
-                        <TextView
-                            android:id="@+id/tvLowStock"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="24sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:id="@+id/tvLowStock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="#F57C00"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
 
                 <!-- Out of Stock -->
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFEBEE">
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_stat_card_red"
+                    android:padding="16dp"
+                    android:layout_marginStart="8dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_close"
+                        app:tint="#D32F2F"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
+                        android:text="Hết hàng"
+                        android:textSize="12sp"
+                        android:textColor="#546E7A"
+                        android:layout_marginTop="8dp"/>
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/ic_close"
-                            android:tint="#D32F2F" />
+                    <TextView
+                        android:id="@+id/tvOutOfStock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="#D32F2F"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Hết hàng"
-                            android:textSize="12sp"
-                            android:textColor="@color/gray_600" />
-
-                        <TextView
-                            android:id="@+id/tvOutOfStock"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="24sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Search Bar -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Search Bar (Dark Theme) -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#111827">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundMode="none"
-                    app:startIconDrawable="@drawable/ic_search"
-                    app:endIconMode="clear_text">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="#9CA3AF"/>
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etSearch"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@null"
                         android:hint="Tìm kiếm theo tên hoặc SKU..."
-                        android:inputType="text"
-                        android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:textColorHint="#6B7280"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:maxLines="1"
+                        android:layout_marginStart="12dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- Products List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="16dp"
-                android:clipToPadding="false" />
+                android:clipToPadding="false"
+                android:paddingHorizontal="16dp"
+                android:nestedScrollingEnabled="false"/>
 
             <!-- Empty State -->
             <LinearLayout
@@ -247,24 +244,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="32dp"
+                android:padding="40dp"
                 android:gravity="center"
                 android:visibility="gone">
 
                 <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:src="@drawable/ic_products"
-                    android:tint="@color/gray_300" />
+                    app:tint="#E5E7EB" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Không tìm thấy sản phẩm nào"
+                    android:text="Không tìm thấy sản phẩm"
                     android:textSize="16sp"
-                    android:textColor="@color/gray_600" />
+                    android:textStyle="bold"
+                    android:textColor="#374151" />
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Thử tìm kiếm với từ khóa khác"
+                    android:textSize="14sp"
+                    android:textColor="#9CA3AF" />
             </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -28,4 +28,11 @@ public interface ProductApi {
     
     @GET("/api/v1/products/categories")
     Call<List<Category>> getCategories();
+    
+    @GET("/api/v1/products/search")
+    Call<List<Product>> getProductsByCategory(
+            @Query("categoryId") Long categoryId,
+            @Query("minPrice") Double minPrice,
+            @Query("maxPrice") Double maxPrice
+    );
 }

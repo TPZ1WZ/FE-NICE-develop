@@ -102,6 +102,16 @@
             android:name=".ui.favorite.FavoriteActivity"
             android:exported="false" />
         
+        <!-- NotificationActivity - Thông báo -->
+        <activity
+            android:name=".ui.notification.NotificationActivity"
+            android:exported="false" />
+        
+        <!-- SettingsActivity - Cài đặt -->
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false" />
+        
         <!-- AdminDashboardActivity - Admin Dashboard -->
         <activity
             android:name=".ui.admin.AdminDashboardActivity"

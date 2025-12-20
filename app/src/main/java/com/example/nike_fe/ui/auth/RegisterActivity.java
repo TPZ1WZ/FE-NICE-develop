@@ -114,13 +114,13 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     RegisterResponse registerResponse = response.body();
-                    
+
                     if (registerResponse.isSuccess()) {
                         // Đăng ký thành công
-                        Toast.makeText(RegisterActivity.this, 
-                            "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.", 
-                            Toast.LENGTH_LONG).show();
-                        
+                        Toast.makeText(RegisterActivity.this,
+                                "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
+                                Toast.LENGTH_LONG).show();
+
                         // Chuyển về màn LoginActivity sau 2 giây
                         new android.os.Handler().postDelayed(new Runnable() {
                             @Override
@@ -133,9 +133,9 @@ public class RegisterActivity extends AppCompatActivity {
                         }, 2000);
                     } else {
                         // Backend trả success = false
-                        Toast.makeText(RegisterActivity.this, 
-                            registerResponse.getMessage(), 
-                            Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this,
+                                registerResponse.getMessage(),
+                                Toast.LENGTH_LONG).show();
                     }
                 } else {
                     // HTTP error (400, 409, 500...)
@@ -146,9 +146,9 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 setLoading(false);
-                Toast.makeText(RegisterActivity.this, 
-                    "Lỗi kết nối: " + t.getMessage(), 
-                    Toast.LENGTH_LONG).show();
+                Toast.makeText(RegisterActivity.this,
+                        "Lỗi kết nối: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -156,8 +156,8 @@ public class RegisterActivity extends AppCompatActivity {
     /**
      * Validate tất cả các trường input
      */
-    private boolean validateInputs(String fullName, String email, String phone, 
-                                   String password, String confirmPassword) {
+    private boolean validateInputs(String fullName, String email, String phone,
+            String password, String confirmPassword) {
         boolean isValid = true;
 
         // Validate Full Name
@@ -256,7 +256,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void setLoading(boolean isLoading) {
         btnRegister.setEnabled(!isLoading);
         btnRegister.setText(isLoading ? "ĐANG TẠO TÀI KHOẢN..." : "TẠO TÀI KHOẢN");
-        
+
         // Disable tất cả các EditText khi đang loading
         etFullName.setEnabled(!isLoading);
         etEmail.setEnabled(!isLoading);

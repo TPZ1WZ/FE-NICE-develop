@@ -94,15 +94,33 @@ public class AdminProductsActivity extends AppCompatActivity {
         adapter.setOnProductClickListener(new AdminProductAdapter.OnProductClickListener() {
             @Override
             public void onEditClick(AdminProduct product) {
-                Intent intent = new Intent(AdminProductsActivity.this, AdminProductFormActivity.class);
-                intent.putExtra("product_id", product.getId());
-                intent.putExtra("is_edit_mode", true);
-                startActivity(intent);
+                try {
+                    if (product == null || product.getId() == null) {
+                        Toast.makeText(AdminProductsActivity.this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Intent intent = new Intent(AdminProductsActivity.this, AdminProductFormActivity.class);
+                    intent.putExtra("product_id", product.getId());
+                    intent.putExtra("is_edit_mode", true);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error opening edit product: " + e.getMessage(), e);
+                    Toast.makeText(AdminProductsActivity.this, "Lỗi mở trang chỉnh sửa", Toast.LENGTH_SHORT).show();
+                }
             }
             
             @Override
             public void onDeleteClick(AdminProduct product) {
-                showDeleteConfirmDialog(product);
+                try {
+                    if (product == null) {
+                        Toast.makeText(AdminProductsActivity.this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    showDeleteConfirmDialog(product);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error opening delete dialog: " + e.getMessage(), e);
+                    Toast.makeText(AdminProductsActivity.this, "Lỗi hiển thị xác nhận xóa", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -205,27 +223,71 @@ public class AdminProductsActivity extends AppCompatActivity {
     }
     
     private void showDeleteConfirmDialog(AdminProduct product) {
+        if (product == null) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        String productName = product.getName() != null ? product.getName() : "N/A";
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc chắn muốn xóa sản phẩm \"" + product.getName() + "\"?\n\nHành động này không thể hoàn tác.")
+                .setMessage("Bạn có chắc chắn muốn xóa sản phẩm \"" + productName + "\"?\n\nHành động này không thể hoàn tác.")
                 .setPositiveButton("Xóa", (dialog, which) -> deleteProduct(product))
                 .setNegativeButton("Hủy", null)
                 .show();
     }
     
     private void deleteProduct(AdminProduct product) {
+        if (product == null || product.getId() == null) {
+            Toast.makeText(this, "Lỗi: Không thể xóa sản phẩm", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         Log.d(TAG, "Deleting product: " + product.getId());
         layoutLoading.setVisibility(View.VISIBLE);
         
-        productApi.deleteProduct("Bearer " + token, product.getId()).enqueue(new Callback<Void>() {
+        productApi.deleteProduct("Bearer " + token, product.getId()).enqueue(
+                new Callback<com.example.nike_fe.data.model.DeleteProductResponse>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<com.example.nike_fe.data.model.DeleteProductResponse> call, 
+                                 Response<com.example.nike_fe.data.model.DeleteProductResponse> response) {
                 layoutLoading.setVisibility(View.GONE);
                 
-                if (response.isSuccessful()) {
-                    Toast.makeText(AdminProductsActivity.this, 
-                            "Đã xóa sản phẩm thành công", Toast.LENGTH_SHORT).show();
-                    loadData(); // Reload all data
+                if (response.isSuccessful() && response.body() != null) {
+                    com.example.nike_fe.data.model.DeleteProductResponse deleteResponse = response.body();
+                    
+                    if (deleteResponse.isSuccess()) {
+                        // Tạo thông báo chi tiết
+                        StringBuilder message = new StringBuilder("Đã xóa sản phẩm thành công");
+                        
+                        if (deleteResponse.getDetails() != null) {
+                            com.example.nike_fe.data.model.DeleteProductResponse.Details details = 
+                                    deleteResponse.getDetails();
+                            
+                            if (details.getCartItemsRemoved() > 0) {
+                                message.append("\n• Đã xóa khỏi ")
+                                       .append(details.getCartItemsRemoved())
+                                       .append(" giỏ hàng");
+                            }
+                            
+                            if (details.getFavoritesRemoved() > 0) {
+                                message.append("\n• Đã xóa khỏi ")
+                                       .append(details.getFavoritesRemoved())
+                                       .append(" danh sách yêu thích");
+                            }
+                            
+                            if (details.isSoftDelete()) {
+                                message.append("\n• Sản phẩm được ẩn do có trong đơn hàng");
+                            }
+                        }
+                        
+                        Toast.makeText(AdminProductsActivity.this, 
+                                message.toString(), Toast.LENGTH_LONG).show();
+                        loadData(); // Reload all data
+                    } else {
+                        Toast.makeText(AdminProductsActivity.this, 
+                                deleteResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(AdminProductsActivity.this, 
                             "Xóa thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -233,7 +295,7 @@ public class AdminProductsActivity extends AppCompatActivity {
             }
             
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<com.example.nike_fe.data.model.DeleteProductResponse> call, Throwable t) {
                 layoutLoading.setVisibility(View.GONE);
                 Log.e(TAG, "Error deleting product", t);
                 Toast.makeText(AdminProductsActivity.this, 

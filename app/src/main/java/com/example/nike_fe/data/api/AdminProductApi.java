@@ -43,7 +43,7 @@ public interface AdminProductApi {
     );
     
     @DELETE("/api/admin/products/{id}")
-    Call<Void> deleteProduct(
+    Call<com.example.nike_fe.data.model.DeleteProductResponse> deleteProduct(
             @Header("Authorization") String token,
             @Path("id") Long id
     );
