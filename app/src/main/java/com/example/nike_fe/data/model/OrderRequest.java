@@ -19,12 +19,16 @@ public class OrderRequest {
     @SerializedName("coupon_code")
     private String couponCode;
     
+    @SerializedName("customer_note")
+    private String customerNote;
+    
     public OrderRequest(String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode) {
         this.receiverName = receiverName;
         this.shippingAddress = shippingAddress;
         this.paymentMethod = paymentMethod;
         this.phone = phone;
         this.couponCode = couponCode;
+        this.customerNote = ""; // Default empty
     }
     
     public String getReceiverName() {
@@ -65,5 +69,13 @@ public class OrderRequest {
     
     public void setCouponCode(String couponCode) {
         this.couponCode = couponCode;
+    }
+    
+    public String getCustomerNote() {
+        return customerNote;
+    }
+    
+    public void setCustomerNote(String customerNote) {
+        this.customerNote = customerNote;
     }
 }

@@ -128,7 +128,6 @@
                     android:id="@+id/tvFullName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nguyễn Văn A"
                     android:textSize="15sp"
                     android:textColor="@color/black"
                     android:layout_marginBottom="8dp" />
@@ -145,7 +144,6 @@
                     android:id="@+id/tvPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0123456789"
                     android:textSize="15sp"
                     android:textColor="@color/black"
                     android:layout_marginBottom="8dp" />
@@ -162,9 +160,28 @@
                     android:id="@+id/tvAddress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="123 Đường ABC, Quận 1, TP.HCM"
                     android:textSize="15sp"
                     android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/tvCustomerNoteLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ghi chú:"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="2dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvCustomerNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="15sp"
+                    android:textColor="@color/black"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -310,6 +327,42 @@
                         android:textStyle="bold"
                         android:textColor="@color/black" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutActionButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="@color/white"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btnReorder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Mua lại"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/btn_rounded_black"
+                    android:paddingVertical="12dp" />
+
+                <Button
+                    android:id="@+id/btnReview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Đánh giá"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:background="@drawable/btn_rounded_outline"
+                    android:paddingVertical="12dp" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

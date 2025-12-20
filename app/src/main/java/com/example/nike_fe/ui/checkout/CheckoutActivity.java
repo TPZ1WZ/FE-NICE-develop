@@ -153,6 +153,7 @@ public class CheckoutActivity extends AppCompatActivity {
         
         // Get district
         String district = etDistrict.getText().toString().trim();
+        String note = etNote.getText().toString().trim();
         
         // Build shipping address: "address, district, city"
         StringBuilder addressBuilder = new StringBuilder(address);
@@ -166,13 +167,14 @@ public class CheckoutActivity extends AppCompatActivity {
         String paymentMethod = rbCOD.isChecked() ? "COD" : "VNPAY";
         
         // Place order with receiver name
-        placeOrder(fullName, shippingAddress, paymentMethod, phone);
+        placeOrder(fullName, shippingAddress, paymentMethod, phone, note);
     }
     
-    private void placeOrder(String receiverName, String shippingAddress, String paymentMethod, String phone) {
+    private void placeOrder(String receiverName, String shippingAddress, String paymentMethod, String phone, String customerNote) {
         showLoading(true);
         
         OrderRequest request = new OrderRequest(receiverName, shippingAddress, paymentMethod, phone, null);
+        request.setCustomerNote(customerNote);
         
         orderApi.createOrder("Bearer " + token, request).enqueue(new Callback<OrderResponse>() {
             @Override

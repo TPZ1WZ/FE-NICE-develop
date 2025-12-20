@@ -13,6 +13,7 @@ public class Order {
     private Double totalAmount;
     private Double totalDiscount;
     private Double finalAmount;
+    private Double shippingFee;
     private Integer quantity;
     private String receiverName;  // Tên người nhận hàng
     private String phone;
@@ -20,6 +21,8 @@ public class Order {
     private String paymentMethod;
     private String shippingAddress;
     private String txnId;
+    private String customerNote;
+    private String adminNote;
     private List<OrderItem> items;
     private String createdAt;
     
@@ -114,6 +117,14 @@ public class Order {
         this.finalAmount = finalAmount;
     }
     
+    public Double getShippingFee() {
+        return shippingFee;
+    }
+    
+    public void setShippingFee(Double shippingFee) {
+        this.shippingFee = shippingFee;
+    }
+    
     public Integer getQuantity() {
         return quantity;
     }
@@ -168,6 +179,22 @@ public class Order {
     
     public void setTxnId(String txnId) {
         this.txnId = txnId;
+    }
+    
+    public String getCustomerNote() {
+        return customerNote;
+    }
+    
+    public void setCustomerNote(String customerNote) {
+        this.customerNote = customerNote;
+    }
+    
+    public String getAdminNote() {
+        return adminNote;
+    }
+    
+    public void setAdminNote(String adminNote) {
+        this.adminNote = adminNote;
     }
     
     public List<OrderItem> getItems() {

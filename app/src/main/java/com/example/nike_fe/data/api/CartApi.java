@@ -40,4 +40,10 @@ public interface CartApi {
             @Path("productId") Long productId,
             @Path("size") String size
     );
+    
+    @POST("/api/v1/carts/reorder/{orderId}")
+    Call<Map<String, Object>> reorderFromOrder(
+            @Header("Authorization") String token,
+            @Path("orderId") Long orderId
+    );
 }

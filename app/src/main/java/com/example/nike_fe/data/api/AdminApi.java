@@ -68,6 +68,13 @@ public interface AdminApi {
         @Query("status") String status
     );
     
+    @PATCH("api/v1/admin/orders/{id}/admin-note")
+    Call<java.util.Map<String, Object>> updateAdminNote(
+        @Header("Authorization") String token,
+        @Path("id") Long orderId,
+        @Body java.util.Map<String, String> request
+    );
+    
     @GET("api/v1/admin/users")
     Call<List<User>> getAllUsers(@Header("Authorization") String token);
     

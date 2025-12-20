@@ -33,6 +33,7 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     private TextView tvOrderId, tvStatus, tvCustomerName, tvPhone, tvAddress;
     private TextView tvPaymentMethod, tvTotalAmount, tvDiscount, tvFinalAmount;
     private TextView tvCreatedAt, tvQuantity;
+    private TextView tvCustomerNote, tvCustomerNoteLabel;
     private RecyclerView recyclerViewItems;
     private ProgressBar progressBar;
     private ScrollView layoutContent;
@@ -80,6 +81,9 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         tvFinalAmount = findViewById(R.id.tvFinalAmount);
         tvCreatedAt = findViewById(R.id.tvCreatedAt);
         tvQuantity = findViewById(R.id.tvQuantity);
+        
+        tvCustomerNote = findViewById(R.id.tvCustomerNote);
+        tvCustomerNoteLabel = findViewById(R.id.tvCustomerNoteLabel);
         
         recyclerViewItems = findViewById(R.id.recyclerViewItems);
         progressBar = findViewById(R.id.progressBar);
@@ -182,6 +186,16 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
                 OrderItemAdapter adapter = new OrderItemAdapter(this, order.getItems());
                 recyclerViewItems.setLayoutManager(new LinearLayoutManager(this));
                 recyclerViewItems.setAdapter(adapter);
+            }
+            
+            // Display customer note if available
+            if (order.getCustomerNote() != null && !order.getCustomerNote().trim().isEmpty()) {
+                tvCustomerNote.setText(order.getCustomerNote());
+                tvCustomerNote.setVisibility(View.VISIBLE);
+                tvCustomerNoteLabel.setVisibility(View.VISIBLE);
+            } else {
+                tvCustomerNote.setVisibility(View.GONE);
+                tvCustomerNoteLabel.setVisibility(View.GONE);
             }
             
             // Show/hide action buttons based on status
