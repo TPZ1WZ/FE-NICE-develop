@@ -180,7 +180,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         if (menuReviews != null) {
             menuReviews.setOnClickListener(v -> {
                 drawerLayout.closeDrawer(GravityCompat.START);
-                Toast.makeText(this, "Tính năng Đánh giá đang phát triển", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, AdminReviewsActivity.class);
+                startActivity(intent);
             });
         }
 

@@ -25,6 +25,12 @@ import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.model.AddToCartRequest;
 import com.example.nike_fe.data.model.ProductDetail;
 import com.example.nike_fe.ui.cart.CartActivity;
+import com.example.nike_fe.adapter.ProductReviewAdapter;
+import com.example.nike_fe.data.api.UserReviewApi;
+import com.example.nike_fe.data.model.Review;
+import com.example.nike_fe.data.model.ReviewSummary;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -48,6 +54,11 @@ public class ProductDetailActivity extends AppCompatActivity {
     private ImageView ivBack, ivFavorite;
     private ProgressBar progressBar;
 
+    // Reviews
+    private RecyclerView rvReviews;
+    private TextView tvRatingSummary;
+    private TextView tvNoReviews;
+
     // Quantity Controls
     private ImageView btnMinus, btnPlus;
     private TextView tvQuantityHolder;
@@ -56,9 +67,11 @@ public class ProductDetailActivity extends AppCompatActivity {
     private ChipGroup chipGroupSizes;
 
     private ImageGalleryAdapter imageAdapter;
+    private ProductReviewAdapter reviewAdapter;
     private ProductApi productApi;
     private CartApi cartApi;
     private FavoriteApi favoriteApi;
+    private UserReviewApi userReviewApi;
     private String token;
     private boolean isFavorite = false;
     private Long productId;
@@ -83,6 +96,57 @@ public class ProductDetailActivity extends AppCompatActivity {
         setupListeners(); // Separated setup
         setupImageGallery();
         loadProductDetail();
+        loadReviews();
+        loadReviewSummary();
+    }
+
+    private void setupReviewList() {
+        rvReviews.setLayoutManager(new LinearLayoutManager(this));
+        reviewAdapter = new ProductReviewAdapter(this, new ArrayList<>());
+        rvReviews.setAdapter(reviewAdapter);
+    }
+
+    private void loadReviews() {
+        userReviewApi.getProductReviews(productId).enqueue(new Callback<List<Review>>() {
+            @Override
+            public void onResponse(Call<List<Review>> call, Response<List<Review>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Review> reviews = response.body();
+                    if (reviews.isEmpty()) {
+                        tvNoReviews.setVisibility(View.VISIBLE);
+                        rvReviews.setVisibility(View.GONE);
+                    } else {
+                        tvNoReviews.setVisibility(View.GONE);
+                        rvReviews.setVisibility(View.VISIBLE);
+                        reviewAdapter.setReviews(reviews);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Review>> call, Throwable t) {
+                // Ignore API failures for reviews to not block UI
+                android.util.Log.e("ProductDetail", "Failed to load reviews", t);
+            }
+        });
+    }
+
+    private void loadReviewSummary() {
+        userReviewApi.getReviewSummary(productId).enqueue(new Callback<ReviewSummary>() {
+            @Override
+            public void onResponse(Call<ReviewSummary> call, Response<ReviewSummary> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ReviewSummary summary = response.body();
+                    tvRatingSummary.setText(String.format(Locale.getDefault(), "%.1f (%d đánh giá)",
+                            summary.getAverageRating(), summary.getTotalReviews()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReviewSummary> call, Throwable t) {
+                // Ignore
+            }
+        });
     }
 
     private void initViews() {
@@ -100,6 +164,13 @@ public class ProductDetailActivity extends AppCompatActivity {
         ivFavorite = findViewById(R.id.ivFavorite);
         progressBar = findViewById(R.id.progressBar);
 
+        // Reviews
+        rvReviews = findViewById(R.id.rvReviews);
+        tvRatingSummary = findViewById(R.id.tvRatingSummary);
+        tvNoReviews = findViewById(R.id.tvNoReviews);
+
+        setupReviewList();
+
         // Quantity Controls
         btnMinus = findViewById(R.id.btnMinus);
         btnPlus = findViewById(R.id.btnPlus);
@@ -110,6 +181,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         productApi = retrofitClient.getProductApi();
         favoriteApi = retrofitClient.getFavoriteApi();
         cartApi = retrofitClient.getCartApi();
+        userReviewApi = retrofitClient.getUserReviewApi();
         String rawToken = retrofitClient.getToken();
         token = (rawToken != null && !rawToken.startsWith("Bearer ")) ? "Bearer " + rawToken : rawToken;
     }
@@ -129,8 +201,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnAddToCart.setOnClickListener(v -> {
             android.util.Log.d("ProductDetail", "🔘 Add to Cart button clicked");
             android.util.Log.d("ProductDetail", "🔐 Token status: " + (token != null ? "Present" : "NULL"));
-            android.util.Log.d("ProductDetail", "📦 Product Detail status: " + (productDetail != null ? "Loaded" : "NULL"));
-            
+            android.util.Log.d("ProductDetail",
+                    "📦 Product Detail status: " + (productDetail != null ? "Loaded" : "NULL"));
+
             if (token == null || token.isEmpty()) {
                 android.util.Log.w("ProductDetail", "⚠️ No token found, redirecting to login");
                 Toast.makeText(this, "Vui lòng đăng nhập để mua hàng", Toast.LENGTH_SHORT).show();
@@ -325,10 +398,13 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         AddToCartRequest request = new AddToCartRequest(actualProductId, quantity, selectedSize);
-        
-        android.util.Log.d("ProductDetail", "🛒 Adding to cart - ProductId: " + actualProductId + ", Quantity: " + quantity + ", Size: " + selectedSize);
-        android.util.Log.d("ProductDetail", "📝 Token: " + (token != null ? "Present (length: " + token.length() + ")" : "NULL"));
-        android.util.Log.d("ProductDetail", "📦 Request Body: productId=" + actualProductId + ", quantity=" + quantity + ", size=" + selectedSize);
+
+        android.util.Log.d("ProductDetail", "🛒 Adding to cart - ProductId: " + actualProductId + ", Quantity: "
+                + quantity + ", Size: " + selectedSize);
+        android.util.Log.d("ProductDetail",
+                "📝 Token: " + (token != null ? "Present (length: " + token.length() + ")" : "NULL"));
+        android.util.Log.d("ProductDetail",
+                "📦 Request Body: productId=" + actualProductId + ", quantity=" + quantity + ", size=" + selectedSize);
 
         // Disable button momentarily
         btnAddToCart.setEnabled(false);
@@ -340,10 +416,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                     Response<java.util.Map<String, String>> response) {
                 btnAddToCart.setEnabled(true);
                 btnAddToCart.setAlpha(1.0f);
-                
+
                 android.util.Log.d("ProductDetail", "📦 Add to cart response: " + response.code());
                 android.util.Log.d("ProductDetail", "🔗 Request URL: " + call.request().url());
-                
+
                 if (response.isSuccessful()) {
                     android.util.Log.d("ProductDetail", "✅ Successfully added to cart");
                     if (response.body() != null) {
@@ -361,11 +437,13 @@ public class ProductDetailActivity extends AppCompatActivity {
                             android.util.Log.e("ProductDetail", "Error body: " + errorBody);
                             Toast.makeText(ProductDetailActivity.this, "Lỗi: " + errorBody, Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(ProductDetailActivity.this, "Thêm vào giỏ thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProductDetailActivity.this, "Thêm vào giỏ thất bại: " + response.code(),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     } catch (Exception e) {
                         android.util.Log.e("ProductDetail", "Error reading error body", e);
-                        Toast.makeText(ProductDetailActivity.this, "Thêm vào giỏ thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProductDetailActivity.this, "Thêm vào giỏ thất bại: " + response.code(),
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
             }

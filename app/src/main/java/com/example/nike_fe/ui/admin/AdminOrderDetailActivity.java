@@ -33,6 +33,7 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     private TextView tvOrderId, tvStatus, tvCustomerName, tvPhone, tvAddress;
     private TextView tvPaymentMethod, tvTotalAmount, tvDiscount, tvFinalAmount;
     private TextView tvCreatedAt, tvQuantity;
+    private TextView tvCustomerNote, tvCustomerNoteLabel;
     private RecyclerView recyclerViewItems;
     private ProgressBar progressBar;
     private ScrollView layoutContent;
@@ -80,6 +81,9 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         tvFinalAmount = findViewById(R.id.tvFinalAmount);
         tvCreatedAt = findViewById(R.id.tvCreatedAt);
         tvQuantity = findViewById(R.id.tvQuantity);
+        
+        tvCustomerNote = findViewById(R.id.tvCustomerNote);
+        tvCustomerNoteLabel = findViewById(R.id.tvCustomerNoteLabel);
         
         recyclerViewItems = findViewById(R.id.recyclerViewItems);
         progressBar = findViewById(R.id.progressBar);
@@ -145,13 +149,30 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
             tvStatus.setText(getStatusText(status));
             tvStatus.setBackgroundResource(getStatusColor(status));
             
-            tvCustomerName.setText(order.getShippingAddress() != null ? order.getShippingAddress() : "N/A");
+            // Hiển thị tên người nhận hàng (không phải tên user account)
+            String receiverName = order.getReceiverName() != null ? order.getReceiverName() : "N/A";
+            
+            // Hiển thị thêm thông tin user account nếu cần
+            String email = order.getEmail() != null ? order.getEmail() : "";
+            if (!email.isEmpty()) {
+                tvCustomerName.setText(receiverName + " (" + email + ")");
+            } else {
+                tvCustomerName.setText(receiverName);
+            }
+            
             tvPhone.setText(order.getPhone() != null ? order.getPhone() : "N/A");
+            
+            // Địa chỉ đã được format: "address, district, city"
             tvAddress.setText(order.getShippingAddress() != null ? order.getShippingAddress() : "N/A");
-            tvPaymentMethod.setText(order.getPaymentMethod() != null ? order.getPaymentMethod() : "N/A");
+            
+            // Hiển thị phương thức thanh toán
+            String paymentMethod = order.getPaymentMethod() != null ? order.getPaymentMethod() : "N/A";
+            tvPaymentMethod.setText(paymentMethod);
+            
             tvCreatedAt.setText(order.getCreatedAt() != null ? order.getCreatedAt() : "N/A");
             tvQuantity.setText(String.valueOf(order.getQuantity() != null ? order.getQuantity() : 0));
             
+            // Hiển thị số tiền
             Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
             Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
             Double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
@@ -165,6 +186,16 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
                 OrderItemAdapter adapter = new OrderItemAdapter(this, order.getItems());
                 recyclerViewItems.setLayoutManager(new LinearLayoutManager(this));
                 recyclerViewItems.setAdapter(adapter);
+            }
+            
+            // Display customer note if available
+            if (order.getCustomerNote() != null && !order.getCustomerNote().trim().isEmpty()) {
+                tvCustomerNote.setText(order.getCustomerNote());
+                tvCustomerNote.setVisibility(View.VISIBLE);
+                tvCustomerNoteLabel.setVisibility(View.VISIBLE);
+            } else {
+                tvCustomerNote.setVisibility(View.GONE);
+                tvCustomerNoteLabel.setVisibility(View.GONE);
             }
             
             // Show/hide action buttons based on status

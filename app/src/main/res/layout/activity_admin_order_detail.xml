@@ -122,7 +122,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Thông tin khách hàng"
+                        android:text="Thông tin đơn hàng"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -140,7 +140,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Nguyễn Văn A"
                         android:textColor="#000000"
                         android:textSize="14sp" />
 
@@ -157,7 +156,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="0123456789"
                         android:textColor="#000000"
                         android:textSize="14sp" />
 
@@ -174,9 +172,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="123 Đường ABC, Quận 1, TP.HCM"
                         android:textColor="#000000"
                         android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvCustomerNoteLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Ghi chú:"
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvCustomerNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text=""
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

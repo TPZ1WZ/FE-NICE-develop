@@ -296,8 +296,16 @@ public class CartActivity extends AppCompatActivity {
 
                             // DO NOT call loadCart() here to avoid stale data
                         } else {
-                            Toast.makeText(CartActivity.this,
-                                    "Lỗi xóa sản phẩm", Toast.LENGTH_SHORT).show();
+                            try {
+                                String errorBody = response.errorBody() != null ? response.errorBody().string()
+                                        : "Unknown error";
+                                android.util.Log.e("CartActivity",
+                                        "Delete failed: " + response.code() + " - " + errorBody);
+                                Toast.makeText(CartActivity.this, "Lỗi: " + response.code() + " - " + errorBody,
+                                        Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                Toast.makeText(CartActivity.this, "Lỗi: " + response.code(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
 

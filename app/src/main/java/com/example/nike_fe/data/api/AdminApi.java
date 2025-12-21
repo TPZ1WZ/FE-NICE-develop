@@ -102,4 +102,54 @@ public interface AdminApi {
                         @Header("Authorization") String token,
                         @Path("id") Long id,
                         @Body User user);
+
+        // Review Management APIs
+        @GET("api/v1/admin/reviews")
+        Call<java.util.Map<String, Object>> getAllReviews(
+                        @Header("Authorization") String token,
+                        @Query("page") int page,
+                        @Query("size") int size,
+                        @Query("status") String status,
+                        @Query("rating") Integer rating,
+                        @Query("productId") Long productId);
+
+        @GET("api/v1/admin/reviews/statistics")
+        Call<java.util.Map<String, Object>> getReviewStatistics(
+                        @Header("Authorization") String token);
+
+        @GET("api/v1/admin/reviews/pending")
+        Call<java.util.List<com.example.nike_fe.data.model.Review>> getPendingReviews(
+                        @Header("Authorization") String token);
+
+        @PATCH("api/v1/admin/reviews/{reviewId}/approve")
+        Call<java.util.Map<String, Object>> approveReview(
+                        @Header("Authorization") String token,
+                        @Path("reviewId") Long reviewId);
+
+        @PUT("api/v1/admin/reviews/{reviewId}/reject")
+        Call<java.util.Map<String, Object>> rejectReview(
+                        @Header("Authorization") String token,
+                        @Path("reviewId") Long reviewId,
+                        @Body java.util.Map<String, String> body);
+
+        @DELETE("api/v1/admin/reviews/{reviewId}")
+        Call<java.util.Map<String, Object>> deleteReview(
+                        @Header("Authorization") String token,
+                        @Path("reviewId") Long reviewId);
+
+        @POST("api/v1/admin/reviews/{reviewId}/admin-reply")
+        Call<java.util.Map<String, Object>> replyToReview(
+                        @Header("Authorization") String token,
+                        @Path("reviewId") Long reviewId,
+                        @Body java.util.Map<String, String> body);
+
+        @POST("api/v1/admin/reviews/bulk-approve")
+        Call<java.util.Map<String, Object>> bulkApproveReviews(
+                        @Header("Authorization") String token,
+                        @Body java.util.Map<String, java.util.List<Long>> body);
+
+        @DELETE("api/v1/admin/reviews/bulk-delete")
+        Call<java.util.Map<String, Object>> bulkDeleteReviews(
+                        @Header("Authorization") String token,
+                        @Body java.util.Map<String, java.util.List<Long>> body);
 }

@@ -166,6 +166,17 @@
         <activity
             android:name=".ui.admin.AdminCouponFormActivity"
             android:exported="false" />
+
+        <!-- AdminReviewsActivity - Admin Review Management -->
+        <activity
+            android:name=".ui.admin.AdminReviewsActivity"
+            android:exported="false"
+            android:label="Quản lý Đánh giá"
+            android:parentActivityName=".ui.admin.AdminDashboardActivity" />
+        <!-- OrderReviewActivity - User Review -->
+        <activity
+            android:name=".ui.order.OrderReviewActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

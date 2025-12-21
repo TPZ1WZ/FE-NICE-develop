@@ -322,21 +322,31 @@ public class CheckoutActivity extends AppCompatActivity {
             etCity.requestFocus();
             return;
         }
-
-        // Build shipping address
-        String shippingAddress = address + ", " + city;
+        
+        // Get district and note
+        String district = etDistrict.getText().toString().trim();
+        String note = etNote.getText().toString().trim();
+        
+        // Build shipping address: "address, district, city"
+        StringBuilder addressBuilder = new StringBuilder(address);
+        if (!district.isEmpty()) {
+            addressBuilder.append(", ").append(district);
+        }
+        addressBuilder.append(", ").append(city);
+        String shippingAddress = addressBuilder.toString();
 
         // Get payment method
         String paymentMethod = rbCOD.isChecked() ? "COD" : "VNPAY";
 
-        // Place order
-        placeOrder(shippingAddress, paymentMethod, phone);
+        // Place order with receiver name, note, and coupon
+        placeOrder(fullName, shippingAddress, paymentMethod, phone, note);
     }
 
-    private void placeOrder(String shippingAddress, String paymentMethod, String phone) {
+    private void placeOrder(String receiverName, String shippingAddress, String paymentMethod, String phone, String customerNote) {
         showLoading(true);
 
-        OrderRequest request = new OrderRequest(shippingAddress, paymentMethod, phone, currentCouponCode);
+        OrderRequest request = new OrderRequest(receiverName, shippingAddress, paymentMethod, phone, currentCouponCode);
+        request.setCustomerNote(customerNote);
 
         orderApi.createOrder("Bearer " + token, request).enqueue(new Callback<OrderResponse>() {
             @Override

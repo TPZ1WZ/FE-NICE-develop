@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * RetrofitClient - Singleton để kết nối với backend NICESTORE-develop
- * Backend URL: http://10.0.2.2:8080/ (Emulator → localhost)
+ * Backend URL: http://10.0.2.2:8080/ (Emulator -> localhost)
  */
 public class RetrofitClient {
     private static final String BASE_URL = "http://10.0.2.2:8080/";
@@ -105,5 +105,13 @@ public class RetrofitClient {
     public void clearToken() {
         SharedPreferences prefs = context.getSharedPreferences("nike_prefs", Context.MODE_PRIVATE);
         prefs.edit().remove("access_token").apply();
+    }
+
+    public UserReviewApi getUserReviewApi() {
+        return retrofit.create(UserReviewApi.class);
+    }
+
+    public UploadApi getUploadApi() {
+        return retrofit.create(UploadApi.class);
     }
 }

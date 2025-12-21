@@ -134,6 +134,7 @@
                         android:layout_marginStart="16dp"/>
                         
                     <TextView
+                         android:id="@+id/tvRatingSummary"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
                          android:text="4.9 (6,573 đánh giá)"
@@ -295,7 +296,58 @@
                     </LinearLayout>
                 </LinearLayout>
 
-            </LinearLayout>
+                </LinearLayout>
+
+                <!-- Reviews Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="32dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Đánh giá sản phẩm"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvSeeAllReviews"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Xem tất cả"
+                            android:textColor="#757575"
+                            android:textSize="14sp"
+                            android:visibility="gone"/>
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"/>
+                    
+                    <TextView
+                        android:id="@+id/tvNoReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chưa có đánh giá nào"
+                        android:gravity="center"
+                        android:padding="20dp"
+                        android:textColor="#757575"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
