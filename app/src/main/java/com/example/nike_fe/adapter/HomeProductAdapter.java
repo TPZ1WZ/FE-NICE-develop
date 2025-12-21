@@ -113,7 +113,6 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
 
         // Grid specific
         TextView tvRating;
-        TextView tvSold;
 
         // List specific
         TextView tvBestSeller;

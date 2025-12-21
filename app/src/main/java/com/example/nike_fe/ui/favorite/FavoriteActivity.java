@@ -122,7 +122,7 @@ public class FavoriteActivity extends AppCompatActivity implements FavoriteAdapt
     @Override
     public void onProductClick(FavoriteProduct product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
-        intent.putExtra("PRODUCT_ID", product.getProductId());
+        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getProductId());
         startActivity(intent);
     }
 

@@ -25,7 +25,7 @@ import com.example.nike_fe.data.model.Category;
 import com.example.nike_fe.data.model.Product;
 import com.example.nike_fe.data.model.User;
 import com.example.nike_fe.ui.auth.LoginActivity;
-import com.example.nike_fe.ui.home.BrandAdapter;
+
 import com.example.nike_fe.ui.home.FilterAdapter;
 import com.example.nike_fe.ui.profile.ProfileActivity;
 import com.example.nike_fe.ui.product.ProductDetailActivity;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private RecyclerView rvBrands, rvFilters, rvProductGrid;
+    private RecyclerView rvFilters, rvProductGrid;
     private TextView tvHeaderName;
     private CircleImageView ivHeaderAvatar;
     private ImageView btnNotification;
@@ -61,6 +61,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BottomNavigationView bottomNavigation;
     private FloatingActionButton fabCart;
 
+    // Search Fields
+    private RecyclerView rvSearchResults;
+    private com.example.nike_fe.adapter.SearchProductAdapter searchAdapter;
+    private View layoutSearchResults;
+    private View layoutMainContent;
+    private List<Product> allProducts = new java.util.ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
@@ -73,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupRecyclerViews();
         setupBottomNavigation();
         setupBottomNavigation();
-        fetchCategories();
         fetchProducts(null);
         loadUserProfile();
     }
@@ -81,9 +87,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initViews() {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        rvBrands = findViewById(R.id.rvBrands);
+
         rvFilters = findViewById(R.id.rvFilters);
         rvProductGrid = findViewById(R.id.rvProductGrid);
+        rvSearchResults = findViewById(R.id.rvSearchResults);
+        layoutSearchResults = findViewById(R.id.layoutSearchResults);
+        layoutMainContent = findViewById(R.id.layoutMainContent);
 
         tvHeaderName = findViewById(R.id.tvHeaderName);
         ivHeaderAvatar = findViewById(R.id.ivHeaderAvatar);
@@ -110,6 +119,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
 
+        // Sort Button Logic (New)
+        View btnSort = findViewById(R.id.btnSort);
+        if (btnSort != null) {
+            btnSort.setOnClickListener(v -> showSortDialog());
+        }
+
         // ... (rest of initViews) ...
         // Note: Search Logic should update currentBrandQuery too?
         // Yes, but for now let's just make sure filter works with brands.
@@ -125,11 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    // Local filtering for search as implemented before...
-                    // Or should we call API? The original code did local filtering on adapter.
-                    if (productAdapter != null) {
-                        productAdapter.filter(s.toString());
-                    }
+                    filterProducts(s.toString());
                 }
 
                 @Override
@@ -137,6 +148,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         }
+
+        // View All Logic
+        TextView tvViewAllSpecial = findViewById(R.id.tvViewAllSpecialOffers);
+        TextView tvViewAllPopular = findViewById(R.id.tvViewAllPopular);
+
+        View.OnClickListener viewAllListener = v -> {
+            Intent intent = new Intent(MainActivity.this, com.example.nike_fe.ui.product.AllProductsActivity.class);
+            startActivity(intent);
+        };
+
+        if (tvViewAllSpecial != null)
+            tvViewAllSpecial.setOnClickListener(viewAllListener);
+        if (tvViewAllPopular != null)
+            tvViewAllPopular.setOnClickListener(viewAllListener);
 
         // Open drawer when clicking avatar
         if (ivHeaderAvatar != null) {
@@ -160,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     startActivity(new Intent(this, com.example.nike_fe.ui.favorite.FavoriteActivity.class));
                     return true;
                 } else if (id == R.id.nav_notifications) {
-                    Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Thông báo", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if (id == R.id.nav_profile) {
                     startActivity(new Intent(this, ProfileActivity.class));
@@ -185,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TextView tvName = headerView.findViewById(R.id.tvUserName);
                 TextView tvEmail = headerView.findViewById(R.id.tvUserEmail);
                 if (tvName != null)
-                    tvName.setText("Guest");
+                    tvName.setText("Khách");
                 if (tvEmail != null)
                     tvEmail.setText("guest@nike.com");
             }
@@ -193,18 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupRecyclerViews() {
-        // 1. Brands
-        BrandAdapter brandAdapter = new BrandAdapter(this, new java.util.ArrayList<>(), category -> {
-            // Update current query
-            currentBrandQuery = category.getName();
-            Toast.makeText(this, "Filter: " + category.getName(), Toast.LENGTH_SHORT).show();
-            fetchProducts(currentBrandQuery, null, null);
-        });
-
-        if (rvBrands != null) {
-            rvBrands.setLayoutManager(new GridLayoutManager(this, 4));
-            rvBrands.setAdapter(brandAdapter);
-        }
+        // 1. Brands - Removed as per user request
 
         // 2. Filters - Load từ API
         List<String> initialFilters = Arrays.asList("All"); // Chỉ có "All" ban đầu
@@ -232,6 +246,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadCategoriesFromApi();
 
         // ... (rest of setupRecyclerViews)
+
+        // 3. Search Results
+        searchAdapter = new com.example.nike_fe.adapter.SearchProductAdapter(this, product -> {
+            Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
+            intent.putExtra("product_id", product.getId());
+            startActivity(intent);
+        });
+        if (rvSearchResults != null) {
+            rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
+            rvSearchResults.setAdapter(searchAdapter);
+        }
     }
 
     /**
@@ -281,6 +306,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Cập nhật danh sách sản phẩm hiển thị
      */
     private void updateProductList(List<Product> products) {
+        // Save for search
+        this.allProducts = new java.util.ArrayList<>(products);
+
         productAdapter = new HomeProductAdapter(MainActivity.this,
                 new HomeProductAdapter.OnProductClickListener() {
                     @Override
@@ -453,42 +481,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                             updateProductList(products);
                         } else {
-                            Toast.makeText(MainActivity.this, "No products found", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<Product>> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, "Error loading products: " + t.getMessage(),
+                        Toast.makeText(MainActivity.this, "Lỗi tải sản phẩm: " + t.getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private void fetchCategories() {
-        RetrofitClient.getInstance(this).getCategoryApi().getCategories().enqueue(new Callback<List<Category>>() {
-            @Override
-            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Category> categories = response.body();
-
-                    BrandAdapter brandAdapter = new BrandAdapter(MainActivity.this, categories, category -> {
-                        // Fetch products by category ID
-                        fetchProductsByCategory(category.getId(), null, null);
-                        Toast.makeText(MainActivity.this, "Lọc theo: " + category.getName(), Toast.LENGTH_SHORT).show();
-                    });
-
-                    if (rvBrands != null) {
-                        rvBrands.setAdapter(brandAdapter);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Category>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Failed to load categories", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void loadUserProfile() {
@@ -573,6 +575,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
     }
 
+    private void filterProducts(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            if (layoutSearchResults != null)
+                layoutSearchResults.setVisibility(View.GONE);
+            if (layoutMainContent != null)
+                layoutMainContent.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (layoutSearchResults != null)
+            layoutSearchResults.setVisibility(View.VISIBLE);
+        if (layoutMainContent != null)
+            layoutMainContent.setVisibility(View.GONE);
+
+        if (allProducts != null) {
+            List<Product> filtered = new java.util.ArrayList<>();
+            String lower = query.toLowerCase().trim();
+            for (Product p : allProducts) {
+                if (p.getName().toLowerCase().contains(lower)) {
+                    filtered.add(p);
+                }
+            }
+            if (searchAdapter != null) {
+                searchAdapter.setProducts(filtered);
+            }
+        }
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -592,12 +622,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_sign_out) {
             showSignOutDialog();
         } else {
-            Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sắp ra mắt", Toast.LENGTH_SHORT).show();
         }
 
         if (drawerLayout != null)
             drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showSortDialog() {
+        String[] options = { "Mới nhất", "Giá tăng dần", "Giá giảm dần", "Tên A-Z", "Đánh giá cao nhất" };
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Sắp xếp theo")
+                .setSingleChoiceItems(options, -1, (dialog, which) -> {
+                    sortProducts(which);
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void sortProducts(int sortOption) {
+        if (allProducts == null || allProducts.isEmpty())
+            return;
+
+        java.util.Collections.sort(allProducts, (p1, p2) -> {
+            switch (sortOption) {
+                case 0: // Mới nhất (Newest) - Mock by ID descending
+                    return Long.compare(p2.getId(), p1.getId());
+                case 1: // Giá tăng dần
+                    return Double.compare(p1.getPrice(), p2.getPrice());
+                case 2: // Giá giảm dần
+                    return Double.compare(p2.getPrice(), p1.getPrice());
+                case 3: // Tên A-Z
+                    return p1.getName().compareToIgnoreCase(p2.getName());
+                case 4: // Đánh giá cao nhất - Mock
+                    return 0; // No rating field yet
+                default:
+                    return 0;
+            }
+        });
+
+        // Re-apply filter if any text in search box
+        android.widget.EditText etSearch = findViewById(R.id.etSearch);
+        if (etSearch != null && etSearch.getText().length() > 0) {
+            filterProducts(etSearch.getText().toString());
+        } else {
+            // Update main list
+            if (productAdapter != null) {
+                productAdapter.setProducts(allProducts);
+            }
+        }
     }
 
     private void showSignOutDialog() {

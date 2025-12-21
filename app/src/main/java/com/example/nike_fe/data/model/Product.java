@@ -10,6 +10,15 @@ public class Product {
     private java.util.List<String> sizes;
     private List<String> images;
     private boolean isFavorite;
+    private Category category;
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
     public boolean isFavorite() {
         return isFavorite;

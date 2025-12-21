@@ -79,6 +79,10 @@
         
         <!-- ProfileActivity - Hồ sơ người dùng -->
         <activity
+            android:name=".ui.product.AllProductsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
         

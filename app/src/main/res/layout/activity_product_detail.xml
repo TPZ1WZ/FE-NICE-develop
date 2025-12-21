@@ -113,18 +113,7 @@
                     android:gravity="center_vertical"
                     android:layout_marginTop="8dp">
                     
-                    <TextView
-                         android:id="@+id/tvSold"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:text="6,378 đã bán"
-                         android:textSize="12sp"
-                         android:textColor="#555555"
-                         android:background="@drawable/bg_sold_badge"
-                         android:paddingStart="8dp"
-                         android:paddingEnd="8dp"
-                         android:paddingTop="4dp"
-                         android:paddingBottom="4dp"/>
+
                          
                     <ImageView
                         android:layout_width="16dp"

@@ -265,9 +265,9 @@ public class CartActivity extends AppCompatActivity {
 
     private void removeCartItem(CartItem item) {
         cartApi.removeItem("Bearer " + token, item.getProduct().getId(), item.getSize())
-                .enqueue(new Callback<Map<String, String>>() {
+                .enqueue(new Callback<CartResponse>() {
                     @Override
-                    public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
+                    public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
                         if (response.isSuccessful()) {
                             Toast.makeText(CartActivity.this, "Đã xóa sản phẩm", Toast.LENGTH_SHORT).show();
 
@@ -293,16 +293,13 @@ public class CartActivity extends AppCompatActivity {
                                     rvCartItems.setVisibility(View.GONE);
                                 }
                             }
-
-                            // DO NOT call loadCart() here to avoid stale data
                         } else {
                             try {
                                 String errorBody = response.errorBody() != null ? response.errorBody().string()
                                         : "Unknown error";
                                 android.util.Log.e("CartActivity",
                                         "Delete failed: " + response.code() + " - " + errorBody);
-                                Toast.makeText(CartActivity.this, "Lỗi: " + response.code() + " - " + errorBody,
-                                        Toast.LENGTH_LONG).show();
+                                Toast.makeText(CartActivity.this, "Lỗi: " + response.code(), Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Toast.makeText(CartActivity.this, "Lỗi: " + response.code(), Toast.LENGTH_SHORT).show();
                             }
@@ -310,7 +307,7 @@ public class CartActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                    public void onFailure(Call<CartResponse> call, Throwable t) {
                         Toast.makeText(CartActivity.this,
                                 "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }

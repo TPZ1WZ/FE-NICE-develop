@@ -21,7 +21,16 @@ import com.example.nike_fe.data.model.OrderStatusDistribution;
 import com.example.nike_fe.ui.auth.LoginActivity;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.nike_fe.adapter.TopProductAdapter;
+import com.example.nike_fe.data.model.TopProduct;
+import com.example.nike_fe.data.model.TopProductsResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,11 +45,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private FrameLayout menuIconContainer;
     private ImageView ivMenu, ivNotifications;
     private TextView tvTotalRevenue, tvTotalOrders, tvTotalUsers, tvProductsInStock, tvProductsOutOfStock;
+    private TextView tvRevenueGrowth, tvOrdersGrowth;
     private TextView tvOrderCompleted, tvOrderConfirmed, tvOrderShipping, tvOrderPending, tvOrderCanceled;
     private LinearLayout menuDashboard, menuProducts, menuOrders, menuUsers, menuCategories, menuReviews, menuCoupons,
             menuSettings, menuLogout;
     private FrameLayout layoutLoading;
     private LinearLayout layoutContent;
+    private RecyclerView rvTopProducts;
+    private TopProductAdapter topProductAdapter;
 
     private AdminApi adminApi;
     private String token;
@@ -53,6 +65,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         initViews();
         loadDashboardStats();
         loadOrderStatusDistribution();
+        loadTopProducts();
     }
 
     private void initViews() {
@@ -66,8 +79,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
             tvTotalUsers = findViewById(R.id.tvTotalUsers);
             tvProductsInStock = findViewById(R.id.tvProductsInStock);
             tvProductsOutOfStock = findViewById(R.id.tvProductsOutOfStock);
+
+            tvRevenueGrowth = findViewById(R.id.tvRevenueGrowth);
+            tvOrdersGrowth = findViewById(R.id.tvOrdersGrowth);
+
             layoutLoading = findViewById(R.id.layoutLoading);
             layoutContent = findViewById(R.id.layoutContent);
+            rvTopProducts = findViewById(R.id.rvTopProducts);
+
+            // ... (rest of initViews is fine, just replacing the block to include new IDs)
+
+            // Setup RecyclerView
+            rvTopProducts.setLayoutManager(new LinearLayoutManager(this));
+            topProductAdapter = new TopProductAdapter(this, new ArrayList<>());
+            rvTopProducts.setAdapter(topProductAdapter);
 
             // Order status TextViews
             tvOrderCompleted = findViewById(R.id.tvOrderCompleted);
@@ -121,9 +146,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     drawerLayout.openDrawer(GravityCompat.START);
                 }
             });
-        } else {
-            Log.e(TAG, "Menu container or drawer layout is null! container: " + menuIconContainer + ", drawerLayout: "
-                    + drawerLayout);
         }
 
         // Also set on ImageView as backup
@@ -260,7 +282,22 @@ public class AdminDashboardActivity extends AppCompatActivity {
         tvProductsInStock.setText(String.valueOf(stats.getProductsInStock()));
         tvProductsOutOfStock.setText("Hết hàng: " + stats.getProductsOutOfStock());
 
+        // Display Growth
+        setGrowthText(tvRevenueGrowth, stats.getRevenueGrowth());
+        setGrowthText(tvOrdersGrowth, stats.getOrdersGrowth());
+
         Log.d(TAG, "Stats displayed successfully");
+    }
+
+    private void setGrowthText(TextView tv, double growth) {
+        if (tv == null)
+            return;
+        String symbol = growth >= 0 ? "+" : "";
+        tv.setText(String.format(Locale.US, "%s%.1f%%", symbol, growth));
+        // Green for positive/zero, Red for negative
+        int color = growth >= 0 ? android.graphics.Color.parseColor("#10B981")
+                : android.graphics.Color.parseColor("#EF4444");
+        tv.setTextColor(color);
     }
 
     private void loadOrderStatusDistribution() {
@@ -295,6 +332,29 @@ public class AdminDashboardActivity extends AppCompatActivity {
         Log.d(TAG, "Order status displayed successfully");
     }
 
+    private void loadTopProducts() {
+        Log.d(TAG, "Loading top products...");
+        adminApi.getTopProducts("Bearer " + token, 5).enqueue(new Callback<TopProductsResponse>() {
+            @Override
+            public void onResponse(Call<TopProductsResponse> call, Response<TopProductsResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<TopProduct> products = response.body().getProducts();
+                    if (products != null) {
+                        Log.d(TAG, "Top products loaded: " + products.size());
+                        topProductAdapter.setData(products);
+                    }
+                } else {
+                    Log.e(TAG, "Error loading top products: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TopProductsResponse> call, Throwable t) {
+                Log.e(TAG, "Failed to load top products", t);
+            }
+        });
+    }
+
     private void logout() {
         RetrofitClient.getInstance(this).clearToken();
         Intent intent = new Intent(this, LoginActivity.class);
@@ -309,7 +369,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         }
     }
 }

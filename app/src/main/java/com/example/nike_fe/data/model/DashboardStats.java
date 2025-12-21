@@ -5,13 +5,13 @@ import com.google.gson.annotations.SerializedName;
 public class DashboardStats {
     @SerializedName("totalRevenue")
     private double totalRevenue;
-    
+
     @SerializedName("totalOrders")
     private int totalOrders;
-    
+
     @SerializedName("totalUsers")
     private int totalUsers;
-    
+
     @SerializedName("totalProducts")
     private int totalProducts;
 
@@ -42,8 +42,19 @@ public class DashboardStats {
         this.totalUsers = totalUsers;
     }
 
+    @SerializedName("revenueGrowth")
+    private double revenueGrowth;
+
+    @SerializedName("ordersGrowth")
+    private double ordersGrowth;
+
+    @SerializedName("usersGrowth")
+    private double usersGrowth;
+
+    @SerializedName("productsOutOfStock")
+    private int productsOutOfStock;
+
     public int getProductsInStock() {
-        // Backend returns totalProducts, we use it as in-stock
         return totalProducts;
     }
 
@@ -52,11 +63,34 @@ public class DashboardStats {
     }
 
     public int getProductsOutOfStock() {
-        // TODO: Backend needs to add this field
-        return 0;
+        return productsOutOfStock;
     }
 
     public void setProductsOutOfStock(int productsOutOfStock) {
-        // Not used for now
+        this.productsOutOfStock = productsOutOfStock;
+    }
+
+    public double getRevenueGrowth() {
+        return revenueGrowth;
+    }
+
+    public void setRevenueGrowth(double revenueGrowth) {
+        this.revenueGrowth = revenueGrowth;
+    }
+
+    public double getOrdersGrowth() {
+        return ordersGrowth;
+    }
+
+    public void setOrdersGrowth(double ordersGrowth) {
+        this.ordersGrowth = ordersGrowth;
+    }
+
+    public double getUsersGrowth() {
+        return usersGrowth;
+    }
+
+    public void setUsersGrowth(double usersGrowth) {
+        this.usersGrowth = usersGrowth;
     }
 }

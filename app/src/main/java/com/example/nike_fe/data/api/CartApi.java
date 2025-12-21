@@ -34,7 +34,7 @@ public interface CartApi {
                         @Body AddToCartRequest request);
 
         @DELETE("/api/v1/carts/remove")
-        Call<Map<String, String>> removeItem(
+        Call<CartResponse> removeItem(
                         @Header("Authorization") String token,
                         @Query("productId") Long productId,
                         @Query("size") String size);

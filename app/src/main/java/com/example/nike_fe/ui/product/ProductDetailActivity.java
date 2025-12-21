@@ -277,14 +277,14 @@ public class ProductDetailActivity extends AppCompatActivity {
                     productDetail = response.body();
                     displayProductDetail();
                 } else {
-                    Toast.makeText(ProductDetailActivity.this, "Error loading product", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProductDetailActivity.this, "Lỗi tải sản phẩm", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ProductDetail> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(ProductDetailActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProductDetailActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -453,7 +453,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 btnAddToCart.setEnabled(true);
                 btnAddToCart.setAlpha(1.0f);
                 android.util.Log.e("ProductDetail", "💥 Add to cart failure", t);
-                Toast.makeText(ProductDetailActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProductDetailActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

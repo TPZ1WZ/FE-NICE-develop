@@ -135,7 +135,57 @@
                             app:tint="@color/white"/>
                     </FrameLayout>
 
+                    <!-- Sort Button -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/btnSort"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Sắp xếp"
+                        android:textColor="@color/black"
+                        app:chipBackgroundColor="@color/white"
+                        app:chipIcon="@drawable/ic_filter"
+                        app:chipIconTint="@color/black"
+                        style="@style/Widget.MaterialComponents.Chip.Action"
+                        android:gravity="center"
+                        />
+
                 </LinearLayout>
+
+                <!-- Search Results Container (Initially Hidden) -->
+                <LinearLayout
+                    android:id="@+id/layoutSearchResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:background="@color/white"
+                    android:paddingTop="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Gợi ý sản phẩm"
+                        android:textColor="#757575"
+                        android:textSize="14sp"
+                        android:paddingHorizontal="16dp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSearchResults"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingBottom="100dp"
+                        android:overScrollMode="never"/>
+                </LinearLayout>
+
+                <!-- Main Home Content Container -->
+                <LinearLayout
+                    android:id="@+id/layoutMainContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                 <!-- Special Offers Header -->
                 <LinearLayout
@@ -156,6 +206,7 @@
                         android:textStyle="bold"/>
 
                     <TextView
+                        android:id="@+id/tvViewAllSpecialOffers"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Xem tất cả"
@@ -213,14 +264,7 @@
                         android:rotation="-15"/>
                 </FrameLayout>
 
-                <!-- Brand Categories -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvBrands"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:paddingHorizontal="8dp"
-                    android:overScrollMode="never"/>
+
 
                 <!-- Most Popular Header -->
                 <LinearLayout
@@ -241,6 +285,7 @@
                         android:textStyle="bold"/>
 
                     <TextView
+                        android:id="@+id/tvViewAllPopular"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Xem tất cả"
@@ -270,6 +315,8 @@
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2"
                     tools:listitem="@layout/item_home_product"/>
+
+                </LinearLayout> <!-- End layoutMainContent -->
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

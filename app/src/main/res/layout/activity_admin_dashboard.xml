@@ -66,7 +66,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="16dp"
-                        android:text="Dashboard Overview"
+                        android:text="Tổng Quan"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/black" />
@@ -118,7 +118,8 @@
                         android:layout_marginBottom="16dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="1dp"
-                        app:strokeWidth="0dp">
+                        app:strokeWidth="0dp"
+                        app:cardBackgroundColor="@color/white">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -130,13 +131,13 @@
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"
                                 android:background="@drawable/circle_background"
-                                android:backgroundTint="#ECFDF5">
+                                android:backgroundTint="#ECFDF5"
+                                android:padding="12dp">
                                 <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_gravity="center"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:src="@drawable/ic_menu"
-                                    android:tint="#10B981" />
+                                    app:tint="#10B981" />
                             </FrameLayout>
 
                             <LinearLayout
@@ -173,15 +174,10 @@
                                 android:background="@drawable/circle_background"
                                 android:backgroundTint="#ECFDF5">
                                 <TextView
+                                    android:id="@+id/tvRevenueGrowth"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="â†—"
-                                    android:textSize="12sp"
-                                    android:textColor="#10B981" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text=" +12.5%"
+                                    android:text="+0%"
                                     android:textSize="11sp"
                                     android:textStyle="bold"
                                     android:textColor="#10B981"
@@ -197,7 +193,8 @@
                         android:layout_marginBottom="16dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="1dp"
-                        app:strokeWidth="0dp">
+                        app:strokeWidth="0dp"
+                        app:cardBackgroundColor="@color/white">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -209,13 +206,13 @@
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"
                                 android:background="@drawable/circle_background"
-                                android:backgroundTint="#EFF6FF">
+                                android:backgroundTint="#EFF6FF"
+                                android:padding="12dp">
                                 <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_gravity="center"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:src="@drawable/ic_shopping_bag"
-                                    android:tint="#3B82F6" />
+                                    app:tint="#3B82F6" />
                             </FrameLayout>
 
                             <LinearLayout
@@ -252,15 +249,10 @@
                                 android:background="@drawable/circle_background"
                                 android:backgroundTint="#EFF6FF">
                                 <TextView
+                                    android:id="@+id/tvOrdersGrowth"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="â†—"
-                                    android:textSize="12sp"
-                                    android:textColor="#3B82F6" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text=" +5.2%"
+                                    android:text="+0%"
                                     android:textSize="11sp"
                                     android:textStyle="bold"
                                     android:textColor="#3B82F6"
@@ -276,7 +268,8 @@
                         android:layout_marginBottom="16dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="1dp"
-                        app:strokeWidth="0dp">
+                        app:strokeWidth="0dp"
+                        app:cardBackgroundColor="@color/white">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -333,7 +326,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="â†—"
+                                    android:text="↗"
                                     android:textSize="12sp"
                                     android:textColor="#8B5CF6" />
                                 <TextView
@@ -385,7 +378,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Sáº£n Pháº©m Tá»“n Kho"
+                                    android:text="Sản Phẩm Tồn Kho"
                                     android:textSize="13sp"
                                     android:textColor="@color/gray_600" />
 
@@ -403,7 +396,7 @@
                                     android:id="@+id/tvProductsOutOfStock"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Háº¿t hÃ ng: 3"
+                                    android:text="Hết hàng: 3"
                                     android:textSize="12sp"
                                     android:textColor="@color/gray_500"
                                     android:layout_marginTop="4dp" />
@@ -420,7 +413,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="â†˜"
+                                    android:text="↘"
                                     android:textSize="12sp"
                                     android:textColor="#EF4444" />
                                 <TextView
@@ -961,228 +954,13 @@
                                 android:gravity="end" />
                         </LinearLayout>
 
-                        <!-- Product 1 -->
-                        <LinearLayout
+                        <!-- RecyclerView for Top Products -->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvTopProducts"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingVertical="10dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="2"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical">
-
-                                <View
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:background="@drawable/circle_gray_background" />
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_marginStart="10dp"
-                                    android:text="Nike Air Max 90"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:maxLines="1"
-                                    android:ellipsize="end" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="AM-90-001"
-                                android:textSize="11sp"
-                                android:textColor="@color/gray_600"
-                                android:gravity="center" />
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="120"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
-                                android:gravity="end" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/gray_200" />
-
-                        <!-- Product 2 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingVertical="10dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="2"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical">
-
-                                <View
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:background="@drawable/circle_gray_background" />
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_marginStart="10dp"
-                                    android:text="Nike Air Force 1"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:maxLines="1"
-                                    android:ellipsize="end" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="AF1-07-W"
-                                android:textSize="11sp"
-                                android:textColor="@color/gray_600"
-                                android:gravity="center" />
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="95"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
-                                android:gravity="end" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/gray_200" />
-
-                        <!-- Product 3 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingVertical="10dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="2"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical">
-
-                                <View
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:background="@drawable/circle_gray_background" />
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_marginStart="10dp"
-                                    android:text="Jordan 1 High OG"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:maxLines="1"
-                                    android:ellipsize="end" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="JD1-H-RED"
-                                android:textSize="11sp"
-                                android:textColor="@color/gray_600"
-                                android:gravity="center" />
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="45"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
-                                android:gravity="end" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/gray_200" />
-
-                        <!-- Product 4 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingVertical="10dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="2"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical">
-
-                                <View
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:background="@drawable/circle_gray_background" />
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_marginStart="10dp"
-                                    android:text="Nike Pegasus 40"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:maxLines="1"
-                                    android:ellipsize="end" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="PEG-40-RUN"
-                                android:textSize="11sp"
-                                android:textColor="@color/gray_600"
-                                android:gravity="center" />
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="32"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
-                                android:gravity="end" />
-                        </LinearLayout>
+                            android:nestedScrollingEnabled="false"
+                            android:overScrollMode="never" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -1261,7 +1039,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Dashboard"
+                            android:text="Tổng quan"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="@color/black"
