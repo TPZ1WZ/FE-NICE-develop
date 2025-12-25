@@ -31,7 +31,7 @@ import retrofit2.Response;
 public class AdminOrderDetailActivity extends AppCompatActivity {
     
     private TextView tvOrderId, tvStatus, tvCustomerName, tvPhone, tvAddress;
-    private TextView tvPaymentMethod, tvTotalAmount, tvDiscount, tvFinalAmount;
+    private TextView tvPaymentMethod, tvTotalAmount, tvDiscount, tvShippingFee, tvFinalAmount;
     private TextView tvCreatedAt, tvQuantity;
     private TextView tvCustomerNote, tvCustomerNoteLabel;
     private RecyclerView recyclerViewItems;
@@ -78,6 +78,7 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         tvPaymentMethod = findViewById(R.id.tvPaymentMethod);
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
         tvDiscount = findViewById(R.id.tvDiscount);
+        tvShippingFee = findViewById(R.id.tvShippingFee);
         tvFinalAmount = findViewById(R.id.tvFinalAmount);
         tvCreatedAt = findViewById(R.id.tvCreatedAt);
         tvQuantity = findViewById(R.id.tvQuantity);
@@ -175,10 +176,12 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
             // Hiển thị số tiền
             Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
             Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+            Double shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0.0;
             Double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
             
             tvTotalAmount.setText(currencyFormat.format(totalAmount));
             tvDiscount.setText(currencyFormat.format(totalDiscount));
+            tvShippingFee.setText(currencyFormat.format(shippingFee));
             tvFinalAmount.setText(currencyFormat.format(finalAmount));
             
             // Setup RecyclerView for order items

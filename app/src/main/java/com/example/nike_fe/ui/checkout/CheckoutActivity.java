@@ -42,7 +42,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private TextInputEditText etFullName, etPhone, etAddress, etCity, etDistrict, etNote;
     private RadioGroup rgPaymentMethod;
     private RadioButton rbCOD, rbVNPay;
-    private TextView tvSubtotal, tvShippingFee, tvTotal;
+    private TextView tvSubtotal, tvDiscount, tvShippingFee, tvTotal;
     private Button btnConfirmOrder;
     private FrameLayout layoutLoading;
     private NestedScrollView layoutCheckoutContent;
@@ -77,6 +77,7 @@ public class CheckoutActivity extends AppCompatActivity {
         rbCOD = findViewById(R.id.rbCOD);
         rbVNPay = findViewById(R.id.rbVNPay);
         tvSubtotal = findViewById(R.id.tvSubtotal);
+        tvDiscount = findViewById(R.id.tvDiscount);
         tvShippingFee = findViewById(R.id.tvShippingFee);
         tvTotal = findViewById(R.id.tvTotal);
         btnConfirmOrder = findViewById(R.id.btnConfirmOrder);
@@ -277,6 +278,7 @@ public class CheckoutActivity extends AppCompatActivity {
         NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
 
         tvSubtotal.setText(formatter.format(subtotal) + " ₫");
+        tvDiscount.setText(formatter.format(currentDiscountAmount) + " ₫");
         tvShippingFee.setText(formatter.format(SHIPPING_FEE) + " ₫");
 
         // Show discount if applied (maybe add a row for it in layout later, for now

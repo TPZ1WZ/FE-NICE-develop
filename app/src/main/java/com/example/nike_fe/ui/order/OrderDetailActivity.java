@@ -40,7 +40,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private ImageView ivBack;
     private TextView tvOrderId, tvOrderDate, tvOrderStatus;
     private TextView tvFullName, tvPhone, tvAddress;
-    private TextView tvPaymentMethod, tvSubtotal, tvShipping, tvTotal;
+    private TextView tvPaymentMethod, tvSubtotal, tvDiscount, tvShipping, tvTotal;
     private TextView tvCustomerNote, tvCustomerNoteLabel;
     private RecyclerView rvOrderItems;
     private FrameLayout layoutLoading;
@@ -81,6 +81,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvAddress = findViewById(R.id.tvAddress);
         tvPaymentMethod = findViewById(R.id.tvPaymentMethod);
         tvSubtotal = findViewById(R.id.tvSubtotal);
+        tvDiscount = findViewById(R.id.tvDiscount);
         tvShipping = findViewById(R.id.tvShipping);
         tvTotal = findViewById(R.id.tvTotal);
         tvCustomerNote = findViewById(R.id.tvCustomerNote);
@@ -187,6 +188,10 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         // Pricing
         tvSubtotal.setText(formatPrice(order.getTotalAmount()));
+
+        // Discount
+        Double discount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+        tvDiscount.setText(formatPrice(discount));
 
         // Shipping fee
         Double shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0.0;

@@ -136,14 +136,17 @@
         </LinearLayout>
 
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitReview"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Gửi đánh giá"
             android:layout_marginTop="12dp"
-            android:backgroundTint="@color/black"
-            android:textColor="@color/white"/>
+            android:backgroundTint="#000000"
+            android:textAllCaps="false"
+            app:cornerRadius="20dp"
+            android:textColor="#FFFFFF"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -11,7 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.nike_fe.R;
+import android.widget.Button;
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import com.example.nike_fe.data.model.Order;
+import com.example.nike_fe.data.model.OrderItem;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -21,73 +25,122 @@ import java.util.List;
 import java.util.Locale;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
-    
+
     private Context context;
     private List<Order> orderList;
     private OnOrderClickListener listener;
-    
+
     public interface OnOrderClickListener {
         void onOrderClick(Order order);
+
+        void onBuyAgainClick(Order order);
+
+        void onReviewClick(Order order);
     }
-    
+
     public OrderAdapter(Context context, List<Order> orderList, OnOrderClickListener listener) {
         this.context = context;
         this.orderList = orderList;
         this.listener = listener;
     }
-    
+
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_order, parent, false);
         return new OrderViewHolder(view);
     }
-    
+
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
-        
-        holder.tvOrderId.setText("Đơn hàng #" + order.getId());
-        holder.tvOrderDate.setText(formatDate(order.getCreatedAt()));
+
+        // Handle Product Info from first item
+        if (order.getItems() != null && !order.getItems().isEmpty()) {
+            OrderItem firstItem = order.getItems().get(0);
+
+            // Hiển thị tên sản phẩm đầu tiên và số sản phẩm còn lại
+            int totalItems = order.getItems().size();
+            if (totalItems > 1) {
+                holder.tvProductName.setText(firstItem.getProductName() + " (+" + (totalItems - 1) + " sản phẩm)");
+            } else {
+                holder.tvProductName.setText(firstItem.getProductName());
+            }
+
+            // Hiển thị thông tin size và tổng số lượng của đơn hàng
+            String size = firstItem.getSize() != null ? firstItem.getSize() : "--";
+            int totalQty = order.getQuantity() != null ? order.getQuantity() : 0;
+            holder.tvProductDetails.setText("Size = " + size + " | Số lương = " + totalQty);
+
+            // Image
+            String imageUrl = firstItem.getFirstImage();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(context)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_image_placeholder)
+                        .error(R.drawable.ic_image_placeholder)
+                        .into(holder.ivProductImage);
+            } else {
+                holder.ivProductImage.setImageResource(R.drawable.ic_image_placeholder);
+            }
+        } else {
+            holder.tvProductName.setText("Đơn hàng #" + order.getId());
+            holder.tvProductDetails.setText("Không có sản phẩm");
+            holder.ivProductImage.setImageResource(R.drawable.ic_image_placeholder);
+        }
+
+        // Hiển thị tổng tiền cuối cùng (đã bao gồm giảm giá và phí ship)
         holder.tvOrderTotal.setText(formatPrice(order.getFinalAmount()));
-        holder.tvOrderQuantity.setText(order.getQuantity() + " sản phẩm");
-        
+
         // Status
         String status = order.getStatus();
         holder.tvOrderStatus.setText(getStatusText(status));
-        holder.tvOrderStatus.setTextColor(getStatusColor(status));
-        
-        // Payment method
-        String paymentMethod = order.getPaymentMethod();
-        if ("COD".equalsIgnoreCase(paymentMethod)) {
-            holder.tvPaymentMethod.setText("COD");
-        } else if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
-            holder.tvPaymentMethod.setText("VNPay");
-        } else {
-            holder.tvPaymentMethod.setText(paymentMethod);
-        }
-        
+
+        // Handle Action Buttons visibility
+        boolean showButtons = isOrderCompleted(status);
+        holder.layoutActionButtons.setVisibility(showButtons ? View.VISIBLE : View.GONE);
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onOrderClick(order);
             }
         });
+
+        holder.btnBuyAgain.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onBuyAgainClick(order);
+            }
+        });
+
+        holder.btnLeaveReview.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onReviewClick(order);
+            }
+        });
     }
-    
+
     @Override
     public int getItemCount() {
         return orderList.size();
     }
-    
+
+    private boolean isOrderCompleted(String status) {
+        if (status == null)
+            return false;
+        String s = status.toUpperCase();
+        return s.equals("COMPLETED") || s.equals("DELIVERED") || s.equals("CANCELLED");
+    }
+
     private String formatPrice(Double price) {
-        if (price == null) return "0 ₫";
+        if (price == null)
+            return "0 ₫";
         NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
         return formatter.format(price) + " ₫";
     }
-    
+
     private String formatDate(String dateStr) {
-        if (dateStr == null) return "";
-        
+        if (dateStr == null)
+            return "";
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
@@ -97,10 +150,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             return dateStr;
         }
     }
-    
+
     private String getStatusText(String status) {
-        if (status == null) return "Không xác định";
-        
+        if (status == null)
+            return "Không xác định";
         switch (status.toUpperCase()) {
             case "PENDING":
                 return "Chờ xác nhận";
@@ -113,46 +166,30 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             case "DELIVERED":
                 return "Đã giao hàng";
             case "COMPLETED":
-                return "Hoàn thành";
+                return "Hoàn tất";
             case "CANCELLED":
                 return "Đã hủy";
             default:
                 return status;
         }
     }
-    
-    private int getStatusColor(String status) {
-        if (status == null) return Color.parseColor("#6B7280");
-        
-        switch (status.toUpperCase()) {
-            case "PENDING":
-                return Color.parseColor("#F59E0B"); // Orange
-            case "CONFIRMED":
-            case "PROCESSING":
-                return Color.parseColor("#3B82F6"); // Blue
-            case "SHIPPING":
-                return Color.parseColor("#8B5CF6"); // Purple
-            case "DELIVERED":
-            case "COMPLETED":
-                return Color.parseColor("#10B981"); // Green
-            case "CANCELLED":
-                return Color.parseColor("#EF4444"); // Red
-            default:
-                return Color.parseColor("#6B7280"); // Gray
-        }
-    }
-    
+
     static class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvOrderId, tvOrderDate, tvOrderStatus, tvOrderTotal, tvOrderQuantity, tvPaymentMethod;
-        
+        ImageView ivProductImage;
+        TextView tvProductName, tvProductDetails, tvOrderStatus, tvOrderTotal;
+        Button btnBuyAgain, btnLeaveReview;
+        View layoutActionButtons;
+
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvOrderId = itemView.findViewById(R.id.tvOrderId);
-            tvOrderDate = itemView.findViewById(R.id.tvOrderDate);
+            ivProductImage = itemView.findViewById(R.id.ivProductImage);
+            tvProductName = itemView.findViewById(R.id.tvProductName);
+            tvProductDetails = itemView.findViewById(R.id.tvProductDetails);
             tvOrderStatus = itemView.findViewById(R.id.tvOrderStatus);
             tvOrderTotal = itemView.findViewById(R.id.tvOrderTotal);
-            tvOrderQuantity = itemView.findViewById(R.id.tvOrderQuantity);
-            tvPaymentMethod = itemView.findViewById(R.id.tvPaymentMethod);
+            layoutActionButtons = itemView.findViewById(R.id.layoutActionButtons);
+            btnBuyAgain = itemView.findViewById(R.id.btnBuyAgain);
+            btnLeaveReview = itemView.findViewById(R.id.btnLeaveReview);
         }
     }
 }
