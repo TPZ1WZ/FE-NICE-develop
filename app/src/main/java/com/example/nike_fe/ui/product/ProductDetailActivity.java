@@ -3,7 +3,6 @@ package com.example.nike_fe.ui.product;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -24,7 +23,6 @@ import com.example.nike_fe.data.api.ProductApi;
 import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.model.AddToCartRequest;
 import com.example.nike_fe.data.model.ProductDetail;
-import com.example.nike_fe.ui.cart.CartActivity;
 import com.example.nike_fe.adapter.ProductReviewAdapter;
 import com.example.nike_fe.data.api.UserReviewApi;
 import com.example.nike_fe.data.model.Review;
@@ -50,6 +48,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private LinearLayout llImageIndicator;
     private TextView tvProductName, tvPrice;
     private TextView tvDescription, tvTotalPrice;
+    private TextView tvStock;  // Hiển thị số lượng tồn kho
     private View btnAddToCart; // Changed to View/LinearLayout
     private ImageView ivBack, ivFavorite;
     private ProgressBar progressBar;
@@ -153,11 +152,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         vpProductImages = findViewById(R.id.vpProductImages);
         llImageIndicator = findViewById(R.id.llImageIndicator);
         tvProductName = findViewById(R.id.tvProductName);
-        // tvProductSubtitle removed in new design or not strictly needed to bind if
-        // mocked
         tvPrice = findViewById(R.id.tvPrice); // Unit price (hidden or used for calc)
         tvTotalPrice = findViewById(R.id.tvTotalPrice); // Displayed at bottom
         tvDescription = findViewById(R.id.tvDescription);
+        tvStock = findViewById(R.id.tvStock); // Số lượng tồn kho
         btnAddToCart = findViewById(R.id.btnAddToCart);
         chipGroupSizes = findViewById(R.id.chipGroupSizes);
         ivBack = findViewById(R.id.ivBack);
@@ -215,6 +213,21 @@ public class ProductDetailActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng đợi sản phẩm tải xong", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // Kiểm tra đã chọn size chưa
+            int selectedChipId = chipGroupSizes.getCheckedChipId();
+            if (selectedChipId == -1) {
+                Toast.makeText(this, "Vui lòng chọn kích cỡ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Check stock logic before adding
+            if (productDetail.getStock() != null && quantity > productDetail.getStock()) {
+                Toast.makeText(this, "Số lượng trong kho không đủ (còn: " + productDetail.getStock() + ")",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             addToCart();
         });
 
@@ -227,9 +240,19 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         btnPlus.setOnClickListener(v -> {
-            // Optional: Check stock limit
-            quantity++;
-            updateQuantityAndPrice();
+            // Check stock limit
+            if (productDetail != null && productDetail.getStock() != null) {
+                if (quantity < productDetail.getStock()) {
+                    quantity++;
+                    updateQuantityAndPrice();
+                } else {
+                    Toast.makeText(this, "Đã đạt giới hạn tồn kho: " + productDetail.getStock(), Toast.LENGTH_SHORT)
+                            .show();
+                }
+            } else {
+                quantity++;
+                updateQuantityAndPrice();
+            }
         });
     }
 
@@ -238,11 +261,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (productDetail != null) {
             double total = productDetail.getPrice() * quantity;
             NumberFormat formatter = NumberFormat.getInstance(Locale.US);
-            // Assuming currency is USD for design match, or allow Locale based
-            // For now, matching the design "$105.00" style if possible, or keeping VND if
-            // backend is VND
-            // Design shows dollar sign, but existing code used VND. Let's stick to
-            // formatted price.
             if (total > 10000) { // Likely VND
                 NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
                 tvTotalPrice.setText(vnFormat.format(total) + "₫");
@@ -290,9 +308,48 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void displayProductDetail() {
+        // Hiển thị tên sản phẩm
         tvProductName.setText(productDetail.getName());
 
-        // Format price
+        // Hiển thị số lượng tồn kho
+        if (productDetail.getStock() != null) {
+            if (productDetail.getStock() <= 0) {
+                tvStock.setText("HẾT HÀNG");
+                tvStock.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                // Vô hiệu hóa nút thêm vào giỏ
+                btnAddToCart.setEnabled(false);
+                btnAddToCart.setAlpha(0.5f);
+                
+                // Hiển thị giá với trạng thái hết hàng
+                if (tvPrice != null) {
+                    tvPrice.setText("HẾT HÀNG");
+                    tvPrice.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                }
+            } else {
+                // Hiển thị số lượng còn lại
+                tvStock.setText("Còn lại: " + productDetail.getStock() + " sản phẩm");
+                
+                // Đổi màu dựa trên số lượng
+                if (productDetail.getStock() <= 5) {
+                    tvStock.setTextColor(getResources().getColor(android.R.color.holo_orange_dark));
+                } else {
+                    tvStock.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                }
+                
+                // Hiển thị giá bình thường
+                if (tvPrice != null) {
+                    NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+                    String priceStr = vnFormat.format(productDetail.getPrice()) + "₫";
+                    tvPrice.setText(priceStr);
+                    tvPrice.setTextColor(getResources().getColor(android.R.color.black));
+                }
+            }
+        } else {
+            // Không có thông tin tồn kho
+            tvStock.setText("Liên hệ");
+            tvStock.setTextColor(getResources().getColor(android.R.color.darker_gray));
+        }
+
         updateQuantityAndPrice(); // Init price view
 
         if (productDetail.getDescription() != null && !productDetail.getDescription().isEmpty()) {
@@ -314,7 +371,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         chipGroupSizes.removeAllViews();
         List<String> sizes = productDetail.getSizes();
         if (sizes == null || sizes.isEmpty()) {
+            // Fallback: Size mặc định nếu API không trả về
             sizes = new ArrayList<>();
+            sizes.add("39");
             sizes.add("40");
             sizes.add("41");
             sizes.add("42");
@@ -347,12 +406,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         chip.setChipCornerRadius(cornerRadiusPx);
 
         // Stroke
-        chip.setChipStrokeWidth((int) dpToPx(1));
+        chip.setChipStrokeWidth((int) dpToPx(1.5f));
         chip.setChipStrokeColor(
                 android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E0E0E0")));
 
-        // Layout: 45dp x 45dp
-        int sizePx = (int) dpToPx(45);
+        // Layout: 50dp x 50dp (tăng kích thước để dễ nhấn hơn)
+        int sizePx = (int) dpToPx(50);
         ChipGroup.LayoutParams params = new ChipGroup.LayoutParams(sizePx, sizePx);
         chip.setLayoutParams(params);
 
@@ -373,7 +432,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         chipGroupSizes.addView(chip);
     }
 
-    private float dpToPx(int dp) {
+    private float dpToPx(float dp) {
         return dp * getResources().getDisplayMetrics().density;
     }
 

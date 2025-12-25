@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView tvHeaderName;
     private CircleImageView ivHeaderAvatar;
     private ImageView btnNotification;
+    private TextView tvNotificationBadge; // New Badge TextView
     private User currentUser;
     private HomeProductAdapter productAdapter; // Promoted to class level
     private FilterAdapter filterAdapter; // Để cập nhật brands động
@@ -79,9 +80,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNavigationDrawer();
         setupRecyclerViews();
         setupBottomNavigation();
-        setupBottomNavigation();
+        // setupBottomNavigation(); // Duplicate remove
         fetchProducts(null);
         loadUserProfile();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUnreadCount();
+        loadUserProfile(); // Refresh profile if needed
     }
 
     private void initViews() {
@@ -97,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvHeaderName = findViewById(R.id.tvHeaderName);
         ivHeaderAvatar = findViewById(R.id.ivHeaderAvatar);
         btnNotification = findViewById(R.id.btnNotification);
+        tvNotificationBadge = findViewById(R.id.tvNotificationBadge); // Init Badge
 
         // Notification button click
         btnNotification.setOnClickListener(v -> {
@@ -469,7 +478,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Log querying for debug
         Log.d("MainActivity", "Fetching products for: " + brandQuery + ", Price: " + minPrice + "-" + maxPrice);
 
-        RetrofitClient.getInstance(this).getProductApi().getProducts(brandQuery, minPrice, maxPrice)
+        RetrofitClient.getInstance(this).getProductApi()
+                .getProducts(brandQuery == null ? "" : brandQuery, minPrice, maxPrice)
                 .enqueue(new Callback<List<Product>>() {
                     @Override
                     public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
@@ -673,6 +683,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 productAdapter.setProducts(allProducts);
             }
         }
+    }
+
+    private void updateUnreadCount() {
+        String token = RetrofitClient.getInstance(this).getToken();
+        if (token == null) {
+            if (tvNotificationBadge != null)
+                tvNotificationBadge.setVisibility(View.GONE);
+            return;
+        }
+
+        RetrofitClient.getInstance(this).getNotificationApi().getUnreadCount()
+                .enqueue(new Callback<com.example.nike_fe.data.model.UnreadCountResponse>() {
+                    @Override
+                    public void onResponse(Call<com.example.nike_fe.data.model.UnreadCountResponse> call,
+                            Response<com.example.nike_fe.data.model.UnreadCountResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            long count = response.body().getCount();
+                            if (tvNotificationBadge != null) {
+                                if (count > 0) {
+                                    tvNotificationBadge.setText(String.valueOf(count));
+                                    tvNotificationBadge.setVisibility(View.VISIBLE);
+                                } else {
+                                    tvNotificationBadge.setVisibility(View.GONE);
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<com.example.nike_fe.data.model.UnreadCountResponse> call, Throwable t) {
+                        // Ignore error, just hide badge
+                        if (tvNotificationBadge != null)
+                            tvNotificationBadge.setVisibility(View.GONE);
+                    }
+                });
     }
 
     private void showSignOutDialog() {

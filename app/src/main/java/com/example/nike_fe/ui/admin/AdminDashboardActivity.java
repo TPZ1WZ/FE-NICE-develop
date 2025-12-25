@@ -218,7 +218,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         if (menuSettings != null) {
             menuSettings.setOnClickListener(v -> {
                 drawerLayout.closeDrawer(GravityCompat.START);
-                Toast.makeText(this, "Tính năng Cài đặt đang phát triển", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, AdminSettingsActivity.class);
+                startActivity(intent);
             });
         }
 

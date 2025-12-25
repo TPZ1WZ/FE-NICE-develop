@@ -92,6 +92,10 @@ public class RetrofitClient {
         return retrofit.create(CategoryApi.class);
     }
 
+    public NotificationApi getNotificationApi() {
+        return retrofit.create(NotificationApi.class);
+    }
+
     public void saveToken(String token) {
         SharedPreferences prefs = context.getSharedPreferences("nike_prefs", Context.MODE_PRIVATE);
         prefs.edit().putString("access_token", token).apply();

@@ -152,4 +152,19 @@ public interface AdminApi {
         Call<java.util.Map<String, Object>> bulkDeleteReviews(
                         @Header("Authorization") String token,
                         @Body java.util.Map<String, java.util.List<Long>> body);
+
+        // Settings APIs
+        @POST("/auth/change-password")
+        Call<String> changePassword(
+                        @Header("Authorization") String token,
+                        @Body com.example.nike_fe.data.model.ChangePasswordRequest request);
+
+        @GET("/api/admin/settings")
+        Call<com.example.nike_fe.data.model.StoreSettings> getStoreSettings(
+                        @Header("Authorization") String token);
+
+        @PUT("/api/admin/settings")
+        Call<com.example.nike_fe.data.model.StoreSettings> updateStoreSettings(
+                        @Header("Authorization") String token,
+                        @Body com.example.nike_fe.data.model.StoreSettings settings);
 }

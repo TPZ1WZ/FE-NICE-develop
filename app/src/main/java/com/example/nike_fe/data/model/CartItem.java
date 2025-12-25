@@ -13,8 +13,8 @@ public class CartItem {
     public CartItem() {
     }
 
-    public CartItem(Long id, ProductInCart product, Integer quantity, String size, 
-                   Double productPrice, Double totalPrice) {
+    public CartItem(Long id, ProductInCart product, Integer quantity, String size,
+            Double productPrice, Double totalPrice) {
         this.id = id;
         this.product = product;
         this.quantity = quantity;
@@ -78,19 +78,21 @@ public class CartItem {
         private String subTitle;
         private String description;
         private Double price;
+        private Integer stock;
         private List<String> images;
 
         public ProductInCart() {
         }
 
-        public ProductInCart(Long id, String name, String slug, String subTitle, 
-                           String description, Double price, List<String> images) {
+        public ProductInCart(Long id, String name, String slug, String subTitle,
+                String description, Double price, Integer stock, List<String> images) {
             this.id = id;
             this.name = name;
             this.slug = slug;
             this.subTitle = subTitle;
             this.description = description;
             this.price = price;
+            this.stock = stock;
             this.images = images;
         }
 
@@ -140,6 +142,14 @@ public class CartItem {
 
         public void setPrice(Double price) {
             this.price = price;
+        }
+
+        public Integer getStock() {
+            return stock;
+        }
+
+        public void setStock(Integer stock) {
+            this.stock = stock;
         }
 
         public List<String> getImages() {

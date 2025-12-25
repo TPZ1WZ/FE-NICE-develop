@@ -23,7 +23,7 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
 
     private RangeSlider sliderPrice;
     private TextView tvMinPrice, tvMaxPrice;
-    private ChipGroup cgSize, cgGender, cgRating, cgSort;
+    private ChipGroup cgSize, cgSort;
     private Button btnReset, btnApply;
 
     public FilterBottomSheetFragment() {
@@ -45,8 +45,6 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
         tvMaxPrice = view.findViewById(R.id.tvMaxPrice);
 
         cgSize = view.findViewById(R.id.cgSize);
-        cgGender = view.findViewById(R.id.cgGender);
-        cgRating = view.findViewById(R.id.cgRating);
         cgSort = view.findViewById(R.id.cgSort);
 
         btnReset = view.findViewById(R.id.btnReset);
@@ -90,10 +88,6 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
         btnReset.setOnClickListener(v -> {
             if (cgSize != null)
                 cgSize.clearCheck();
-            if (cgGender != null)
-                cgGender.clearCheck();
-            if (cgRating != null)
-                cgRating.clearCheck();
             if (cgSort != null)
                 cgSort.clearCheck();
             if (sliderPrice != null)

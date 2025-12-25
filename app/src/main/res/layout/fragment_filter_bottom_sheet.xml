@@ -91,6 +91,7 @@
                     android:id="@+id/cgSize"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:chipSpacing="8dp"
                     app:singleSelection="true">
                     
                     <com.google.android.material.chip.Chip
@@ -131,105 +132,6 @@
                         app:chipBackgroundColor="@color/bg_chip_selector"/>
                 </com.google.android.material.chip.ChipGroup>
 
-                <!-- 3. Color -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Màu sắc"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="8dp"/>
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
-                    <LinearLayout
-                        android:id="@+id/llColors"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <!-- Colors will be manipulated by code or static here -->
-                        <View android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/bg_circle_black" android:layout_marginEnd="12dp"/>
-                        <View android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/bg_circle_element" android:backgroundTint="#FFFFFF" android:layout_marginEnd="12dp"/> <!-- Needs stroke -->
-                        <View android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/bg_circle_black" android:backgroundTint="#F44336" android:layout_marginEnd="12dp"/>
-                        <View android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/bg_circle_black" android:backgroundTint="#2196F3" android:layout_marginEnd="12dp"/>
-                        <View android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/bg_circle_black" android:backgroundTint="#4CAF50" android:layout_marginEnd="12dp"/>
-                    </LinearLayout>
-                </HorizontalScrollView>
-
-                <!-- 4. Gender -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Giới tính"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="8dp"/>
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/cgGender"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:singleSelection="true">
-                    
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nam"
-                        app:chipBackgroundColor="@color/bg_chip_selector"/>
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nữ"
-                        app:chipBackgroundColor="@color/bg_chip_selector"/>
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Unisex"
-                        app:chipBackgroundColor="@color/bg_chip_selector"/>
-                </com.google.android.material.chip.ChipGroup>
-
-                <!-- 5. Rating -->
-                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đánh giá"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="8dp"/>
-                 <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/cgRating"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:singleSelection="true">
-                    
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⭐ 4.5+"
-                        app:chipBackgroundColor="@color/bg_chip_selector"/>
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⭐ 4.0+"
-                        app:chipBackgroundColor="@color/bg_chip_selector"/>
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⭐ 3.0+"
-                        app:chipBackgroundColor="@color/bg_chip_selector"/>
-                </com.google.android.material.chip.ChipGroup>
 
                 <!-- 6. Sort By -->
                 <TextView
@@ -245,6 +147,7 @@
                     android:id="@+id/cgSort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:chipSpacing="8dp"
                     app:singleSelection="true">
                     
                     <com.google.android.material.chip.Chip

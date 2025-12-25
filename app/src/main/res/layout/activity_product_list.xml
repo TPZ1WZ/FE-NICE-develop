@@ -1,23 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#121212">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="#121212"
         app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#FFFFFF"
+            android:background="#121212"
             app:contentInsetStart="16dp"
             app:contentInsetEnd="16dp">
 
@@ -27,14 +26,15 @@
                 android:layout_height="24dp"
                 android:src="@drawable/ic_arrow_left"
                 android:contentDescription="Back"
-                android:layout_gravity="start" />
+                android:layout_gravity="start"
+                app:tint="#FFFFFF" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sản phẩm"
                 android:textSize="20sp"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:layout_gravity="center" />
 
@@ -45,7 +45,8 @@
                 android:src="@drawable/ic_shopping_bag"
                 android:contentDescription="Cart"
                 android:layout_gravity="end"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                app:tint="#FFFFFF" />
 
             <ImageView
                 android:id="@+id/ivMenu"
@@ -53,7 +54,8 @@
                 android:layout_height="24dp"
                 android:src="@drawable/ic_menu"
                 android:contentDescription="Menu"
-                android:layout_gravity="end" />
+                android:layout_gravity="end"
+                app:tint="#FFFFFF" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -63,7 +65,7 @@
         android:id="@+id/rvProducts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
+        android:padding="8dp"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -72,6 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:indeterminateTint="#FFFFFF" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

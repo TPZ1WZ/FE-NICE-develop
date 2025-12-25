@@ -111,9 +111,6 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         TextView tvProductName;
         TextView tvPrice;
 
-        // Grid specific
-        TextView tvRating;
-
         // List specific
         TextView tvBestSeller;
         ImageButton btnAdd;
@@ -139,6 +136,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             if (isGridLayout) {
                 tvPrice = itemView.findViewById(R.id.tvProductPrice);
                 // Grid specific (IDs from item_product_grid.xml)
+                // Removed rating/sold views
             } else {
                 tvPrice = itemView.findViewById(R.id.tvPrice);
                 tvBestSeller = itemView.findViewById(R.id.tvBestSeller);
@@ -179,6 +177,8 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             String formattedPrice = formatter.format(product.getPrice()) + " ₫";
             tvPrice.setText(formattedPrice);
 
+            // Removed rating/sold logic
+
             // Load image
             if (product.getThumbnail() != null && !product.getThumbnail().isEmpty()) {
                 String imageUrl = product.getThumbnail();
@@ -190,7 +190,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                             .load(imageUrl)
                             .placeholder(R.drawable.img_placeholder_shoe)
                             .error(R.drawable.img_placeholder_shoe)
-                            .centerInside()
+                            .centerCrop()
                             .into(ivProductImage);
                 }
                 // URL đầy đủ
@@ -199,7 +199,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                             .load(imageUrl)
                             .placeholder(R.drawable.img_placeholder_shoe)
                             .error(R.drawable.img_placeholder_shoe)
-                            .centerInside()
+                            .centerCrop()
                             .into(ivProductImage);
                 }
                 // Relative URL
@@ -209,7 +209,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                             .load(imageUrl)
                             .placeholder(R.drawable.img_placeholder_shoe)
                             .error(R.drawable.img_placeholder_shoe)
-                            .centerInside()
+                            .centerCrop()
                             .into(ivProductImage);
                 } else {
                     // Fallback
@@ -217,7 +217,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                             .load(imageUrl)
                             .placeholder(R.drawable.img_placeholder_shoe)
                             .error(R.drawable.img_placeholder_shoe)
-                            .centerInside()
+                            .centerCrop()
                             .into(ivProductImage);
                 }
             } else {

@@ -91,24 +91,10 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             String formattedPrice = formatter.format(product.getPrice()) + " đ";
             tvSearchProductPrice.setText(formattedPrice);
 
-            // Mock logic for Demo UI (Since backend doesn't have these fields yet)
-            // If price > 2,000,000 show discount
-            if (product.getPrice() > 2000000) {
-                double original = product.getPrice() * 1.2; // Mock 20% markup
-                String formattedOriginal = formatter.format(original) + " đ";
-                tvSearchProductOldPrice.setText(formattedOriginal);
-                tvSearchProductOldPrice.setVisibility(View.VISIBLE);
-                tvSearchProductOldPrice
-                        .setPaintFlags(tvSearchProductOldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                tvSearchDiscountBadge.setVisibility(View.VISIBLE);
-                tvSearchDiscountBadge.setText("-20%");
-            } else {
-                tvSearchProductOldPrice.setVisibility(View.GONE);
-                tvSearchDiscountBadge.setVisibility(View.GONE);
-            }
-
-            // Always show "Còn hàng" for now
-            tvSearchStockStatus.setVisibility(View.VISIBLE);
+            // Mock data removed as per user request
+            tvSearchProductOldPrice.setVisibility(View.GONE);
+            tvSearchDiscountBadge.setVisibility(View.GONE);
+            tvSearchStockStatus.setVisibility(View.GONE);
 
             // Load Image
             if (product.getThumbnail() != null && !product.getThumbnail().isEmpty()) {

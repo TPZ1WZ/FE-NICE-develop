@@ -177,6 +177,14 @@
             android:exported="false"
             android:label="Quản lý Đánh giá"
             android:parentActivityName=".ui.admin.AdminDashboardActivity" />
+            
+        <!-- AdminSettingsActivity - Admin Settings -->
+        <activity
+            android:name=".ui.admin.AdminSettingsActivity"
+            android:exported="false"
+            android:label="Cài đặt Admin"
+            android:parentActivityName=".ui.admin.AdminDashboardActivity" />
+            
         <!-- OrderReviewActivity - User Review -->
         <activity
             android:name=".ui.order.OrderReviewActivity"
