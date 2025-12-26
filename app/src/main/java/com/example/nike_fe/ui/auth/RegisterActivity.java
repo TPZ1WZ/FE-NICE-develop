@@ -106,8 +106,8 @@ public class RegisterActivity extends AppCompatActivity {
         // Tạo request object
         RegisterRequest request = new RegisterRequest(fullName, email, phone, password);
 
-        // Gọi API đăng ký
-        authApi.register(request).enqueue(new Callback<RegisterResponse>() {
+        // Gọi API đăng ký VỚI OTP
+        authApi.registerWithOtp(request).enqueue(new Callback<RegisterResponse>() {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
                 setLoading(false);
@@ -116,21 +116,16 @@ public class RegisterActivity extends AppCompatActivity {
                     RegisterResponse registerResponse = response.body();
 
                     if (registerResponse.isSuccess()) {
-                        // Đăng ký thành công
+                        // Đăng ký thành công - OTP đã gửi
                         Toast.makeText(RegisterActivity.this,
-                                "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
+                                "OTP đã được gửi đến email của bạn!",
                                 Toast.LENGTH_LONG).show();
 
-                        // Chuyển về màn LoginActivity sau 2 giây
-                        new android.os.Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                intent.putExtra("registered_email", email);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }, 2000);
+                        // Chuyển đến màn OTP Verification
+                        Intent intent = new Intent(RegisterActivity.this, VerifyOtpActivity.class);
+                        intent.putExtra("email", email);
+                        startActivity(intent);
+                        finish();
                     } else {
                         // Backend trả success = false
                         Toast.makeText(RegisterActivity.this,

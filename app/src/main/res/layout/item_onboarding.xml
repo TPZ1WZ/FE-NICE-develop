@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/splash_blue"
+    android:background="@drawable/bg_onboarding2"
     android:clipChildren="false"
     android:clipToPadding="false">
 
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="WELCOME TO\nNIKE"
-            android:textColor="#FFFFFF"
+            android:textColor="#000000"
             android:textSize="34sp"
             android:textStyle="bold"
             android:textAlignment="center"
@@ -50,7 +50,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
             android:text="Just Do It"
-            android:textColor="#FFFFFF"
+            android:textColor="#000000"
             android:textSize="16sp"
             android:textAlignment="center"
             android:gravity="center"
