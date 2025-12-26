@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/nike_black"
-            app:title="My Cart"
+            app:title="Giỏ hàng"
             app:titleTextColor="@color/white"
             app:titleTextAppearance="@style/TextAppearance.Nike.Toolbar"
             app:menu="@menu/cart_menu" />
@@ -84,7 +84,7 @@
                             android:id="@+id/btnClearCart"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Clear All"
+                            android:text="Xóa tất cả"
                             android:textColor="#d32f2f"
                             app:backgroundTint="@android:color/transparent"
                             app:strokeWidth="0dp"
@@ -128,7 +128,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total price"
+                    android:text="Tổng tiền"
                     android:textColor="@color/gray_500"
                     android:textSize="14sp" />
 
@@ -136,7 +136,7 @@
                     android:id="@+id/tvTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$0.00"
+                    android:text="0 ₫"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/white" />
@@ -147,7 +147,7 @@
                 android:id="@+id/btnCheckout"
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
-                android:text="Checkout    ➡"
+                android:text="Thanh toán    ➡"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:cornerRadius="30dp"
@@ -182,7 +182,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="YOUR CART IS EMPTY"
+            android:text="GIỎ HÀNG ĐANG TRỐNG"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/white"
@@ -192,7 +192,7 @@
             android:id="@+id/btnContinueShopping"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
-            android:text="Start Shopping"
+            android:text="Mua sắm ngay"
             android:textSize="16sp"
             android:textStyle="bold"
             android:paddingHorizontal="32dp"

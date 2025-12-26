@@ -1,111 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:gravity="center_vertical"
+        android:elevation="2dp">
 
-        <!-- Header -->
-        <androidx.cardview.widget.CardView
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#000000"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="4dp"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="0dp">
+            android:text="Thông tin Danh mục"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginEnd="24dp" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:padding="12dp"
-                android:background="@android:color/white">
+    </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/ivBack"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_back"
-                    android:padding="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="Danh mục"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </RelativeLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- Form Content -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="24dp">
 
             <!-- Name Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tên danh mục"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Tên danh mục"
+                app:hintEnabled="false"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxStrokeColor="#000000"
-                app:hintTextColor="#000000">
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCategoryName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
+                    android:hint="Nhập tên danh mục"
+                    android:textSize="16sp"
+                    android:paddingVertical="14dp"
+                    android:textColor="#000000"
                     android:maxLines="1" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Description Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mô tả"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Mô tả"
+                app:hintEnabled="false"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxStrokeColor="#000000"
-                app:hintTextColor="#000000">
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCategoryDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
-                    android:minLines="3"
-                    android:maxLines="5"
-                    android:gravity="top" />
-
+                    android:hint="Nhập mô tả danh mục (tùy chọn)"
+                    android:minLines="4"
+                    android:gravity="top|start"
+                    android:paddingVertical="14dp"
+                    android:textSize="16sp"
+                    android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Save Button -->
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveCategory"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:text="Lưu"
+                android:layout_marginTop="32dp"
+                android:text="Lưu thay đổi"
+                android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:background="#000000"
-                android:elevation="2dp" />
+                app:backgroundTint="#000000"
+                app:cornerRadius="28dp"
+                android:elevation="0dp" 
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
 
             <!-- Progress Bar -->
             <ProgressBar
@@ -114,10 +144,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:indeterminateTint="#000000"/>
 
         </LinearLayout>
-
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

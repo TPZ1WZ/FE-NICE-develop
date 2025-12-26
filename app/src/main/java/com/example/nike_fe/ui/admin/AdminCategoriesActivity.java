@@ -3,6 +3,7 @@ package com.example.nike_fe.ui.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +33,7 @@ public class AdminCategoriesActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private CategoryAdapter adapter;
     private ProgressBar progressBar;
-    private TextView tvEmpty;
+    private LinearLayout layoutEmpty;
     private FloatingActionButton fabAdd;
     private ImageView ivBack;
     
@@ -45,20 +46,6 @@ public class AdminCategoriesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_categories);
         
         initViews();
-        setupRecyclerView();
-        loadCategories();
-    }
-    
-    private void initViews() {
-        recyclerView = findViewById(R.id.recyclerViewCategories);
-        progressBar = findViewById(R.id.progressBar);
-        tvEmpty = findViewById(R.id.tvEmpty);
-        fabAdd = findViewById(R.id.fabAddCategory);
-        ivBack = findViewById(R.id.ivBack);
-        
-        RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
-        adminApi = retrofitClient.getAdminApi();
-        token = retrofitClient.getToken();
         
         if (token == null || token.isEmpty()) {
             Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
@@ -66,7 +53,22 @@ public class AdminCategoriesActivity extends AppCompatActivity {
             return;
         }
         
+        setupRecyclerView();
+        loadCategories();
+    }
+    
+    private void initViews() {
+        recyclerView = findViewById(R.id.recyclerViewCategories);
+        progressBar = findViewById(R.id.progressBar);
+        layoutEmpty = findViewById(R.id.layoutEmpty);
+        fabAdd = findViewById(R.id.fabAddCategory);
+        ivBack = findViewById(R.id.ivBack);
+        
         ivBack.setOnClickListener(v -> finish());
+        
+        RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
+        adminApi = retrofitClient.getAdminApi();
+        token = retrofitClient.getToken();
         
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(this, AdminCategoryFormActivity.class);
@@ -98,7 +100,7 @@ public class AdminCategoriesActivity extends AppCompatActivity {
     private void loadCategories() {
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.GONE);
+        layoutEmpty.setVisibility(View.GONE);
         
         adminApi.getAllCategories("Bearer " + token).enqueue(new Callback<List<Category>>() {
             @Override
@@ -108,24 +110,30 @@ public class AdminCategoriesActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Category> categories = response.body();
                     if (categories.isEmpty()) {
-                        tvEmpty.setVisibility(View.VISIBLE);
+                        layoutEmpty.setVisibility(View.VISIBLE);
                     } else {
                         recyclerView.setVisibility(View.VISIBLE);
                         adapter.updateData(categories);
                     }
                 } else {
-                    Toast.makeText(AdminCategoriesActivity.this, 
-                            "Lỗi tải danh mục: " + response.code(), Toast.LENGTH_SHORT).show();
-                    tvEmpty.setVisibility(View.VISIBLE);
+                    if (response.code() == 401 || response.code() == 403) {
+                        Toast.makeText(AdminCategoriesActivity.this, 
+                                "Bạn không có quyền truy cập", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(AdminCategoriesActivity.this, 
+                                "Lỗi tải danh mục", Toast.LENGTH_SHORT).show();
+                        layoutEmpty.setVisibility(View.VISIBLE);
+                    }
                 }
             }
             
             @Override
             public void onFailure(Call<List<Category>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                tvEmpty.setVisibility(View.VISIBLE);
+                layoutEmpty.setVisibility(View.VISIBLE);
                 Toast.makeText(AdminCategoriesActivity.this, 
-                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });
     }

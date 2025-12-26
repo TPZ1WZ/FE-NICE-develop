@@ -388,11 +388,34 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void showOrderSuccess() {
-        Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, com.example.nike_fe.ui.order.OrderHistoryActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
+        // Create dialog from custom layout
+        android.app.Dialog dialog = new android.app.Dialog(this);
+        dialog.setContentView(R.layout.dialog_order_success);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setCancelable(false);
+        
+        // Get buttons from dialog layout
+        Button btnViewOrder = dialog.findViewById(R.id.btn_view_order);
+        Button btnHome = dialog.findViewById(R.id.btn_home);
+        
+        // Set click listeners
+        btnViewOrder.setOnClickListener(v -> {
+            dialog.dismiss();
+            Intent intent = new Intent(CheckoutActivity.this, com.example.nike_fe.ui.order.OrderHistoryActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+        
+        btnHome.setOnClickListener(v -> {
+            dialog.dismiss();
+            Intent intent = new Intent(CheckoutActivity.this, com.example.nike_fe.MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+        
+        dialog.show();
     }
 
     private void showLoading(boolean show) {

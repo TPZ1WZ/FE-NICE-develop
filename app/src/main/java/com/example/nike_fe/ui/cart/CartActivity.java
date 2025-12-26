@@ -23,7 +23,7 @@ import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.model.AddToCartRequest;
 import com.example.nike_fe.data.model.CartItem;
 import com.example.nike_fe.data.model.CartResponse;
-import com.example.nike_fe.ui.product.ProductListActivity;
+import com.example.nike_fe.ui.product.AllProductsActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.text.NumberFormat;
@@ -91,7 +91,7 @@ public class CartActivity extends AppCompatActivity {
         btnCheckout.setOnClickListener(v -> navigateToCheckout());
 
         btnContinueShopping.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ProductListActivity.class);
+            Intent intent = new Intent(this, AllProductsActivity.class);
             startActivity(intent);
         });
     }

@@ -103,6 +103,11 @@ public class AdminUserDetailActivity extends AppCompatActivity {
     }
 
     private void displayUserInfo(User user) {
+        if (user == null) {
+            Toast.makeText(this, "Lỗi: Không có dữ liệu người dùng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String avatarUrl = user.getAvatarUrl();
         if (avatarUrl != null && !avatarUrl.startsWith("http")) {
             avatarUrl = RetrofitClient.getInstance(this).getBaseUrl() + avatarUrl;
@@ -114,8 +119,8 @@ public class AdminUserDetailActivity extends AppCompatActivity {
                 .error(R.drawable.ic_avatar_placeholder)
                 .into(ivUserAvatar);
 
-        tvUserName.setText(user.getFullName());
-        tvUserEmail.setText(user.getEmail());
+        tvUserName.setText(user.getFullName() != null ? user.getFullName() : "Chưa cập nhật");
+        tvUserEmail.setText(user.getEmail() != null ? user.getEmail() : "Chưa cập nhật");
         tvUserPhone.setText(user.getPhone() != null ? user.getPhone() : "Chưa cập nhật");
         tvUserAddress.setText(user.getAddress() != null ? user.getAddress() : "Chưa cập nhật");
         tvUserCreatedAt.setText("Tham gia: " + (user.getCreatedAt() != null ? user.getCreatedAt() : "N/A"));
@@ -147,7 +152,7 @@ public class AdminUserDetailActivity extends AppCompatActivity {
             btnToggleStatus
                     .setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#FEE2E2")));
         } else {
-            chipStatus.setText("Banned");
+            chipStatus.setText("Inactive");
             chipStatus.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#FEE2E2")));
             chipStatus.setTextColor(Color.parseColor("#B91C1C"));
 
@@ -210,12 +215,12 @@ public class AdminUserDetailActivity extends AppCompatActivity {
         adminApi.updateUser("Bearer " + token, userId, currentUser).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                layoutLoading.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    currentUser = response.body();
-                    displayUserInfo(currentUser);
+                if (response.isSuccessful()) {
                     Toast.makeText(AdminUserDetailActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                    // Reload user details để lấy đầy đủ thông tin từ server
+                    loadUserDetails();
                 } else {
+                    layoutLoading.setVisibility(View.GONE);
                     Toast.makeText(AdminUserDetailActivity.this, "Lỗi cập nhật: " + response.code(), Toast.LENGTH_SHORT)
                             .show();
                     // Reload to reset local changes if failed
@@ -226,7 +231,7 @@ public class AdminUserDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 layoutLoading.setVisibility(View.GONE);
-                Toast.makeText(AdminUserDetailActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminUserDetailActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 // Reload to reset local changes if failed
                 loadUserDetails();
             }

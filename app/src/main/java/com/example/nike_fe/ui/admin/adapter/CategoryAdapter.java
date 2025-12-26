@@ -3,7 +3,7 @@ package com.example.nike_fe.ui.admin.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,7 +59,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
         private TextView tvCategoryId, tvName, tvDescription, tvCreatedAt, tvUpdatedAt;
-        private ImageButton btnEdit, btnDelete;
+        private ImageView btnEdit, btnDelete;
         
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);

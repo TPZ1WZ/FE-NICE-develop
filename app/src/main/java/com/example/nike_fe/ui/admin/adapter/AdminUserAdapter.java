@@ -106,7 +106,7 @@ public class AdminUserAdapter extends RecyclerView.Adapter<AdminUserAdapter.User
                         android.content.res.ColorStateList.valueOf(Color.parseColor("#DCFCE7")));
                 chipStatus.setTextColor(Color.parseColor("#166534"));
             } else {
-                chipStatus.setText("Banned");
+                chipStatus.setText("Inactive");
                 chipStatus.setChipBackgroundColor(
                         android.content.res.ColorStateList.valueOf(Color.parseColor("#FEE2E2")));
                 chipStatus.setTextColor(Color.parseColor("#B91C1C"));
