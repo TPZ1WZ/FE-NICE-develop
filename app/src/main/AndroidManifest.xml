@@ -50,6 +50,21 @@
         <activity
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
+
+        <!-- VerifyOtpActivity - Màn hình xác thực OTP -->
+        <activity
+            android:name=".ui.auth.VerifyOtpActivity"
+            android:exported="false" />
+        
+        <!-- ForgotPasswordActivity - Màn hình quên mật khẩu -->
+        <activity
+            android:name=".ui.auth.ForgotPasswordActivity"
+            android:exported="false" />
+        
+        <!-- ResetPasswordActivity - Màn hình đặt lại mật khẩu -->
+        <activity
+            android:name=".ui.auth.ResetPasswordActivity"
+            android:exported="false" />
         
         <!-- MainActivity -->
         <activity
