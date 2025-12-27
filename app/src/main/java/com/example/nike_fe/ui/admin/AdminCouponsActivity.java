@@ -106,6 +106,7 @@ public class AdminCouponsActivity extends AppCompatActivity implements AdminCoup
     }
 
     private void loadCoupons() {
+        Log.d(TAG, "Loading coupons...");
         layoutLoading.setVisibility(View.VISIBLE);
         // Page 0, Size 100 for simplicity initially
         adminCouponApi.getCoupons("Bearer " + token, 0, 100, "id,desc").enqueue(new Callback<CouponListResponse>() {
@@ -114,6 +115,10 @@ public class AdminCouponsActivity extends AppCompatActivity implements AdminCoup
                 layoutLoading.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     allCoupons = response.body().getContent();
+                    Log.d(TAG, "Loaded " + allCoupons.size() + " coupons");
+                    for (Coupon c : allCoupons) {
+                        Log.d(TAG, "Coupon: " + c.getCode() + ", name=" + c.getName() + ", desc=" + c.getDescription() + ", active=" + c.getIsActive());
+                    }
                     updateList(allCoupons);
                 } else {
                     Log.e(TAG, "Failed to load coupons: " + response.code());
@@ -173,15 +178,18 @@ public class AdminCouponsActivity extends AppCompatActivity implements AdminCoup
     }
 
     private void deleteCoupon(Long id) {
+        Log.d(TAG, "Deleting coupon with ID: " + id);
         layoutLoading.setVisibility(View.VISIBLE);
         adminCouponApi.deleteCoupon("Bearer " + token, id).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 layoutLoading.setVisibility(View.GONE);
+                Log.d(TAG, "Delete response code: " + response.code());
                 if (response.isSuccessful()) {
                     Toast.makeText(AdminCouponsActivity.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
                     loadCoupons();
                 } else {
+                    Log.e(TAG, "Delete failed with code: " + response.code());
                     Toast.makeText(AdminCouponsActivity.this, "Lỗi xóa: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -189,6 +197,7 @@ public class AdminCouponsActivity extends AppCompatActivity implements AdminCoup
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 layoutLoading.setVisibility(View.GONE);
+                Log.e(TAG, "Delete failed", t);
                 Toast.makeText(AdminCouponsActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });

@@ -143,46 +143,46 @@ public class AdminProductFormActivity extends AppCompatActivity {
     private void setupSizeChips() {
         // XÓA TẤT CẢ CHIPS CŨ trước khi thêm mới (tránh trùng lặp)
         chipGroupSizes.removeAllViews();
-        
+
         // Chuẩn size giày Nike EU: 35-47 + một số size đặc biệt
         String[] sizes = { "35", "35.5", "36", "36.5", "37", "37.5", "38", "38.5", "39", "39.5",
-                           "40", "40.5", "41", "42", "42.5", "43", "44", "44.5", "45", "45.5", "46", "47" };
+                "40", "40.5", "41", "42", "42.5", "43", "44", "44.5", "45", "45.5", "46", "47" };
 
         for (String size : sizes) {
             com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(this);
             chip.setText(size);
             chip.setCheckable(true);
 
-            // Styling tương tự User side để đồng bộ
-            chip.setChipBackgroundColorResource(android.R.color.white);
-            chip.setChipStrokeColorResource(android.R.color.darker_gray);
-            chip.setChipStrokeWidth(dpToPx(1.5f));
-            chip.setTextColor(getResources().getColor(android.R.color.black));
-            
-            // Set kích thước đồng nhất với User (50dp x 50dp)
-            int sizePx = (int) dpToPx(48); // Admin có thể nhỏ hơn 1 chút để hiển thị nhiều hơn
-            com.google.android.material.chip.ChipGroup.LayoutParams params = 
-                new com.google.android.material.chip.ChipGroup.LayoutParams(sizePx, sizePx);
-            chip.setLayoutParams(params);
-            chip.setChipCornerRadius(dpToPx(24));
+            // Styling: Pill shape, Gray BG (#F2F2F2), Black Text
+            chip.setChipBackgroundColor(
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#F2F2F2")));
+            chip.setTextColor(android.graphics.Color.parseColor("#000000"));
+            chip.setChipStrokeWidth(0); // No border for unselected
+
+            // Set kích thước
+            chip.setChipMinHeight(dpToPx(40));
+            chip.setChipCornerRadius(dpToPx(20));
+            chip.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
             // Sự kiện khi click để thay đổi màu
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     // Khi được chọn - màu nền đen, chữ trắng
-                    chip.setChipBackgroundColorResource(android.R.color.black);
-                    chip.setTextColor(getResources().getColor(android.R.color.white));
+                    chip.setChipBackgroundColor(
+                            android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#000000")));
+                    chip.setTextColor(android.graphics.Color.parseColor("#FFFFFF"));
                 } else {
-                    // Khi bỏ chọn - nền trắng, chữ đen
-                    chip.setChipBackgroundColorResource(android.R.color.white);
-                    chip.setTextColor(getResources().getColor(android.R.color.black));
+                    // Khi bỏ chọn - nền xám nhạt, chữ đen
+                    chip.setChipBackgroundColor(
+                            android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#F2F2F2")));
+                    chip.setTextColor(android.graphics.Color.parseColor("#000000"));
                 }
             });
 
             chipGroupSizes.addView(chip);
         }
     }
-    
+
     // Helper method
     private float dpToPx(float dp) {
         return dp * getResources().getDisplayMetrics().density;
@@ -256,7 +256,7 @@ public class AdminProductFormActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
@@ -473,14 +473,8 @@ public class AdminProductFormActivity extends AppCompatActivity {
             etStock.requestFocus();
             return false;
         }
-        
-        // Validation: Phải chọn ít nhất 1 size
-        if (getSelectedSizes().isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn ít nhất 1 kích cỡ", Toast.LENGTH_SHORT).show();
-            return false;
-        }
 
-        // Image URL không bắt buộc
+        // Size và Image không bắt buộc
 
         return true;
     }

@@ -129,29 +129,43 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private void showCouponSelectionDialog(List<Coupon> coupons) {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
-
-        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
-        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
-        layout.setPadding(32, 32, 32, 32);
-
-        TextView title = new TextView(this);
-        title.setText("Chọn mã giảm giá");
-        title.setTextSize(20);
-        title.setTypeface(null, android.graphics.Typeface.BOLD);
-        title.setPadding(0, 0, 0, 32);
-        layout.addView(title);
-
-        RecyclerView rv = new RecyclerView(this);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        CouponSelectionAdapter adapter = new CouponSelectionAdapter(coupons, coupon -> {
-            etCouponCode.setText(coupon.getCode());
-            validateAndApplyCoupon(coupon);
-            dialog.dismiss();
-        });
-        rv.setAdapter(adapter);
-        layout.addView(rv);
-
-        dialog.setContentView(layout);
+        dialog.setDismissWithAnimation(true);
+        
+        // Inflate layout từ file XML
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_coupon_selection, null);
+        
+        // Tìm các views
+        RecyclerView rvCoupons = bottomSheetView.findViewById(R.id.rvCoupons);
+        ImageView ivCloseSheet = bottomSheetView.findViewById(R.id.ivCloseSheet);
+        View layoutEmptyState = bottomSheetView.findViewById(R.id.layoutEmptyState);
+        
+        // Đóng bottom sheet khi click nút X
+        ivCloseSheet.setOnClickListener(v -> dialog.dismiss());
+        
+        // Setup RecyclerView
+        if (coupons != null && !coupons.isEmpty()) {
+            rvCoupons.setVisibility(View.VISIBLE);
+            layoutEmptyState.setVisibility(View.GONE);
+            
+            rvCoupons.setLayoutManager(new LinearLayoutManager(this));
+            CouponSelectionAdapter adapter = new CouponSelectionAdapter(coupons, subtotal, coupon -> {
+                etCouponCode.setText(coupon.getCode());
+                validateAndApplyCoupon(coupon);
+                dialog.dismiss();
+            });
+            
+            // Set selected coupon nếu đã có
+            if (currentCouponCode != null) {
+                adapter.setSelectedCouponCode(currentCouponCode);
+            }
+            
+            rvCoupons.setAdapter(adapter);
+        } else {
+            rvCoupons.setVisibility(View.GONE);
+            layoutEmptyState.setVisibility(View.VISIBLE);
+        }
+        
+        dialog.setContentView(bottomSheetView);
         dialog.show();
     }
 

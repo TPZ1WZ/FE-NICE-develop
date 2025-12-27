@@ -2,8 +2,6 @@ package com.example.nike_fe.ui.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,6 +26,7 @@ import com.example.nike_fe.ui.admin.adapter.AdminProductAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -49,8 +48,10 @@ public class AdminProductsActivity extends AppCompatActivity {
     private AdminProductAdapter adapter;
     private AdminProductApi productApi;
     private String token;
-    private Handler searchHandler = new Handler(Looper.getMainLooper());
-    private Runnable searchRunnable;
+    
+    private List<AdminProduct> allProducts = new ArrayList<>();
+    private List<AdminProduct> filteredProducts = new ArrayList<>();
+    private String currentSearchQuery = "";
 
     private boolean shouldScrollToTop = false; // Flag to control scrolling
 
@@ -94,6 +95,25 @@ public class AdminProductsActivity extends AppCompatActivity {
         rvProducts.setAdapter(adapter);
 
         adapter.setOnProductClickListener(new AdminProductAdapter.OnProductClickListener() {
+            @Override
+            public void onProductClick(AdminProduct product) {
+                // Click vào card sẽ mở trang chi tiết/chỉnh sửa
+                try {
+                    if (product == null || product.getId() == null) {
+                        Toast.makeText(AdminProductsActivity.this, "Lỗi: Không tìm thấy thông tin sản phẩm",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Intent intent = new Intent(AdminProductsActivity.this, AdminProductFormActivity.class);
+                    intent.putExtra("product_id", product.getId());
+                    intent.putExtra("is_edit_mode", true);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error opening product detail: " + e.getMessage(), e);
+                    Toast.makeText(AdminProductsActivity.this, "Lỗi mở chi tiết sản phẩm", Toast.LENGTH_SHORT).show();
+                }
+            }
+            
             @Override
             public void onEditClick(AdminProduct product) {
                 try {
@@ -139,7 +159,7 @@ public class AdminProductsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Search with debounce
+        // Search - instant filter without debounce (like AllProductsActivity)
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -147,11 +167,8 @@ public class AdminProductsActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (searchRunnable != null) {
-                    searchHandler.removeCallbacks(searchRunnable);
-                }
-                searchRunnable = () -> loadProducts(s.toString());
-                searchHandler.postDelayed(searchRunnable, 300);
+                currentSearchQuery = s.toString();
+                applySearch();
             }
 
             @Override
@@ -162,7 +179,39 @@ public class AdminProductsActivity extends AppCompatActivity {
 
     private void loadData() {
         loadStats();
-        loadProducts("");
+        loadProducts();
+    }
+
+    private void applySearch() {
+        filteredProducts.clear();
+        
+        if (currentSearchQuery.isEmpty()) {
+            // Show all products if search is empty
+            filteredProducts.addAll(allProducts);
+        } else {
+            // Filter by name or SKU
+            String query = currentSearchQuery.toLowerCase();
+            for (AdminProduct product : allProducts) {
+                boolean matchesName = product.getName() != null && 
+                                    product.getName().toLowerCase().contains(query);
+                boolean matchesSku = product.getSku() != null && 
+                                   product.getSku().toLowerCase().contains(query);
+                
+                if (matchesName || matchesSku) {
+                    filteredProducts.add(product);
+                }
+            }
+        }
+        
+        // Update UI
+        if (filteredProducts.isEmpty()) {
+            layoutEmpty.setVisibility(View.VISIBLE);
+            rvProducts.setVisibility(View.GONE);
+        } else {
+            layoutEmpty.setVisibility(View.GONE);
+            rvProducts.setVisibility(View.VISIBLE);
+            adapter.setProducts(filteredProducts);
+        }
     }
 
     private void loadStats() {
@@ -189,42 +238,29 @@ public class AdminProductsActivity extends AppCompatActivity {
         });
     }
 
-    private void loadProducts(String query) {
-        Log.d(TAG, "Loading products with query: " + query);
+    private void loadProducts() {
+        Log.d(TAG, "Loading all products...");
         layoutLoading.setVisibility(View.VISIBLE);
         layoutContent.setVisibility(View.GONE);
 
-        productApi.getProducts("Bearer " + token, query).enqueue(new Callback<List<AdminProduct>>() {
+        // Load all products without search query - we'll filter locally
+        productApi.getProducts("Bearer " + token, null).enqueue(new Callback<List<AdminProduct>>() {
             @Override
             public void onResponse(Call<List<AdminProduct>> call, Response<List<AdminProduct>> response) {
                 layoutLoading.setVisibility(View.GONE);
                 layoutContent.setVisibility(View.VISIBLE);
 
                 if (response.isSuccessful() && response.body() != null) {
-                    List<AdminProduct> products = response.body();
-                    Log.d(TAG, "Products loaded: " + products.size());
+                    allProducts = response.body();
+                    Log.d(TAG, "Products loaded: " + allProducts.size());
+                    
+                    // Apply current search filter
+                    applySearch();
 
-                    if (products.isEmpty()) {
-                        layoutEmpty.setVisibility(View.VISIBLE);
-                        rvProducts.setVisibility(View.GONE);
-                    } else {
-                        layoutEmpty.setVisibility(View.GONE);
-                        rvProducts.setVisibility(View.VISIBLE);
-                        // Sort by ID descending (newest first)
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                            products.sort((p1, p2) -> {
-                                Long id1 = p1.getId() != null ? p1.getId() : 0L;
-                                Long id2 = p2.getId() != null ? p2.getId() : 0L;
-                                return id2.compareTo(id1);
-                            });
-                        }
-                        adapter.setProducts(products);
-
-                        // Check flag to scroll to top
-                        if (shouldScrollToTop) {
-                            rvProducts.scrollToPosition(0);
-                            shouldScrollToTop = false; // Reset flag
-                        }
+                    // Check flag to scroll to top
+                    if (shouldScrollToTop) {
+                        rvProducts.scrollToPosition(0);
+                        shouldScrollToTop = false; // Reset flag
                     }
                 } else {
                     Log.e(TAG, "Failed to load products: " + response.code());
@@ -235,7 +271,11 @@ public class AdminProductsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<AdminProduct>> call, Throwable t) {
-                // ...
+                layoutLoading.setVisibility(View.GONE);
+                layoutContent.setVisibility(View.VISIBLE);
+                Log.e(TAG, "Error loading products", t);
+                Toast.makeText(AdminProductsActivity.this,
+                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

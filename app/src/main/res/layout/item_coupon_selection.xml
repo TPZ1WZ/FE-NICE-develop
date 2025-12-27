@@ -1,83 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardCoupon"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
-    app:strokeColor="@color/gray_400"
-    app:strokeWidth="1dp">
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:padding="18dp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_coupon"
-                app:tint="@color/black"
-                android:layout_marginEnd="12dp"/>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvCouponCode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CODE123"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:id="@+id/tvDiscountValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Giảm 10%"
-                    android:textSize="14sp"
-                    android:textColor="#4CAF50"/>
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnApply"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Dùng ngay"
-                android:textSize="12sp"
-                app:backgroundTint="@color/black"/>
-        </LinearLayout>
-        
+        <!-- Hàng 1: Mã voucher -->
         <TextView
-            android:id="@+id/tvDescription"
-            android:layout_width="match_parent"
+            android:id="@+id/tvCouponCode"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mô tả mã giảm giá..."
-            android:textSize="12sp"
-            android:textColor="@color/gray_400"
-            android:layout_marginTop="8dp"/>
+            android:text="NIKE2024"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:letterSpacing="0.05"/>
 
+        <!-- Hàng 2: Giá trị giảm (nổi bật nhất) -->
+        <TextView
+            android:id="@+id/tvDiscountValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Giảm 900.000đ"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginTop="6dp"/>
+
+        <!-- Hàng 3: Điều kiện áp dụng -->
         <TextView
             android:id="@+id/tvMinOrder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Đơn tối thiểu: 200.000đ"
-            android:textSize="12sp"
-            android:textColor="@color/gray_400"
+            android:text="Đơn tối thiểu 1.000.000đ"
+            android:textSize="13sp"
+            android:textColor="#777777"
             android:layout_marginTop="4dp"/>
+
+        <!-- Mô tả (nếu có) -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="12sp"
+            android:textColor="#999999"
+            android:layout_marginTop="2dp"
+            android:visibility="gone"/>
+
+        <!-- Chú thích không đủ điều kiện -->
+        <TextView
+            android:id="@+id/tvIneligibleNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chưa đủ điều kiện"
+            android:textSize="12sp"
+            android:textColor="#FF6B6B"
+            android:textStyle="italic"
+            android:layout_marginTop="6dp"
+            android:visibility="gone"/>
+
+        <!-- Nút "Dùng ngay" -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApply"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Dùng ngay"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#000000"
+            app:cornerRadius="8dp"
+            android:layout_marginTop="12dp"
+            app:strokeWidth="0dp"/>
+
+        <!-- Icon check cho voucher được chọn -->
+        <ImageView
+            android:id="@+id/ivSelected"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_check_selected"
+            android:visibility="gone"
+            android:layout_gravity="end"
+            android:contentDescription="Đã chọn"/>
             
     </LinearLayout>
 

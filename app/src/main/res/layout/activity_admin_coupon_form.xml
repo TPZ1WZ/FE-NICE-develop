@@ -3,320 +3,497 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="#FFFFFF">
 
-    <LinearLayout
+    <!-- Loading State -->
+    <FrameLayout
+        android:id="@+id/layoutLoading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="#FFFFFF"
+        android:elevation="10dp"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="#000000"/>
+    </FrameLayout>
 
-        <!-- Header -->
-        <RelativeLayout
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="24dp"
-            android:paddingBottom="16dp"
-            android:background="@color/white"
-            android:elevation="2dp">
+            android:orientation="vertical"
+            android:paddingBottom="100dp">
 
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_back"
-                android:layout_centerVertical="true"
-                android:contentDescription="Back" />
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/ivBack"
-                android:layout_marginStart="16dp"
-                android:layout_centerVertical="true"
-                android:text="Thêm Mã Giảm Giá"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
-        </RelativeLayout>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true">
-
-            <LinearLayout
+            <!-- Header -->
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:paddingHorizontal="20dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp">
 
-                <!-- Code Input -->
+                <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_back"
+                    android:layout_centerVertical="true"
+                    app:tint="#000000"
+                    android:contentDescription="Back"
+                    android:background="?attr/selectableItemBackgroundBorderless" 
+                    android:clickable="true" />
+
                 <TextView
+                    android:id="@+id/tvTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mã Coupon"
+                    android:layout_toEndOf="@id/ivBack"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true"
+                    android:text="Thêm mã giảm giá"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#374151"
-                    android:layout_marginBottom="8dp"/>
-                
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxStrokeColor="@color/black"
-                    app:hintEnabled="false"
-                    android:layout_marginBottom="16dp">
+                    android:textColor="#000000" />
+            </RelativeLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etCode"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="VD: SUMMER2024"
-                        android:textAllCaps="true"
-                        android:inputType="textCapCharacters"
-                        android:textColor="@color/black"
-                        android:background="@drawable/bg_edit_text"/>
-                </com.google.android.material.textfield.TextInputLayout>
+            <!-- Section: Thông tin cơ bản -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
 
-                <!-- Description Input -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mô tả"
-                    android:textStyle="bold"
-                    android:textColor="#374151"
-                    android:layout_marginBottom="8dp"/>
-                
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxStrokeColor="@color/black"
-                    app:hintEnabled="false"
-                    android:layout_marginBottom="16dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Nhập mô tả cho coupon"
-                        android:textColor="@color/black"
-                        android:background="@drawable/bg_edit_text"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Discount Type -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Loại giảm giá"
-                    android:textStyle="bold"
-                    android:textColor="#374151"
-                    android:layout_marginBottom="8dp"/>
-
-                <RadioGroup
-                    android:id="@+id/rgDiscountType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-
-                    <RadioButton
-                        android:id="@+id/rbPercent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Phần trăm (%)"
-                        android:checked="true"
-                        android:layout_marginEnd="24dp"/>
-
-                    <RadioButton
-                        android:id="@+id/rbAmount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Số tiền (VND)"/>
-                </RadioGroup>
-
-                <!-- Values Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <!-- Discount Value -->
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginEnd="8dp">
-                        
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Giá trị giảm"
-                            android:textStyle="bold"
-                            android:textColor="#374151"
-                            android:layout_marginBottom="8dp"/>
+                        android:text="Thông tin cơ bản"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:layout_marginBottom="16dp"/>
 
-                         <com.google.android.material.textfield.TextInputLayout
+                    <!-- Code -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:hint="Mã coupon *"
+                        app:boxBackgroundMode="outline"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxStrokeColor="#DDDDDD"
+                        app:boxStrokeWidth="1dp"
+                        app:hintTextColor="#888888"
+                        app:placeholderTextColor="#888888">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:boxStrokeColor="@color/black"
-                            app:hintEnabled="false">
+                            android:inputType="textCapCharacters"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etDiscountValue"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="0"
-                                android:inputType="numberDecimal"
-                                android:textColor="@color/black"
-                                android:background="@drawable/bg_edit_text"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <!-- User Limit -->
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <!-- Description -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="8dp">
+                        android:hint="Mô tả"
+                        app:boxBackgroundMode="outline"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxStrokeColor="#DDDDDD"
+                        app:boxStrokeWidth="1dp"
+                        app:hintTextColor="#888888">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Giới hạn dùng"
-                            android:textStyle="bold"
-                            android:textColor="#374151"
-                            android:layout_marginBottom="8dp"/>
-
-                         <com.google.android.material.textfield.TextInputLayout
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDescription"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:boxStrokeColor="@color/black"
-                            app:hintEnabled="false">
+                            android:inputType="text"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Loại giảm giá -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Loại giảm giá"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:layout_marginBottom="12dp"/>
+
+                    <RadioGroup
+                        android:id="@+id/rgDiscountType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/rbPercent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Giảm theo phần trăm (%)"
+                            android:textSize="14sp"
+                            android:textColor="#000000"
+                            android:checked="true"
+                            android:paddingStart="8dp"
+                            android:layout_marginBottom="8dp"/>
+
+                        <RadioButton
+                            android:id="@+id/rbAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Giảm theo số tiền (VND)"
+                            android:textSize="14sp"
+                            android:textColor="#000000"
+                            android:paddingStart="8dp"/>
+                    </RadioGroup>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Giá trị giảm -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Giá trị giảm"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Percent Layout -->
+                    <LinearLayout
+                        android:id="@+id/layoutPercentFields"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:hint="Phần trăm giảm (%)"
+                            app:boxBackgroundMode="outline"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxStrokeColor="#DDDDDD"
+                            app:boxStrokeWidth="1dp"
+                            app:hintTextColor="#888888">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etUsageLimit"
+                                android:id="@+id/etPercent"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="100"
                                 android:inputType="number"
-                                android:textColor="@color/black"
-                                android:background="@drawable/bg_edit_text"/>
+                                android:maxLength="3"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
                         </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Giảm tối đa (VND)"
+                            app:boxBackgroundMode="outline"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxStrokeColor="#DDDDDD"
+                            app:boxStrokeWidth="1dp"
+                            app:hintTextColor="#888888"
+                            app:helperText="Số tiền giảm không vượt quá giá trị này"
+                            app:helperTextTextColor="#888888">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etMaxDiscount"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
                     </LinearLayout>
-                </LinearLayout>
 
-                <!-- Min Order Value -->
-                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Giá trị đơn hàng tối thiểu"
-                    android:textStyle="bold"
-                    android:textColor="#374151"
-                    android:layout_marginBottom="8dp"/>
-                
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxStrokeColor="@color/black"
-                    app:hintEnabled="false"
-                    android:layout_marginBottom="16dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etMinOrderValue"
+                    <!-- Amount Layout -->
+                    <LinearLayout
+                        android:id="@+id/layoutAmountFields"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="0"
-                        android:inputType="numberDecimal"
-                        android:textColor="@color/black"
-                        android:background="@drawable/bg_edit_text"/>
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
-                <!-- Date Selection -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Số tiền giảm (VND)"
+                            app:boxBackgroundMode="outline"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxStrokeColor="#DDDDDD"
+                            app:boxStrokeWidth="1dp"
+                            app:hintTextColor="#888888">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etAmount"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Điều kiện áp dụng -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <!-- Start Date -->
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginEnd="8dp">
-                        
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ngày bắt đầu"
-                            android:textStyle="bold"
-                            android:textColor="#374151"
-                            android:layout_marginBottom="8dp"/>
+                        android:text="Điều kiện áp dụng"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:layout_marginBottom="16dp"/>
 
-                         <TextView
-                             android:id="@+id/tvStartDate"
-                             android:layout_width="match_parent"
-                             android:layout_height="wrap_content"
-                             android:text="Chọn ngày"
-                             android:padding="12dp"
-                             android:textColor="@color/black"
-                             android:background="@drawable/bg_edit_text"
-                             android:drawableEnd="@drawable/ic_calendar_gray"
-                             android:gravity="center_vertical"/>
-                    </LinearLayout>
-
-                    <!-- End Date -->
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="8dp">
+                        android:layout_marginBottom="20dp"
+                        android:hint="Giá trị đơn hàng tối thiểu (VND)"
+                        app:boxBackgroundMode="outline"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxStrokeColor="#DDDDDD"
+                        app:boxStrokeWidth="1dp"
+                        app:hintTextColor="#888888">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etMinOrderValue"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Ngày kết thúc"
-                            android:textStyle="bold"
-                            android:textColor="#374151"
-                            android:layout_marginBottom="8dp"/>
+                            android:inputType="number"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                         <TextView
-                             android:id="@+id/tvEndDate"
-                             android:layout_width="match_parent"
-                             android:layout_height="wrap_content"
-                             android:text="Chọn ngày"
-                             android:padding="12dp"
-                             android:textColor="@color/black"
-                             android:background="@drawable/bg_edit_text"
-                             android:drawableEnd="@drawable/ic_calendar_gray"
-                             android:gravity="center_vertical"/>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Giới hạn lượt sử dụng"
+                        app:boxBackgroundMode="outline"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxStrokeColor="#DDDDDD"
+                        app:boxStrokeWidth="1dp"
+                        app:hintTextColor="#888888">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etUsageLimit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Thời gian áp dụng -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thời gian áp dụng"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:layout_marginBottom="16dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            android:hint="Ngày bắt đầu"
+                            app:boxBackgroundMode="outline"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxStrokeColor="#DDDDDD"
+                            app:boxStrokeWidth="1dp"
+                            app:hintTextColor="#888888"
+                            app:endIconMode="custom"
+                            app:endIconDrawable="@drawable/ic_calendar_gray"
+                            app:endIconTint="#555555">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etStartDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:focusable="false"
+                                android:clickable="true"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            android:hint="Ngày kết thúc"
+                            app:boxBackgroundMode="outline"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxStrokeColor="#DDDDDD"
+                            app:boxStrokeWidth="1dp"
+                            app:hintTextColor="#888888"
+                            app:endIconMode="custom"
+                            app:endIconDrawable="@drawable/ic_calendar_gray"
+                            app:endIconTint="#555555">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etEndDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:focusable="false"
+                                android:clickable="true"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Active Status -->
+            <!-- Section: Status -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:background="@drawable/bg_edit_text"
-                    android:padding="12dp"
-                    android:layout_marginBottom="24dp">
+                    android:padding="20dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Kích hoạt coupon"
-                        android:textSize="16sp"
-                        android:textColor="#111827"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kích hoạt coupon"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#000000"/>
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Coupon chỉ có hiệu lực khi được bật"
+                            android:textSize="12sp"
+                            android:textColor="#888888"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchActive"
@@ -324,33 +501,50 @@
                         android:layout_height="wrap_content"
                         android:checked="true"/>
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <Button
-                    android:id="@+id/btnSave"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="Lưu Thay Đổi"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="@color/black"
-                    app:cornerRadius="12dp"/>
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
-    
-    <!-- Loading Overlay -->
-    <FrameLayout
-        android:id="@+id/layoutLoading"
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Actions -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80FFFFFF"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone">
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        android:elevation="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="12dp"
+            android:text="Hủy"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#555555"
+            android:textAllCaps="false"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:strokeColor="#DDDDDD"
+            app:strokeWidth="1dp"
+            app:cornerRadius="100dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="Lưu thay đổi"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            app:backgroundTint="#000000"
+            app:cornerRadius="100dp"
+            app:elevation="0dp"/>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

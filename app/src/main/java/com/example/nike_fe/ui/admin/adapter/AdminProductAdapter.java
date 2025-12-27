@@ -1,5 +1,6 @@
 package com.example.nike_fe.ui.admin.adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.nike_fe.R;
 import com.example.nike_fe.data.model.AdminProduct;
-import com.google.android.material.chip.Chip;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -26,6 +26,8 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
     private OnProductClickListener listener;
 
     public interface OnProductClickListener {
+        void onProductClick(AdminProduct product);
+        
         void onEditClick(AdminProduct product);
 
         void onDeleteClick(AdminProduct product);
@@ -60,21 +62,23 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
     }
 
     static class ProductViewHolder extends RecyclerView.ViewHolder {
+        private View cardProduct;
         private ImageView ivProductImage;
-        private TextView tvProductName, tvProductSku;
+        private TextView tvProductName, tvProductSkuCategory;
         private TextView tvProductPrice, tvProductSalePrice, tvProductStock;
-        private Chip chipStatus;
+        private TextView tvStatus;
         private ImageView btnEdit, btnDelete;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardProduct = itemView.findViewById(R.id.cardProduct);
             ivProductImage = itemView.findViewById(R.id.ivProductImage);
             tvProductName = itemView.findViewById(R.id.tvProductName);
-            tvProductSku = itemView.findViewById(R.id.tvProductSku);
+            tvProductSkuCategory = itemView.findViewById(R.id.tvProductSkuCategory);
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
             tvProductSalePrice = itemView.findViewById(R.id.tvProductSalePrice);
             tvProductStock = itemView.findViewById(R.id.tvProductStock);
-            chipStatus = itemView.findViewById(R.id.chipStatus);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
@@ -102,8 +106,20 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
 
                 // Product info
                 tvProductName.setText(product.getName());
-                tvProductSku.setText("SKU: " + product.getSku() + " • "
-                        + (product.getCategory() != null ? product.getCategory() : ""));
+                
+                // SKU + Category
+                String skuCategory = "SKU: " + product.getSku();
+                if (product.getCategory() != null && !product.getCategory().isEmpty()) {
+                    skuCategory += " • " + product.getCategory();
+                }
+                tvProductSkuCategory.setText(skuCategory);
+                
+                // Card click listener
+                cardProduct.setOnClickListener(v -> {
+                    if (listener != null && product != null) {
+                        listener.onProductClick(product);
+                    }
+                });
 
                 // Price
                 if (product.getSalePrice() != null && product.getSalePrice() > 0) {
@@ -121,28 +137,28 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
                     }
                 }
 
-                // Stock
+                // Stock Logic - Same background for all, only change text color
                 tvProductStock.setText("Kho: " + product.getStock());
+                tvProductStock.setBackgroundResource(R.drawable.bg_status_pill);
                 if (product.isOutOfStock()) {
-                    tvProductStock.setBackgroundResource(R.drawable.bg_badge_gray);
-                    tvProductStock.setTextColor(itemView.getContext().getColor(R.color.red_600));
+                    // Light Gray Background, Red Text #E53935
+                    tvProductStock.setTextColor(Color.parseColor("#E53935"));
                 } else if (product.isLowStock()) {
-                    tvProductStock.setBackgroundResource(R.drawable.bg_badge_gray);
-                    tvProductStock.setTextColor(itemView.getContext().getColor(R.color.orange_600));
+                    // Light Gray Background, Orange Text #F9A825
+                    tvProductStock.setTextColor(Color.parseColor("#F9A825"));
                 } else {
-                    tvProductStock.setBackgroundResource(R.drawable.bg_badge_gray);
-                    tvProductStock.setTextColor(itemView.getContext().getColor(R.color.black));
+                    // Light Gray Background, Dark Gray Text #555555
+                    tvProductStock.setTextColor(Color.parseColor("#555555"));
                 }
 
-                // Status
+                // Status Badge Logic - Same background, different text color
+                tvStatus.setBackgroundResource(R.drawable.bg_status_pill);
                 if (product.isActive()) {
-                    chipStatus.setText("Hiển thị");
-                    chipStatus.setChipBackgroundColorResource(R.color.green_100);
-                    chipStatus.setTextColor(itemView.getContext().getColor(R.color.green_800));
+                    tvStatus.setText("Đang hiển thị");
+                    tvStatus.setTextColor(Color.parseColor("#555555"));
                 } else {
-                    chipStatus.setText("Đã ẩn");
-                    chipStatus.setChipBackgroundColorResource(R.color.gray_200);
-                    chipStatus.setTextColor(itemView.getContext().getColor(R.color.gray_800));
+                    tvStatus.setText("Đã ẩn");
+                    tvStatus.setTextColor(Color.parseColor("#999999"));
                 }
 
                 // Click listeners

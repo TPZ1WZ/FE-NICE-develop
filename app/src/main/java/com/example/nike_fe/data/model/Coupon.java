@@ -9,6 +9,9 @@ public class Coupon implements Serializable {
     @SerializedName("code")
     private String code;
 
+    @SerializedName("name")
+    private String name;
+
     @SerializedName("description")
     private String description;
 
@@ -33,7 +36,7 @@ public class Coupon implements Serializable {
     @SerializedName("usageCount")
     private Integer usageCount;
 
-    @SerializedName("active")
+    @SerializedName("isActive")
     private Boolean isActive;
 
     public Coupon() {
@@ -67,6 +70,14 @@ public class Coupon implements Serializable {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {

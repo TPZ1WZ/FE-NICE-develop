@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         updateUnreadCount();
         loadUserProfile(); // Refresh profile if needed
+        loadCategoriesFromApi(); // Refresh categories when returning to MainActivity
     }
 
     private void initViews() {

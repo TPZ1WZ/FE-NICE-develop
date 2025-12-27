@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,11 +35,14 @@ public class AdminCouponFormActivity extends AppCompatActivity {
 
     private ImageView ivBack;
     private TextView tvTitle;
-    private TextInputEditText etCode, etDescription, etDiscountValue, etMinOrderValue, etUsageLimit;
+    private TextInputEditText etCode, etDescription;
+    private TextInputEditText etPercent, etMaxDiscount, etAmount;
+    private TextInputEditText etMinOrderValue, etUsageLimit;
+    private TextInputEditText etStartDate, etEndDate;
     private RadioGroup rgDiscountType;
-    private TextView tvStartDate, tvEndDate;
+    private LinearLayout layoutPercentFields, layoutAmountFields;
     private SwitchMaterial switchActive;
-    private Button btnSave;
+    private Button btnSave, btnCancel;
     private FrameLayout layoutLoading;
 
     private AdminCouponApi adminCouponApi;
@@ -46,16 +50,16 @@ public class AdminCouponFormActivity extends AppCompatActivity {
     private Long couponId = -1L;
     private Coupon currentCoupon;
 
-    // Format for server: YYYY-MM-DD
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_coupon_form); // Correction: used existing XML name
+        setContentView(R.layout.activity_admin_coupon_form);
 
         initViews();
+        setupListeners();
         checkIntent();
     }
 
@@ -64,24 +68,47 @@ public class AdminCouponFormActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tvTitle);
         etCode = findViewById(R.id.etCode);
         etDescription = findViewById(R.id.etDescription);
-        etDiscountValue = findViewById(R.id.etDiscountValue);
+
+        // Discount fields
+        etPercent = findViewById(R.id.etPercent);
+        etMaxDiscount = findViewById(R.id.etMaxDiscount);
+        etAmount = findViewById(R.id.etAmount);
+        layoutPercentFields = findViewById(R.id.layoutPercentFields);
+        layoutAmountFields = findViewById(R.id.layoutAmountFields);
+        rgDiscountType = findViewById(R.id.rgDiscountType);
+
         etMinOrderValue = findViewById(R.id.etMinOrderValue);
         etUsageLimit = findViewById(R.id.etUsageLimit);
-        rgDiscountType = findViewById(R.id.rgDiscountType);
-        tvStartDate = findViewById(R.id.tvStartDate);
-        tvEndDate = findViewById(R.id.tvEndDate);
+
+        etStartDate = findViewById(R.id.etStartDate);
+        etEndDate = findViewById(R.id.etEndDate);
+
         switchActive = findViewById(R.id.switchActive);
         btnSave = findViewById(R.id.btnSave);
+        btnCancel = findViewById(R.id.btnCancel);
         layoutLoading = findViewById(R.id.layoutLoading);
 
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         adminCouponApi = retrofitClient.getAdminCouponApi();
         token = retrofitClient.getToken();
+    }
 
+    private void setupListeners() {
         ivBack.setOnClickListener(v -> finish());
+        btnCancel.setOnClickListener(v -> finish());
 
-        tvStartDate.setOnClickListener(v -> showDatePicker(tvStartDate));
-        tvEndDate.setOnClickListener(v -> showDatePicker(tvEndDate));
+        etStartDate.setOnClickListener(v -> showDatePicker(etStartDate));
+        etEndDate.setOnClickListener(v -> showDatePicker(etEndDate));
+
+        rgDiscountType.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rbPercent) {
+                layoutPercentFields.setVisibility(View.VISIBLE);
+                layoutAmountFields.setVisibility(View.GONE);
+            } else {
+                layoutPercentFields.setVisibility(View.GONE);
+                layoutAmountFields.setVisibility(View.VISIBLE);
+            }
+        });
 
         btnSave.setOnClickListener(v -> saveCoupon());
     }
@@ -89,24 +116,38 @@ public class AdminCouponFormActivity extends AppCompatActivity {
     private void checkIntent() {
         couponId = getIntent().getLongExtra("coupon_id", -1);
         if (couponId != -1) {
-            tvTitle.setText("Cập Nhật Coupon");
+            tvTitle.setText("Cập nhật coupon");
+            btnSave.setText("Lưu thay đổi");
             loadCouponDetails();
         } else {
-            tvTitle.setText("Thêm Mã Giảm Giá");
-            // Set default dates (Today and +30 days)
-            tvStartDate.setText(dateFormat.format(calendar.getTime()));
+            tvTitle.setText("Thêm mã giảm giá");
+            btnSave.setText("Tạo mới");
+
+            // Set default dates
+            etStartDate.setText(dateFormat.format(calendar.getTime()));
             Calendar endCal = (Calendar) calendar.clone();
             endCal.add(Calendar.DAY_OF_YEAR, 30);
-            tvEndDate.setText(dateFormat.format(endCal.getTime()));
+            etEndDate.setText(dateFormat.format(endCal.getTime()));
         }
     }
 
-    private void showDatePicker(TextView textView) {
+    private void showDatePicker(TextInputEditText editText) {
+        // Parse current date from field if possible
+        Calendar dateCal = Calendar.getInstance();
+        try {
+            String dateStr = editText.getText().toString();
+            if (!dateStr.isEmpty()) {
+                dateCal.setTime(dateFormat.parse(dateStr));
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+
         new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             Calendar selectedDate = Calendar.getInstance();
             selectedDate.set(year, month, dayOfMonth);
-            textView.setText(dateFormat.format(selectedDate.getTime()));
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+            editText.setText(dateFormat.format(selectedDate.getTime()));
+        }, dateCal.get(Calendar.YEAR), dateCal.get(Calendar.MONTH), dateCal.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     private void loadCouponDetails() {
@@ -137,53 +178,122 @@ public class AdminCouponFormActivity extends AppCompatActivity {
     private void populateForm(Coupon coupon) {
         etCode.setText(coupon.getCode());
         etDescription.setText(coupon.getDescription());
-        etDiscountValue.setText(String.valueOf(coupon.getDiscountValue()));
-        etMinOrderValue.setText(String.valueOf(coupon.getMinOrderValue()));
-        etUsageLimit.setText(String.valueOf(coupon.getUsageLimit()));
 
+        // Populate inputs based on type
         if ("FIXED_AMOUNT".equals(coupon.getDiscountType()) || "AMOUNT".equals(coupon.getDiscountType())) {
             rgDiscountType.check(R.id.rbAmount);
+            // Integer cast for cleaner display if whole number, else double
+            double val = coupon.getDiscountValue();
+            if (val == (long) val) {
+                etAmount.setText(String.format(Locale.US, "%d", (long) val));
+            } else {
+                etAmount.setText(String.valueOf(val));
+            }
         } else {
             rgDiscountType.check(R.id.rbPercent);
+
+            double val = coupon.getDiscountValue();
+            if (val == (long) val) {
+                etPercent.setText(String.format(Locale.US, "%d", (long) val));
+            } else {
+                etPercent.setText(String.valueOf(val));
+            }
+
+            if (coupon.getMaxDiscountAmount() != null) {
+                double max = coupon.getMaxDiscountAmount();
+                if (max == (long) max) {
+                    etMaxDiscount.setText(String.format(Locale.US, "%d", (long) max));
+                } else {
+                    etMaxDiscount.setText(String.valueOf(max));
+                }
+            }
         }
 
-        tvStartDate.setText(coupon.getStartDate());
-        tvEndDate.setText(coupon.getEndDate());
+        if (coupon.getMinOrderValue() != null) {
+            double min = coupon.getMinOrderValue();
+            if (min == (long) min) {
+                etMinOrderValue.setText(String.format(Locale.US, "%d", (long) min));
+            } else {
+                etMinOrderValue.setText(String.valueOf(min));
+            }
+        }
+
+        if (coupon.getUsageLimit() != null) {
+            etUsageLimit.setText(String.valueOf(coupon.getUsageLimit()));
+        }
+
+        etStartDate.setText(coupon.getStartDate());
+        etEndDate.setText(coupon.getEndDate());
         switchActive.setChecked(Boolean.TRUE.equals(coupon.getIsActive()));
 
-        // Disable Code editing in Update mode (usually unique)
+        // Disable Code editing in Update mode
         etCode.setEnabled(false);
     }
 
     private void saveCoupon() {
         String code = etCode.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
-        String discountValueStr = etDiscountValue.getText().toString().trim();
         String minOrderStr = etMinOrderValue.getText().toString().trim();
         String usageLimitStr = etUsageLimit.getText().toString().trim();
-        String startDate = tvStartDate.getText().toString();
-        String endDate = tvEndDate.getText().toString();
+        String startDate = etStartDate.getText().toString();
+        String endDate = etEndDate.getText().toString();
 
-        if (code.isEmpty() || discountValueStr.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập Mã và Giá trị giảm", Toast.LENGTH_SHORT).show();
+        boolean isPercent = rgDiscountType.getCheckedRadioButtonId() == R.id.rbPercent;
+
+        if (code.isEmpty()) {
+            etCode.setError("Vui lòng nhập mã");
             return;
+        }
+
+        // Get value based on type
+        String discountValueStr;
+        String maxDiscountStr = null;
+
+        if (isPercent) {
+            discountValueStr = etPercent.getText().toString().trim();
+            maxDiscountStr = etMaxDiscount.getText().toString().trim();
+            if (discountValueStr.isEmpty()) {
+                etPercent.setError("Nhập % giảm");
+                return;
+            }
+        } else {
+            discountValueStr = etAmount.getText().toString().trim();
+            if (discountValueStr.isEmpty()) {
+                etAmount.setError("Nhập số tiền giảm");
+                return;
+            }
         }
 
         Coupon coupon = new Coupon();
         if (currentCoupon != null)
             coupon.setId(currentCoupon.getId());
 
-        coupon.setCode(code.toUpperCase());
+        coupon.setCode(code); // Giữ nguyên định dạng code
+        // Nếu description không rỗng, dùng nó làm name (tên hiển thị)
+        // Nếu description rỗng, dùng code làm name
+        coupon.setName(description.isEmpty() ? code : description);
         coupon.setDescription(description);
-        coupon.setDiscountType(
-                rgDiscountType.getCheckedRadioButtonId() == R.id.rbPercent ? "PERCENTAGE" : "FIXED_AMOUNT");
+        coupon.setDiscountType(isPercent ? "PERCENTAGE" : "FIXED_AMOUNT");
 
         try {
-            coupon.setDiscountValue(Double.parseDouble(discountValueStr));
+            double val = Double.parseDouble(discountValueStr);
+            if (isPercent && (val <= 0 || val > 100)) {
+                etPercent.setError("% không hợp lệ (1-100)");
+                return;
+            }
+            coupon.setDiscountValue(val);
+
+            if (isPercent && maxDiscountStr != null && !maxDiscountStr.isEmpty()) {
+                coupon.setMaxDiscountAmount(Double.parseDouble(maxDiscountStr));
+            } else {
+                coupon.setMaxDiscountAmount(null);
+            }
+
             coupon.setMinOrderValue(minOrderStr.isEmpty() ? 0.0 : Double.parseDouble(minOrderStr));
             coupon.setUsageLimit(usageLimitStr.isEmpty() ? 0 : Integer.parseInt(usageLimitStr));
+
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Số liệu không hợp lệ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Số liệu nhập vào không hợp lệ", Toast.LENGTH_SHORT).show();
             return;
         }
 
