@@ -92,6 +92,13 @@
             android:name=".ui.checkout.CheckoutActivity"
             android:exported="false" />
         
+        <!-- VNPayActivity - Thanh toán VNPay -->
+        <activity
+            android:name=".ui.payment.VNPayActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize"
+            android:hardwareAccelerated="true" />
+        
         <!-- ProfileActivity - Hồ sơ người dùng -->
         <activity
             android:name=".ui.product.AllProductsActivity"

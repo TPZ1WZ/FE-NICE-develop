@@ -375,9 +375,12 @@ public class CheckoutActivity extends AppCompatActivity {
                     if (orderResponse.requiresPayment()) {
                         String paymentUrl = orderResponse.getPaymentUrl();
                         if (paymentUrl != null && !paymentUrl.isEmpty()) {
-                            Toast.makeText(CheckoutActivity.this, "Chuyển đến trang thanh toán VNPay",
-                                    Toast.LENGTH_SHORT).show();
-                            showOrderSuccess();
+                            // Mở VNPay trong WebView Activity
+                            Toast.makeText(CheckoutActivity.this, "Chuyển đến trang thanh toán VNPay", Toast.LENGTH_SHORT).show();
+                            android.content.Intent intent = new android.content.Intent(CheckoutActivity.this, com.example.nike_fe.ui.payment.VNPayActivity.class);
+                            intent.putExtra("PAYMENT_URL", paymentUrl);
+                            startActivity(intent);
+                            finish();
                         } else {
                             Toast.makeText(CheckoutActivity.this, "Không thể lấy link thanh toán", Toast.LENGTH_SHORT)
                                     .show();

@@ -25,6 +25,7 @@ import com.example.nike_fe.data.model.Category;
 import com.example.nike_fe.data.model.Product;
 import com.example.nike_fe.data.model.User;
 import com.example.nike_fe.ui.auth.LoginActivity;
+import com.example.nike_fe.ui.chat.ChatBoxFragment;
 
 import com.example.nike_fe.ui.home.FilterAdapter;
 import com.example.nike_fe.ui.profile.ProfileActivity;
@@ -116,6 +117,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
         fabCart = findViewById(R.id.fabCart);
+        
+        // Chat FAB - Draggable
+        FloatingActionButton fabChat = findViewById(R.id.fabChat);
+        if (fabChat != null) {
+            // Make FAB draggable
+            final float[] dX = {0};
+            final float[] dY = {0};
+            final float[] downRawX = {0};
+            final float[] downRawY = {0};
+            final boolean[] isDragging = {false};
+            
+            fabChat.setOnTouchListener((v, event) -> {
+                switch (event.getAction()) {
+                    case android.view.MotionEvent.ACTION_DOWN:
+                        downRawX[0] = event.getRawX();
+                        downRawY[0] = event.getRawY();
+                        dX[0] = v.getX() - downRawX[0];
+                        dY[0] = v.getY() - downRawY[0];
+                        isDragging[0] = false;
+                        return true;
+                        
+                    case android.view.MotionEvent.ACTION_MOVE:
+                        float moveDeltaX = Math.abs(event.getRawX() - downRawX[0]);
+                        float moveDeltaY = Math.abs(event.getRawY() - downRawY[0]);
+                        
+                        // Only start dragging if moved more than 10dp
+                        if (moveDeltaX > 10 || moveDeltaY > 10) {
+                            isDragging[0] = true;
+                        }
+                        
+                        if (isDragging[0]) {
+                            v.animate()
+                                .x(event.getRawX() + dX[0])
+                                .y(event.getRawY() + dY[0])
+                                .setDuration(0)
+                                .start();
+                        }
+                        return true;
+                        
+                    case android.view.MotionEvent.ACTION_UP:
+                        if (!isDragging[0]) {
+                            // If not dragged, treat as click
+                            ChatBoxFragment chatBox = new ChatBoxFragment();
+                            chatBox.show(getSupportFragmentManager(), "ChatBox");
+                        }
+                        return true;
+                        
+                    default:
+                        return false;
+                }
+            });
+        }
 
         // Filter Button Logic
         View btnFilter = findViewById(R.id.btnFilter);

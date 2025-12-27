@@ -10,7 +10,7 @@ public class OrderResponse {
     @SerializedName("message")
     private String message;
     
-    @SerializedName("payment_url")
+    @SerializedName(value = "paymentUrl", alternate = {"payment_url"})
     private String paymentUrl;
     
     public String getStatus() {
