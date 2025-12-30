@@ -46,7 +46,6 @@ public class TopProductAdapter extends RecyclerView.Adapter<TopProductAdapter.To
         }
 
         holder.tvProductName.setText(product.getName());
-        holder.tvProductSku.setText(product.getSku());
         holder.tvSoldQuantity.setText(String.valueOf(product.getSoldQuantity()));
 
         Glide.with(context)
@@ -67,14 +66,12 @@ public class TopProductAdapter extends RecyclerView.Adapter<TopProductAdapter.To
     public class TopProductViewHolder extends RecyclerView.ViewHolder {
         private ImageView imgProduct;
         private TextView tvProductName;
-        private TextView tvProductSku;
         private TextView tvSoldQuantity;
 
         public TopProductViewHolder(@NonNull View itemView) {
             super(itemView);
             imgProduct = itemView.findViewById(R.id.imgProduct);
             tvProductName = itemView.findViewById(R.id.tvProductName);
-            tvProductSku = itemView.findViewById(R.id.tvProductSku);
             tvSoldQuantity = itemView.findViewById(R.id.tvSoldQuantity);
         }
     }

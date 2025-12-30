@@ -16,40 +16,34 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface AdminProductApi {
-    
-    @GET("/api/admin/products")
-    Call<List<AdminProduct>> getProducts(
-            @Header("Authorization") String token,
-            @Query("search") String search
-    );
-    
-    @GET("/api/admin/products/{id}")
-    Call<AdminProduct> getProductById(
-            @Header("Authorization") String token,
-            @Path("id") Long id
-    );
-    
-    @POST("/api/admin/products")
-    Call<AdminProduct> createProduct(
-            @Header("Authorization") String token,
-            @Body AdminProduct product
-    );
-    
-    @PUT("/api/admin/products/{id}")
-    Call<AdminProduct> updateProduct(
-            @Header("Authorization") String token,
-            @Path("id") Long id,
-            @Body AdminProduct product
-    );
-    
-    @DELETE("/api/admin/products/{id}")
-    Call<com.example.nike_fe.data.model.DeleteProductResponse> deleteProduct(
-            @Header("Authorization") String token,
-            @Path("id") Long id
-    );
-    
-    @GET("/api/admin/products/stats")
-    Call<ProductStats> getStats(
-            @Header("Authorization") String token
-    );
+
+        @GET("/api/admin/products")
+        Call<List<AdminProduct>> getProducts(
+                        @Header("Authorization") String token,
+                        @Query("search") String search);
+
+        @GET("/api/admin/products/{id}")
+        Call<AdminProduct> getProductById(
+                        @Header("Authorization") String token,
+                        @Path("id") Long id);
+
+        @POST("/api/admin/products")
+        Call<AdminProduct> createProduct(
+                        @Header("Authorization") String token,
+                        @Body AdminProduct product);
+
+        @PUT("/api/admin/products/{id}")
+        Call<AdminProduct> updateProduct(
+                        @Header("Authorization") String token,
+                        @Path("id") Long id,
+                        @Body AdminProduct product);
+
+        @DELETE("/api/admin/products/{id}")
+        Call<com.example.nike_fe.data.model.DeleteProductResponse> deleteProduct(
+                        @Header("Authorization") String token,
+                        @Path("id") Long id);
+
+        @GET("/api/admin/products/stats")
+        Call<ProductStats> getStats(
+                        @Header("Authorization") String token);
 }

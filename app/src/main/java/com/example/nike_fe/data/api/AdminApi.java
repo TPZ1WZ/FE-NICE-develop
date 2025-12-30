@@ -25,18 +25,18 @@ import retrofit2.http.Query;
 
 public interface AdminApi {
 
-        @GET("api/admin/dashboard/statistics")
+        @GET("api/v1/admin/dashboard/statistics")
         Call<DashboardStats> getDashboardStats(@Header("Authorization") String token);
 
-        @GET("api/admin/dashboard/order-status")
+        @GET("api/v1/admin/dashboard/order-status")
         Call<OrderStatusDistribution> getOrderStatusDistribution(@Header("Authorization") String token);
 
-        @GET("api/admin/dashboard/top-products")
+        @GET("api/v1/admin/dashboard/top-products")
         Call<TopProductsResponse> getTopProducts(
                         @Header("Authorization") String token,
                         @Query("limit") int limit);
 
-        @GET("api/admin/dashboard/charts/revenue")
+        @GET("api/v1/admin/dashboard/charts/revenue")
         Call<RevenueChartData> getRevenueChart(
                         @Header("Authorization") String token,
                         @Query("days") int days);

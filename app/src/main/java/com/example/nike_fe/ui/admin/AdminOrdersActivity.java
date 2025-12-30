@@ -48,6 +48,15 @@ public class AdminOrdersActivity extends AppCompatActivity {
         try {
             setContentView(R.layout.activity_admin_orders);
             
+            // Check for filter from intent (from dashboard)
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra("filter")) {
+                String filter = intent.getStringExtra("filter");
+                if ("pending".equals(filter)) {
+                    currentStatus = "pending";
+                }
+            }
+            
             initViews();
             setupSpinner();
             setupRecyclerView();
@@ -97,6 +106,11 @@ public class AdminOrdersActivity extends AppCompatActivity {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerStatus.setAdapter(adapter);
+        
+        // Set initial position based on currentStatus from intent
+        if (currentStatus != null && currentStatus.equals("pending")) {
+            spinnerStatus.setSelection(1, false); // "Chờ xác nhận" is at position 1
+        }
         
         spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
