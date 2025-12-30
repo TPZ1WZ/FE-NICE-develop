@@ -25,6 +25,8 @@
             app:title="Giỏ hàng"
             app:titleTextColor="@color/white"
             app:titleTextAppearance="@style/TextAppearance.Nike.Toolbar"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/white"
             app:menu="@menu/cart_menu" />
 
     </com.google.android.material.appbar.AppBarLayout>

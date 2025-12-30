@@ -29,7 +29,7 @@ public class AdminSettingsActivity extends AppCompatActivity {
     private static final String TAG = "AdminSettings";
     
     private ImageView ivBack;
-    private LinearLayout layoutStoreInfo, layoutChangePassword, layoutNotifications;
+    private LinearLayout layoutStoreInfo, layoutChangePassword, layoutSystemRules;
     private ProgressBar progressBar;
 
     private AdminApi adminApi;
@@ -50,7 +50,7 @@ public class AdminSettingsActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.ivBack);
         layoutStoreInfo = findViewById(R.id.layoutStoreInfo);
         layoutChangePassword = findViewById(R.id.layoutChangePassword);
-        layoutNotifications = findViewById(R.id.layoutNotifications);
+        layoutSystemRules = findViewById(R.id.layoutSystemRules);
         progressBar = findViewById(R.id.progressBar);
 
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
@@ -65,11 +65,11 @@ public class AdminSettingsActivity extends AppCompatActivity {
         // 1️⃣ Thông tin cửa hàng
         layoutStoreInfo.setOnClickListener(v -> showStoreInfoDialog());
 
-        // 2️⃣ Đổi mật khẩu
-        layoutChangePassword.setOnClickListener(v -> showChangePasswordDialog());
+        // 2️⃣ Quy tắc hệ thống
+        layoutSystemRules.setOnClickListener(v -> showSystemRulesDialog());
 
-        // 3️⃣ Cài đặt thông báo
-        layoutNotifications.setOnClickListener(v -> showNotificationSettingsDialog());
+        // 3️⃣ Đổi mật khẩu
+        layoutChangePassword.setOnClickListener(v -> showChangePasswordDialog());
     }
 
     private void loadSettings() {
@@ -199,17 +199,32 @@ public class AdminSettingsActivity extends AppCompatActivity {
     // 2️⃣ ĐỔI MẬT KHẨU ADMIN - API THẬT
     private void showChangePasswordDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("🔐 Đổi mật khẩu");
+        builder.setTitle("Đổi mật khẩu");
 
         android.view.LayoutInflater inflater = getLayoutInflater();
         android.view.View dialogView = inflater.inflate(R.layout.dialog_change_password, null);
         builder.setView(dialogView);
 
+        com.google.android.material.textfield.TextInputLayout tilCurrentPassword = dialogView.findViewById(R.id.tilCurrentPassword);
+        com.google.android.material.textfield.TextInputLayout tilNewPassword = dialogView.findViewById(R.id.tilNewPassword);
+        com.google.android.material.textfield.TextInputLayout tilConfirmPassword = dialogView.findViewById(R.id.tilConfirmPassword);
         TextInputEditText etCurrentPassword = dialogView.findViewById(R.id.etCurrentPassword);
         TextInputEditText etNewPassword = dialogView.findViewById(R.id.etNewPassword);
         TextInputEditText etConfirmPassword = dialogView.findViewById(R.id.etConfirmPassword);
 
-        builder.setPositiveButton("Đổi mật khẩu", (dialog, which) -> {
+        builder.setPositiveButton("Đổi mật khẩu", null);
+        builder.setNegativeButton("Hủy", null);
+        
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        
+        // Override positive button để ngăn auto-dismiss
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            // Xóa lỗi cũ
+            tilCurrentPassword.setError(null);
+            tilNewPassword.setError(null);
+            tilConfirmPassword.setError(null);
+            
             String currentPassword = etCurrentPassword.getText().toString().trim();
             String newPassword = etNewPassword.getText().toString().trim();
             String confirmPassword = etConfirmPassword.getText().toString().trim();
@@ -221,12 +236,12 @@ public class AdminSettingsActivity extends AppCompatActivity {
             }
 
             if (newPassword.length() < 6) {
-                Toast.makeText(this, "Mật khẩu mới phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
+                tilNewPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
                 return;
             }
 
             if (!newPassword.equals(confirmPassword)) {
-                Toast.makeText(this, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show();
+                tilConfirmPassword.setError("Mật khẩu xác nhận không khớp");
                 return;
             }
 
@@ -234,25 +249,45 @@ public class AdminSettingsActivity extends AppCompatActivity {
             ChangePasswordRequest request = new ChangePasswordRequest(currentPassword, newPassword);
             progressBar.setVisibility(View.VISIBLE);
             
-            adminApi.changePassword(token, request).enqueue(new Callback<String>() {
+            adminApi.changePassword(token, request).enqueue(new Callback<okhttp3.ResponseBody>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(Call<okhttp3.ResponseBody> call, Response<okhttp3.ResponseBody> response) {
                     progressBar.setVisibility(View.GONE);
                     if (response.isSuccessful()) {
                         Log.d(TAG, "✅ Password changed successfully");
+                        dialog.dismiss();
                         Toast.makeText(AdminSettingsActivity.this, 
-                            "✅ Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                            "✅ Đổi mật khẩu thành công!", Toast.LENGTH_LONG).show();
                     } else {
-                        Log.e(TAG, "❌ Failed to change password: " + response.code());
-                        String errorMsg = response.code() == 400 ? 
-                            "Mật khẩu hiện tại không đúng" : "Lỗi đổi mật khẩu";
+                        // Parse error body để lấy message cụ thể
+                        String errorMessage = "Lỗi đổi mật khẩu";
+                        try {
+                            if (response.errorBody() != null) {
+                                String errorBody = response.errorBody().string();
+                                Log.e(TAG, "❌ Error response body: " + errorBody);
+                                
+                                // Parse JSON để lấy error message
+                                if (errorBody.contains("Current password is wrong") || 
+                                    errorBody.contains("Mật khẩu hiện tại")) {
+                                    // Mật khẩu hiện tại sai - hiển thị lỗi trên input
+                                    tilCurrentPassword.setError("Mật khẩu hiện tại không đúng");
+                                    etCurrentPassword.requestFocus();
+                                    return;
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error parsing error body", e);
+                        }
+                        
+                        Log.e(TAG, "❌ Failed to change password: code=" + response.code() + 
+                                ", message=" + response.message());
                         Toast.makeText(AdminSettingsActivity.this, 
-                            "❌ " + errorMsg, Toast.LENGTH_SHORT).show();
+                            "❌ " + errorMessage, Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(Call<okhttp3.ResponseBody> call, Throwable t) {
                     progressBar.setVisibility(View.GONE);
                     Log.e(TAG, "❌ Network error changing password", t);
                     Toast.makeText(AdminSettingsActivity.this, 
@@ -260,65 +295,51 @@ public class AdminSettingsActivity extends AppCompatActivity {
                 }
             });
         });
-
-        builder.setNegativeButton("Hủy", null);
-        builder.show();
     }
 
-    // 3️⃣ CÀI ĐẶT THÔNG BÁO - LƯU SERVER
-    private void showNotificationSettingsDialog() {
+    // 3️⃣ QUY TẮC HỆ THỐNG - NGƯỠNG TỒN KHO
+    private void showSystemRulesDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("🔔 Cài đặt thông báo");
+        builder.setTitle("Quy tắc hệ thống");
 
         android.view.LayoutInflater inflater = getLayoutInflater();
-        android.view.View dialogView = inflater.inflate(R.layout.dialog_notification_settings, null);
+        android.view.View dialogView = inflater.inflate(R.layout.dialog_system_rules, null);
         builder.setView(dialogView);
 
-        SwitchCompat switchNewOrders = dialogView.findViewById(R.id.switchNewOrders);
-        SwitchCompat switchOutOfStock = dialogView.findViewById(R.id.switchOutOfStock);
-        SwitchCompat switchSystem = dialogView.findViewById(R.id.switchSystem);
+        TextInputEditText etStockThreshold = dialogView.findViewById(R.id.etStockThreshold);
 
-        // Load cài đặt hiện tại
-        if (currentSettings != null) {
-            switchNewOrders.setChecked(currentSettings.isNotifNewOrders());
-            switchOutOfStock.setChecked(currentSettings.isNotifOutOfStock());
-            switchSystem.setChecked(currentSettings.isNotifSystem());
-        }
+        // Load cài đặt từ SharedPreferences
+        android.content.SharedPreferences prefs = getSharedPreferences("AdminSettings", MODE_PRIVATE);
+        etStockThreshold.setText(String.valueOf(prefs.getInt("stock_threshold", 10)));
 
         builder.setPositiveButton("Lưu", (dialog, which) -> {
-            if (currentSettings == null) {
-                currentSettings = new StoreSettings();
-            }
+            String thresholdStr = etStockThreshold.getText().toString().trim();
             
-            currentSettings.setNotifNewOrders(switchNewOrders.isChecked());
-            currentSettings.setNotifOutOfStock(switchOutOfStock.isChecked());
-            currentSettings.setNotifSystem(switchSystem.isChecked());
+            if (thresholdStr.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập ngưỡng cảnh báo", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            // Lưu lên server
-            progressBar.setVisibility(View.VISIBLE);
-            adminApi.updateStoreSettings(token, currentSettings).enqueue(new Callback<StoreSettings>() {
-                @Override
-                public void onResponse(Call<StoreSettings> call, Response<StoreSettings> response) {
-                    progressBar.setVisibility(View.GONE);
-                    if (response.isSuccessful()) {
-                        saveToLocal(currentSettings);
-                        Toast.makeText(AdminSettingsActivity.this, 
-                            "✅ Đã lưu cài đặt thông báo", Toast.LENGTH_SHORT).show();
-                    } else {
-                        saveToLocal(currentSettings);
-                        Toast.makeText(AdminSettingsActivity.this, 
-                            "⚠️ Đã lưu cục bộ", Toast.LENGTH_SHORT).show();
-                    }
+            try {
+                int stockThreshold = Integer.parseInt(thresholdStr);
+
+                // Validation
+                if (stockThreshold < 1 || stockThreshold > 1000) {
+                    Toast.makeText(this, "Ngưỡng tồn kho phải từ 1-1000", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
-                @Override
-                public void onFailure(Call<StoreSettings> call, Throwable t) {
-                    progressBar.setVisibility(View.GONE);
-                    saveToLocal(currentSettings);
-                    Toast.makeText(AdminSettingsActivity.this, 
-                        "⚠️ Lỗi server, đã lưu cục bộ", Toast.LENGTH_SHORT).show();
-                }
-            });
+                // Lưu cài đặt
+                android.content.SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("stock_threshold", stockThreshold);
+                editor.apply();
+
+                Toast.makeText(this, "✅ Đã lưu ngưỡng cảnh báo tồn kho: " + stockThreshold, 
+                    Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Stock threshold saved: " + stockThreshold);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Vui lòng nhập số hợp lệ", Toast.LENGTH_SHORT).show();
+            }
         });
 
         builder.setNegativeButton("Hủy", null);

@@ -3,6 +3,7 @@ package com.example.nike_fe.ui.cart;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -24,6 +25,7 @@ import com.example.nike_fe.data.model.AddToCartRequest;
 import com.example.nike_fe.data.model.CartItem;
 import com.example.nike_fe.data.model.CartResponse;
 import com.example.nike_fe.ui.product.AllProductsActivity;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.text.NumberFormat;
@@ -41,6 +43,7 @@ public class CartActivity extends AppCompatActivity {
     private TextView tvTotalQuantity, tvTotalPrice;
     private FrameLayout layoutLoading;
     private LinearLayout layoutEmptyCart;
+    private MaterialToolbar toolbar;
     // private MaterialCardView cardOrderSummary; // Removed from UI
 
     private CartAdapter adapter;
@@ -66,6 +69,7 @@ public class CartActivity extends AppCompatActivity {
         tvTotalPrice = findViewById(R.id.tvTotal);
         layoutLoading = findViewById(R.id.layoutLoading);
         layoutEmptyCart = findViewById(R.id.layoutEmptyCart);
+        toolbar = findViewById(R.id.toolbar);
         // cardOrderSummary = findViewById(R.id.cardOrderSummary);
 
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
@@ -88,6 +92,8 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
+        toolbar.setNavigationOnClickListener(v -> finish());
+        
         btnCheckout.setOnClickListener(v -> navigateToCheckout());
 
         btnContinueShopping.setOnClickListener(v -> {

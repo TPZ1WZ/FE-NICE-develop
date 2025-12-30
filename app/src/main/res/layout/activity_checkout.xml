@@ -29,23 +29,31 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_back"
-                android:contentDescription="Back"
-                android:layout_marginBottom="24dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="THANH TOÁN"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="32dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="32dp">
+
+                <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_back"
+                    android:contentDescription="Back"
+                    android:layout_marginEnd="16dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.05"
+                    android:text="THANH TOÁN"
+                    android:textColor="@color/black"
+                    android:textSize="32sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

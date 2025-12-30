@@ -434,7 +434,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private void loadProductStats() {
         Log.d(TAG, "Loading product stats from products/stats API (only active products)...");
         
-        productApi.getStats("Bearer " + token).enqueue(new Callback<ProductStats>() {
+        // Đọc ngưỡng tồn kho từ SharedPreferences
+        android.content.SharedPreferences prefs = getSharedPreferences("AdminSettings", MODE_PRIVATE);
+        int stockThreshold = prefs.getInt("stock_threshold", 10);
+        
+        Log.d(TAG, "Using stock threshold: " + stockThreshold);
+        
+        productApi.getStats("Bearer " + token, stockThreshold).enqueue(new Callback<ProductStats>() {
             @Override
             public void onResponse(Call<ProductStats> call, Response<ProductStats> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -445,17 +451,17 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     
                     // Update stock card with accurate data (only active products)
                     int totalStock = stats.getTotal();
-                    int lowStock = stats.getLowStock(); // Products with stock < 10
+                    int lowStock = stats.getLowStock(); // Products with stock <= threshold
                     
                     tvStockTotalV2.setText("Sản phẩm: " + totalStock);
-                    tvStockLowV2.setText("Gần hết (<10): " + lowStock);
+                    tvStockLowV2.setText("Gần hết (≤" + stockThreshold + "): " + lowStock);
                     
                     Log.d(TAG, "Product stats displayed successfully (excluding hidden products)");
                 } else {
                     Log.e(TAG, "Error loading product stats: " + response.code());
                     // Set default values on error
                     tvStockTotalV2.setText("Sản phẩm: 0");
-                    tvStockLowV2.setText("Gần hết (<10): 0");
+                    tvStockLowV2.setText("Gần hết: 0");
                 }
             }
 
@@ -464,7 +470,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 Log.e(TAG, "Failed to load product stats", t);
                 // Set default values on failure
                 tvStockTotalV2.setText("Sản phẩm: 0");
-                tvStockLowV2.setText("Gần hết (<10): 0");
+                tvStockLowV2.setText("Gần hết: 0");
             }
         });
     }

@@ -216,12 +216,18 @@ public class AdminProductsActivity extends AppCompatActivity {
 
     private void loadStats() {
         Log.d(TAG, "Loading stats...");
-        productApi.getStats("Bearer " + token).enqueue(new Callback<ProductStats>() {
+        
+        // Đọc ngưỡng tồn kho từ SharedPreferences
+        android.content.SharedPreferences prefs = getSharedPreferences("AdminSettings", MODE_PRIVATE);
+        int stockThreshold = prefs.getInt("stock_threshold", 10);
+        
+        productApi.getStats("Bearer " + token, stockThreshold).enqueue(new Callback<ProductStats>() {
             @Override
             public void onResponse(Call<ProductStats> call, Response<ProductStats> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ProductStats stats = response.body();
-                    Log.d(TAG, "Stats loaded: total=" + stats.getTotal() + ", lowStock=" + stats.getLowStock()
+                    Log.d(TAG, "Stats loaded with threshold " + stockThreshold + ": total=" + stats.getTotal() 
+                            + ", lowStock=" + stats.getLowStock()
                             + ", outOfStock=" + stats.getOutOfStock());
                     tvTotalProducts.setText(String.valueOf(stats.getTotal()));
                     tvLowStock.setText(String.valueOf(stats.getLowStock()));

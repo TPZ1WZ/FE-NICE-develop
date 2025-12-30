@@ -154,8 +154,8 @@ public interface AdminApi {
                         @Body java.util.Map<String, java.util.List<Long>> body);
 
         // Settings APIs
-        @POST("/auth/change-password")
-        Call<String> changePassword(
+        @POST("/api/v1/auth/change-password")
+        Call<okhttp3.ResponseBody> changePassword(
                         @Header("Authorization") String token,
                         @Body com.example.nike_fe.data.model.ChangePasswordRequest request);
 

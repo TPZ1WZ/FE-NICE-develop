@@ -36,7 +36,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     private FrameLayout layoutLoading;
     private TextView tvEmptyState;
     private TabLayout tabLayout;
-    private ImageView ivSearch, ivMore;
+    private ImageView ivBack;
 
     private OrderAdapter orderAdapter;
     private List<Order> allOrders = new ArrayList<>(); // Store all fetched orders
@@ -60,8 +60,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
         layoutLoading = findViewById(R.id.layoutLoading);
         tvEmptyState = findViewById(R.id.tvEmptyState);
         tabLayout = findViewById(R.id.tabLayout);
-        ivSearch = findViewById(R.id.ivSearch);
-        ivMore = findViewById(R.id.ivMore);
+        ivBack = findViewById(R.id.ivBack);
 
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         orderApi = retrofitClient.getOrderApi();
@@ -73,9 +72,8 @@ public class OrderHistoryActivity extends AppCompatActivity {
             return;
         }
 
-        // Search and More icons functionality can be added here
-        ivSearch.setOnClickListener(v -> Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show());
-        ivMore.setOnClickListener(v -> Toast.makeText(this, "More options clicked", Toast.LENGTH_SHORT).show());
+        // Setup back button
+        ivBack.setOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {

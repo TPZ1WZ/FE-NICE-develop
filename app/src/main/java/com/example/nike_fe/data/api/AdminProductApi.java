@@ -45,5 +45,6 @@ public interface AdminProductApi {
 
         @GET("/api/admin/products/stats")
         Call<ProductStats> getStats(
-                        @Header("Authorization") String token);
+                        @Header("Authorization") String token,
+                        @Query("threshold") Integer threshold);
 }

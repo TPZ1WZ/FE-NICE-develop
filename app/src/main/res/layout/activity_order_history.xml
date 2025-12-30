@@ -19,31 +19,24 @@
             android:orientation="horizontal"
             android:padding="16dp">
 
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="#333333"
+                android:contentDescription="Back"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Đơn hàng"
                 android:textColor="#000000"
-                android:textSize="34sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
-
-            <ImageView
-                android:id="@+id/ivSearch"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:contentDescription="Search"
-                android:src="@drawable/ic_search"
-                app:tint="#333333" />
-
-            <ImageView
-                android:id="@+id/ivMore"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Options"
-                android:src="@drawable/ic_more_vert"
-                app:tint="#333333" />
         </LinearLayout>
 
         <!-- Tabs -->

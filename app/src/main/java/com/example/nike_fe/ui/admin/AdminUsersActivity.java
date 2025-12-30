@@ -33,7 +33,7 @@ import retrofit2.Response;
 
 public class AdminUsersActivity extends AppCompatActivity {
 
-    private ImageView ivBack, ivFilter;
+    private ImageView ivBack;
     private TextInputEditText etSearch;
     private RecyclerView rvUsers;
     private FrameLayout layoutLoading;
@@ -58,7 +58,6 @@ public class AdminUsersActivity extends AppCompatActivity {
 
     private void initViews() {
         ivBack = findViewById(R.id.ivBack);
-        ivFilter = findViewById(R.id.ivFilter);
         etSearch = findViewById(R.id.etSearch);
         rvUsers = findViewById(R.id.rvUsers);
         layoutLoading = findViewById(R.id.layoutLoading);
@@ -98,10 +97,6 @@ public class AdminUsersActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         ivBack.setOnClickListener(v -> finish());
-
-        ivFilter.setOnClickListener(v -> {
-            Toast.makeText(this, "Tính năng lọc đang phát triển", Toast.LENGTH_SHORT).show();
-        });
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
