@@ -39,40 +39,10 @@ public class VNPayActivity extends AppCompatActivity {
 
         android.util.Log.d("VNPayActivity", "Payment URL: " + paymentUrl);
 
-        // Hiện dialog chọn cách thanh toán
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Chọn cách thanh toán")
-            .setMessage("VNPay có thể không hiển thị tốt trong app. Bạn muốn thanh toán bằng cách nào?")
-            .setPositiveButton("Mở Trình duyệt (Khuyến nghị)", (dialog, which) -> {
-                openInBrowser();
-            })
-            .setNegativeButton("Thử trong App", (dialog, which) -> {
-                initViews();
-                setupWebView();
-                loadPaymentUrl();
-            })
-            .setCancelable(true)
-            .setOnCancelListener(dialog -> finish())
-            .show();
-    }
-
-    private void openInBrowser() {
-        android.util.Log.d("VNPayActivity", "Opening in browser: " + paymentUrl);
-        
-        try {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl));
-            startActivity(browserIntent);
-            
-            Toast.makeText(this, "Đã mở trình duyệt. Sau khi thanh toán xong, quay lại app.", Toast.LENGTH_LONG).show();
-            
-            // Về home, user sẽ tự check đơn hàng sau khi thanh toán
-            navigateToHome();
-            
-        } catch (Exception e) {
-            android.util.Log.e("VNPayActivity", "Failed to open browser", e);
-            Toast.makeText(this, "Không thể mở trình duyệt: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            finish();
-        }
+        // ✅ Mở WebView để thanh toán trong app
+        initViews();
+        setupWebView();
+        loadPaymentUrl();
     }
 
     private void initViews() {
@@ -131,27 +101,25 @@ public class VNPayActivity extends AppCompatActivity {
             }
 
             private boolean handleUrl(String url, WebView view) {
-                // Log URL for debugging
                 android.util.Log.d("VNPayActivity", "shouldOverrideUrlLoading: " + url);
 
-                // Check if this is callback URL (trước khi load localhost)
-                if (url.contains("/orders/vnpay/callback") || url.contains("vnp_ResponseCode")) {
-                    // Không load URL localhost, xử lý ngay
+                // ✅ Check if this is callback URL (bắt callback trước khi load)
+                if (url.contains("/api/v1/orders/vnpay/callback") || url.contains("vnp_ResponseCode")) {
                     android.util.Log.d("VNPayActivity", "Callback detected, handling payment");
                     handlePaymentCallback(url);
-                    return true; // Chặn WebView load URL này
+                    return true; // Chặn WebView load URL localhost
                 }
 
-                // Thay localhost bằng 10.0.2.2 cho emulator
-                if (url.contains("localhost:8080")) {
-                    String newUrl = url.replace("localhost:8080", "10.0.2.2:8080");
+                // ✅ Replace localhost with 10.0.2.2 for emulator
+                if (url.contains("localhost:8080") || url.contains("127.0.0.1:8080")) {
+                    String newUrl = url.replace("localhost:8080", "10.0.2.2:8080")
+                                      .replace("127.0.0.1:8080", "10.0.2.2:8080");
                     android.util.Log.d("VNPayActivity", "Replaced localhost with 10.0.2.2: " + newUrl);
                     view.loadUrl(newUrl);
                     return true;
                 }
 
-                // Return false to let WebView handle normal navigation
-                // Only return true if we handled it specifically above
+                // Let WebView handle normal navigation
                 return false;
             }
 
@@ -239,6 +207,18 @@ public class VNPayActivity extends AppCompatActivity {
     }
 
     private void handlePaymentCallback(String url) {
+        android.util.Log.d("VNPayActivity", "Payment callback - URL: " + url);
+        
+        // ✅ GỌI BACKEND CALLBACK ĐỂ CẬP NHẬT ORDER
+        // Thay thế 10.0.2.2 bằng 10.0.2.2 để emulator có thể gọi localhost
+        String callbackUrl = url.replace("localhost:8080", "10.0.2.2:8080")
+                               .replace("127.0.0.1:8080", "10.0.2.2:8080");
+        
+        android.util.Log.d("VNPayActivity", "Calling backend callback: " + callbackUrl);
+        
+        // Load callback URL để backend xử lý (update order status)
+        webView.loadUrl(callbackUrl);
+        
         // Parse callback URL to get payment result
         Uri uri = Uri.parse(url);
         String responseCode = uri.getQueryParameter("vnp_ResponseCode");
@@ -246,14 +226,17 @@ public class VNPayActivity extends AppCompatActivity {
 
         android.util.Log.d("VNPayActivity", "Payment callback - ResponseCode: " + responseCode + ", TxnRef: " + txnRef);
 
-        if ("00".equals(responseCode)) {
-            // Payment successful - Hiển thị dialog thông báo chi tiết
-            showPaymentSuccessDialog(txnRef);
-        } else {
-            // Payment failed
-            String errorMessage = getPaymentErrorMessage(responseCode);
-            showPaymentFailedDialog(errorMessage);
-        }
+        // Delay một chút để backend kịp xử lý
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            if ("00".equals(responseCode)) {
+                // Payment successful - Hiển thị dialog thông báo chi tiết
+                showPaymentSuccessDialog(txnRef);
+            } else {
+                // Payment failed
+                String errorMessage = getPaymentErrorMessage(responseCode);
+                showPaymentFailedDialog(errorMessage);
+            }
+        }, 1000); // Delay 1 giây để backend xử lý xong
     }
 
     private void showPaymentSuccessDialog(String txnRef) {
@@ -263,7 +246,8 @@ public class VNPayActivity extends AppCompatActivity {
                         "Trạng thái đơn hàng:\n" +
                         "• Đang chờ xác nhận từ Admin\n" +
                         "• Sau khi xác nhận, đơn hàng sẽ được chuẩn bị\n" +
-                        "• Bạn có thể theo dõi trong Đơn Hàng Của Tôi\n\n" +
+                        "• Bạn có thể theo dõi trong phần Đơn hàng\n\n" +
+                        "Chú ý: Nếu bạn có nhu cầu hủy đơn hàng, vui lòng liên hệ với bộ phận hỗ trợ hoặc dùng chatbox để được giúp đỡ.\n\n" +
                         "Cảm ơn bạn đã mua hàng!")
                 .setPositiveButton("Xem Đơn Hàng", (dialog, which) -> {
                     // Navigate to Order History

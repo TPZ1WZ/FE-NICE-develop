@@ -237,7 +237,7 @@
                         android:id="@+id/rbVNPay"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:text="Thanh toán qua VNPAY          Khuyến dùng"
+                        android:text="Thanh toán qua VNPAY"
                         android:textSize="15sp"
                         android:textColor="@color/black"
                         android:paddingStart="16dp"
