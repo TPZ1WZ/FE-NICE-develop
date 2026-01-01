@@ -11,14 +11,14 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/nike_black">
+        android:background="#FFFFFF">
     
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="80dp"
-            android:background="@color/nike_black"
+            android:background="#FFFFFF"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
@@ -61,7 +61,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Andrew Ainsley"
-                            android:textColor="@color/white"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold"/>
                     </LinearLayout>
@@ -78,7 +78,7 @@
                         android:src="@drawable/ic_notification"
                         android:clickable="true"
                         android:focusable="true"
-                        app:tint="@color/white"/>
+                        app:tint="@color/black"/>
 
                     <TextView
                         android:id="@+id/tvNotificationBadge"
@@ -111,7 +111,7 @@
                         android:layout_weight="1"
                         android:layout_marginEnd="12dp"
                         android:background="@drawable/bg_search_bar"
-                        android:backgroundTint="@color/nike_dark_gray"
+                        android:backgroundTint="#F5F5F5"
                         android:gravity="center_vertical"
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp">
@@ -120,7 +120,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_search"
-                            app:tint="#BDBDBD"/>
+                            app:tint="#757575"/>
 
                         <EditText
                             android:id="@+id/etSearch"
@@ -129,7 +129,7 @@
                             android:layout_marginStart="8dp"
                             android:background="@null"
                             android:hint="Tìm kiếm giày..."
-                            android:textColor="@color/white"
+                            android:textColor="@color/black"
                             android:textColorHint="#9E9E9E"
                             android:textSize="14sp"
                             android:maxLines="1"
@@ -162,10 +162,10 @@
                         android:layout_height="50dp"
                         android:layout_marginStart="8dp"
                         android:text="Sắp xếp"
-                        android:textColor="@color/black"
-                        app:chipBackgroundColor="@color/white"
+                        android:textColor="@color/white"
+                        app:chipBackgroundColor="@color/black"
                         app:chipIcon="@drawable/ic_filter"
-                        app:chipIconTint="@color/black"
+                        app:chipIconTint="@color/white"
                         style="@style/Widget.MaterialComponents.Chip.Action"
                         android:gravity="center"
                         />
@@ -179,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone"
-                    android:background="@color/white"
+                    android:background="@color/black"
                     android:paddingTop="16dp">
 
                     <TextView
@@ -221,7 +221,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Ưu đãi đặc biệt"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
 
@@ -230,59 +230,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Xem tất cả"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
-                <!-- Special Offers Banner -->
-                <FrameLayout
+                <!-- Special Offers Banner Carousel -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/bannerViewPager"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="@drawable/bg_special_offer"
-                    android:layout_marginBottom="24dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_gravity="center_vertical"
-                        android:paddingStart="24dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="25%"
-                            android:textColor="@color/white"
-                            android:textSize="48sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Đặc biệt hôm nay!"
-                            android:textColor="@color/white"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Nhận giảm giá cho mỗi đơn hàng,\nchỉ áp dụng hôm nay"
-                            android:textColor="#E0E0E0"
-                            android:textSize="12sp"/>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="160dp"
-                        android:layout_height="140dp"
-                        android:layout_gravity="center_vertical|end"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/img_placeholder_shoe"
-                        android:rotation="-15"/>
-                </FrameLayout>
+                    android:layout_marginBottom="24dp"/>
 
 
 
@@ -300,7 +259,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Phổ biến nhất"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
 
@@ -309,7 +268,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Xem tất cả"
-                        android:textColor="@color/nike_blue"
+                        android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
@@ -326,44 +285,59 @@
                     tools:listitem="@layout/item_home_category"/> <!-- Reusing for preview -->
 
                 <!-- Product Grid -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvProductGrid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="8dp"
-                    android:overScrollMode="never"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="2"
-                    tools:listitem="@layout/item_home_product"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvProductGrid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:overScrollMode="never"
+                        android:paddingHorizontal="8dp"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="2"
+                        tools:listitem="@layout/item_home_product" />
 
                 </LinearLayout> <!-- End layoutMainContent -->
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     
-        <!-- Bottom App Bar -->
-        <com.google.android.material.bottomappbar.BottomAppBar
+        <!-- Bottom App Bar with Image Background -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/bottomAppBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:layout_gravity="bottom"
-            android:backgroundTint="@color/nike_black"
-            app:fabAlignmentMode="center"
-            app:fabCradleMargin="8dp"
-            app:fabCradleRoundedCornerRadius="24dp"
-            app:hideOnScroll="true">
-    
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior">
+
+            <!-- Background Image -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/bar_navigation"
+                android:scaleType="centerCrop"/>
+
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottomNavigation"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="16dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
                 android:background="@android:color/transparent"
+                style="@style/Widget.MaterialComponents.BottomNavigationView"
                 app:menu="@menu/bottom_nav_menu"
                 app:elevation="0dp"
-                app:labelVisibilityMode="unlabeled" />
+                app:labelVisibilityMode="unlabeled"
+                app:itemIconTint="@color/nav_item_color_state_white"
+                app:itemIconSize="30dp"
+                app:itemRippleColor="@android:color/transparent"/>
                 
-        </com.google.android.material.bottomappbar.BottomAppBar>
+        </com.google.android.material.card.MaterialCardView>
     
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabCart"
@@ -372,8 +346,13 @@
             android:src="@drawable/ic_shopping_bag"
             app:tint="@color/white"
             app:backgroundTint="@color/nike_black"
-            app:layout_anchor="@id/bottomAppBar"
-            app:maxImageSize="32dp" />
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="32dp"
+            app:maxImageSize="32dp"
+            app:elevation="12dp"
+            app:borderWidth="0dp"
+            android:outlineProvider="none"
+            android:stateListAnimator="@null"/>
 
         <!-- Chat FAB -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -399,11 +378,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@drawable/bg_category_selector"
-        android:backgroundTint="#03A9F4"
+        android:backgroundTint="#000000"
         android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
-        app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

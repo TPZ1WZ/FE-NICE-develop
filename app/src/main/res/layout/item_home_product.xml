@@ -1,19 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="160dp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="16dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="16dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/nike_dark_gray">
+    app:cardElevation="0dp"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="1.5dp"
+    app:cardBackgroundColor="@android:color/transparent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="12dp">
+        android:layout_height="wrap_content">
 
+        <!-- Top Background Image -->
+        <ImageView
+            android:id="@+id/ivTopBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/item_top_background1"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/llBottomInfo"/>
+
+        <!-- Bottom Background Image -->
+        <ImageView
+            android:id="@+id/ivBottomBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/item_bot_background"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="@+id/llBottomInfo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Top Half: Image & Favorite -->
         <!-- Favorite Icon -->
         <ImageView
             android:id="@+id/ivFavorite"
@@ -22,7 +48,8 @@
             android:layout_marginTop="12dp"
             android:layout_marginStart="12dp"
             android:src="@drawable/ic_heart"
-            app:tint="#9CA3AF"
+            app:tint="#BDBDBD"
+            android:elevation="2dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,70 +58,59 @@
             android:id="@+id/ivProductImage"
             android:layout_width="120dp"
             android:layout_height="100dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:scaleType="centerCrop"
             android:src="@drawable/img_placeholder_shoe"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivFavorite" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Best Seller Text -->
-        <TextView
-            android:id="@+id/tvBestSeller"
-            android:layout_width="wrap_content"
+        <!-- Bottom Half: Info (Transparent Background) -->
+        <LinearLayout
+            android:id="@+id/llBottomInfo"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="8dp"
-            android:text="BEST SELLER"
-            android:textColor="@color/splash_blue"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivProductImage" />
-
-        <!-- Product Name -->
-        <TextView
-            android:id="@+id/tvProductName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:text="Nike Jordan"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:maxLines="1"
-            android:ellipsize="end"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvBestSeller" />
-
-        <!-- Price -->
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="4dp"
-            android:text="$302.00"
-            android:textColor="@color/nike_blue"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvProductName" />
-
-        <!-- Add Button (+) -->
-        <ImageButton
-            android:id="@+id/btnAdd"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/bg_add_btn"
-            android:src="@drawable/ic_add"
-            app:tint="@color/white"
+            android:orientation="vertical"
+            android:background="@android:color/transparent"
+            android:padding="12dp"
+            app:layout_constraintTop_toBottomOf="@id/ivProductImage"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
+            <!-- Best Seller Badge (Optional, kept if needed) -->
+            <!-- <TextView ... /> -->
+
+            <!-- Product Name -->
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nike React Infinity Run 3"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Price -->
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.200.000 ₫"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Add Button (+) - Overlay or inside black area? Reference image shows clean bottom.
+             If overlaying on the line, we can keep it. I'll hide it or move it to match strict 'Clean' look of reference image if needed.
+             Reference image does NOT show an add button. I'll comment it out or remove for now to match the user's 'picture' request.
+        -->
+        
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

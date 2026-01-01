@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
     app:cardCornerRadius="14dp"
-    app:cardBackgroundColor="#1F1F23"
+    app:cardBackgroundColor="@android:color/transparent"
     app:cardElevation="0dp"
     android:clickable="true"
     android:focusable="true">
@@ -15,6 +15,30 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <!-- Top Background Image -->
+        <ImageView
+            android:id="@+id/ivTopBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/item_top_background"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/llBottomInfo"/>
+
+        <!-- Bottom Background Image -->
+        <ImageView
+            android:id="@+id/ivBottomBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/item_bot_background"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="@+id/llBottomInfo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <!-- Product Image (Square 1:1) -->
         <ImageView
@@ -27,7 +51,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:scaleType="centerCrop"
             android:src="@drawable/img_placeholder_shoe"
-            android:background="#2A2A2E" />
+            android:background="@android:color/transparent" />
 
         <!-- Favorite Icon -->
         <ImageView
@@ -42,10 +66,12 @@
 
         <!-- Product Info -->
         <LinearLayout
+            android:id="@+id/llBottomInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="12dp"
+            android:background="@android:color/transparent"
             app:layout_constraintTop_toBottomOf="@id/ivProductImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">

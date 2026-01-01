@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@drawable/profile"
     android:padding="24dp">
 
     <!-- Header -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp">
+        android:layout_marginBottom="100dp">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -24,14 +24,6 @@
             app:tint="@color/black"
             android:padding="8dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Hồ sơ"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"/>
     </RelativeLayout>
 
     <!-- Avatar Section -->
@@ -46,7 +38,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/img_placeholder_shoe"
-            app:civ_border_width="0dp"/>
+            app:civ_border_width="0dp" />
 
         <ImageView
             android:layout_width="24dp"
@@ -75,7 +67,7 @@
         android:paddingHorizontal="16dp"
         android:text="EMMANUEL OYIBOKE"
         android:textStyle="bold"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:layout_marginBottom="16dp"/>
 
     <TextView
@@ -94,7 +86,7 @@
         android:text="emmanueloyiboke@gmail.com"
         android:inputType="textEmailAddress"
         android:textStyle="bold"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:layout_marginBottom="16dp"/>
 
     <TextView
@@ -113,7 +105,7 @@
         android:text="........"
         android:inputType="textPassword"
         android:textStyle="bold"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:layout_marginBottom="8dp"/>
         
     <TextView
@@ -122,52 +114,130 @@
         android:layout_gravity="end"
         android:text="Khôi phục mật khẩu"
         android:textColor="@color/gray_500"
-        android:textSize="12sp"
+        android:textSize="15sp"
         android:layout_marginBottom="32dp"/>
 
-    <Button
-        android:id="@+id/btnSave"
+    <!-- Row 1: Save & My Orders -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Lưu thay đổi"
-        android:textAllCaps="false"
-        android:backgroundTint="@color/splash_blue"
-        app:cornerRadius="12dp"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnMyOrders"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Đơn hàng của tôi"
-        android:textColor="@color/white"
-        android:textAllCaps="false"
-        android:backgroundTint="#FF6B00"
-        app:cornerRadius="12dp"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnAdminDashboard"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Trang quản trị"
-        android:textColor="@color/white"
-        android:textAllCaps="false"
-        android:backgroundTint="#4CAF50"
-        app:cornerRadius="12dp"
-        android:visibility="gone"
-        android:layout_marginBottom="16dp"
-        tools:visibility="visible"/>
-
-    <TextView
-        android:id="@+id/tvLogout"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Đăng xuất"
-        android:textColor="#EF4444"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:padding="8dp"/>
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="68dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            android:layout_marginEnd="4dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/xanhla"
+                android:scaleType="centerCrop"/>
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:text="Lưu Thay Đổi"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="68dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            android:layout_marginStart="4dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/xanhbien"
+                android:scaleType="centerCrop"/>
+
+            <Button
+                android:id="@+id/btnMyOrders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:text="Đơn Hàng"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <!-- Row 2: Admin & Logout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvAdminDashboard"
+            android:layout_width="0dp"
+            android:layout_height="68dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            android:layout_marginEnd="4dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/mauvang"
+                android:scaleType="centerCrop"/>
+
+            <Button
+                android:id="@+id/btnAdminDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:text="Trang Quản Trị"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="68dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            android:layout_marginStart="4dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/maudo"
+                android:scaleType="centerCrop"/>
+
+            <Button
+                android:id="@+id/tvLogout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:text="Đăng Xuất"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
 </LinearLayout>

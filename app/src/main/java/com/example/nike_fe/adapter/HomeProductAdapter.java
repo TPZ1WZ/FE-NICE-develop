@@ -110,10 +110,6 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         ImageView ivProductImage;
         TextView tvProductName;
         TextView tvPrice;
-
-        // List specific
-        TextView tvBestSeller;
-        ImageButton btnAdd;
         ImageView ivFavorite;
 
         public ProductViewHolder(@NonNull View itemView) {
@@ -139,15 +135,15 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                 // Removed rating/sold views
             } else {
                 tvPrice = itemView.findViewById(R.id.tvPrice);
-                tvBestSeller = itemView.findViewById(R.id.tvBestSeller);
-                btnAdd = itemView.findViewById(R.id.btnAdd);
+                // tvBestSeller = itemView.findViewById(R.id.tvBestSeller); // Removed
+                // btnAdd = itemView.findViewById(R.id.btnAdd); // Removed
 
-                btnAdd.setOnClickListener(v -> {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION && listener != null) {
-                        listener.onAddClick(products.get(position));
-                    }
-                });
+                // btnAdd.setOnClickListener(v -> { // Removed
+                // int position = getAdapterPosition();
+                // if (position != RecyclerView.NO_POSITION && listener != null) {
+                // listener.onAddClick(products.get(position));
+                // }
+                // });
             }
 
             itemView.setOnClickListener(v -> {
@@ -224,9 +220,9 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
                 ivProductImage.setImageResource(R.drawable.img_placeholder_shoe);
             }
 
-            if (!isGridLayout && tvBestSeller != null) {
-                tvBestSeller.setVisibility(View.VISIBLE);
-            }
+            // if (!isGridLayout && tvBestSeller != null) {
+            // tvBestSeller.setVisibility(View.VISIBLE);
+            // }
         }
     }
 }

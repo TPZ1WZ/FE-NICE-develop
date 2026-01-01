@@ -46,10 +46,10 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
 
         if (selectedPosition == position) {
             holder.tvFilterName.setBackgroundResource(R.drawable.bg_filter_selected);
-            holder.tvFilterName.setTextColor(Color.WHITE);
+            holder.tvFilterName.setTextColor(Color.BLACK);
         } else {
             holder.tvFilterName.setBackgroundResource(R.drawable.bg_filter_unselected);
-            holder.tvFilterName.setTextColor(Color.BLACK);
+            holder.tvFilterName.setTextColor(Color.WHITE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -68,7 +68,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
     public int getItemCount() {
         return filters.size();
     }
-    
+
     /**
      * Cập nhật danh sách filters mới từ API
      */
