@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:paddingTop="16dp">
+
+    <!-- Radio Button -->
+    <RadioButton
+        android:id="@+id/rbSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="@android:color/black"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Edit Button -->
+    <TextView
+        android:id="@+id/tvEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sửa"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@id/tvDelete"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/rbSelect" />
+
+    <!-- Delete Button (only shown if not default) -->
+    <TextView
+        android:id="@+id/tvDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Xóa"
+        android:textColor="#E53935"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/rbSelect" />
+
+    <!-- Name and Phone -->
+    <LinearLayout
+        android:id="@+id/layoutNamePhone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@id/rbSelect"
+        app:layout_constraintEnd_toStartOf="@id/tvEdit"
+        app:layout_constraintTop_toTopOf="@id/rbSelect"
+        app:layout_constraintBottom_toBottomOf="@id/rbSelect">
+
+        <TextView
+            android:id="@+id/tvRecipientName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Họ tên"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" | "
+            android:textColor="@android:color/darker_gray"
+            android:textSize="16sp"
+            android:layout_marginHorizontal="4dp"/>
+
+        <TextView
+            android:id="@+id/tvPhoneNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Số điện thoại"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- Address -->
+    <TextView
+        android:id="@+id/tvFullAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Địa chỉ"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@id/layoutNamePhone"
+        app:layout_constraintEnd_toEndOf="@id/layoutNamePhone"
+        app:layout_constraintTop_toBottomOf="@id/layoutNamePhone" />
+
+    <!-- Default Badge -->
+    <TextView
+        android:id="@+id/tvDefaultBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mặc định"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/badge_default"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/layoutNamePhone"
+        app:layout_constraintTop_toBottomOf="@id/tvFullAddress"
+        app:layout_constraintBottom_toTopOf="@id/divider" />
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDefaultBadge"
+        app:layout_goneMarginTop="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

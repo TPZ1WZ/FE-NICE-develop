@@ -92,6 +92,16 @@
             android:name=".ui.checkout.CheckoutActivity"
             android:exported="false" />
         
+        <!-- SelectAddressActivity - Chọn địa chỉ nhận hàng -->
+        <activity
+            android:name=".ui.address.SelectAddressActivity"
+            android:exported="false" />
+        
+        <!-- AddEditAddressActivity - Thêm/Sửa địa chỉ -->
+        <activity
+            android:name=".ui.address.AddEditAddressActivity"
+            android:exported="false" />
+        
         <!-- VNPayActivity - Thanh toán VNPay -->
         <activity
             android:name=".ui.payment.VNPayActivity"

@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -17,12 +18,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.nike_fe.R;
+import com.example.nike_fe.data.api.AddressApi;
 import com.example.nike_fe.data.api.OrderApi;
 import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.api.UserCouponApi;
+import com.example.nike_fe.data.model.Address;
 import com.example.nike_fe.data.model.Coupon;
 import com.example.nike_fe.data.model.OrderRequest;
 import com.example.nike_fe.data.model.OrderResponse;
+import com.example.nike_fe.ui.address.SelectAddressActivity;
 import com.example.nike_fe.ui.auth.LoginActivity;
 import com.example.nike_fe.ui.checkout.adapter.CouponSelectionAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -39,7 +43,10 @@ import retrofit2.Response;
 public class CheckoutActivity extends AppCompatActivity {
 
     private ImageView ivBack;
-    private TextInputEditText etFullName, etPhone, etAddress, etCity, etDistrict, etNote;
+    private LinearLayout cvAddressCard;
+    private LinearLayout layoutAddressContent, layoutAddressEmpty;
+    private TextView tvSelectedRecipientName, tvSelectedPhoneNumber, tvSelectedAddress;
+    private TextInputEditText etNote;
     private RadioGroup rgPaymentMethod;
     private RadioButton rbCOD, rbVNPay;
     private TextView tvSubtotal, tvDiscount, tvShippingFee, tvTotal;
@@ -48,10 +55,18 @@ public class CheckoutActivity extends AppCompatActivity {
     private NestedScrollView layoutCheckoutContent;
 
     private OrderApi orderApi;
+    private AddressApi addressApi;
     private String token;
+    
+    // Address data
+    private Long selectedAddressId;
+    private String recipientName;
+    private String phoneNumber;
+    private String fullAddress;
 
     private double subtotal = 0.0;
     private static final double SHIPPING_FEE = 30000.0;
+    private static final int REQUEST_SELECT_ADDRESS = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +82,15 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private void initViews() {
         ivBack = findViewById(R.id.ivBack);
-        etFullName = findViewById(R.id.etFullName);
-        etPhone = findViewById(R.id.etPhone);
-        etAddress = findViewById(R.id.etAddress);
-        etCity = findViewById(R.id.etCity);
-        etDistrict = findViewById(R.id.etDistrict);
+        
+        // Address card views
+        cvAddressCard = findViewById(R.id.cvAddressCard);
+        layoutAddressContent = findViewById(R.id.layoutAddressContent);
+        layoutAddressEmpty = findViewById(R.id.layoutAddressEmpty);
+        tvSelectedRecipientName = findViewById(R.id.tvSelectedRecipientName);
+        tvSelectedPhoneNumber = findViewById(R.id.tvSelectedPhoneNumber);
+        tvSelectedAddress = findViewById(R.id.tvSelectedAddress);
+        
         etNote = findViewById(R.id.etNote);
         rgPaymentMethod = findViewById(R.id.rgPaymentMethod);
         rbCOD = findViewById(R.id.rbCOD);
@@ -91,6 +110,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         orderApi = retrofitClient.getOrderApi();
+        addressApi = retrofitClient.getAddressApi();
         userCouponApi = retrofitClient.getUserCouponApi();
         token = retrofitClient.getToken();
 
@@ -100,7 +120,11 @@ public class CheckoutActivity extends AppCompatActivity {
             return;
         }
 
+        // Setup address card click
+        cvAddressCard.setOnClickListener(v -> openSelectAddressScreen());
+
         loadValidCoupons();
+        loadDefaultAddress();
     }
 
     private void loadValidCoupons() {
@@ -171,6 +195,79 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         ivBack.setOnClickListener(v -> onBackPressed());
+    }
+
+    private void loadDefaultAddress() {
+        addressApi.getDefaultAddress("Bearer " + token).enqueue(new Callback<Address>() {
+            @Override
+            public void onResponse(Call<Address> call, Response<Address> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Address address = response.body();
+                    updateAddressDisplay(address);
+                } else {
+                    showEmptyAddressState();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Address> call, Throwable t) {
+                // Show empty state on error
+                showEmptyAddressState();
+            }
+        });
+    }
+
+    private void updateAddressDisplay(Address address) {
+        selectedAddressId = address.getId();
+        recipientName = address.getRecipientName();
+        phoneNumber = address.getPhoneNumber();
+        fullAddress = address.getFullAddress();
+
+        layoutAddressContent.setVisibility(View.VISIBLE);
+        layoutAddressEmpty.setVisibility(View.GONE);
+
+        tvSelectedRecipientName.setText(recipientName);
+        tvSelectedPhoneNumber.setText(phoneNumber);
+        tvSelectedAddress.setText(fullAddress);
+    }
+
+    private void showEmptyAddressState() {
+        layoutAddressContent.setVisibility(View.GONE);
+        layoutAddressEmpty.setVisibility(View.VISIBLE);
+        
+        selectedAddressId = null;
+        recipientName = null;
+        phoneNumber = null;
+        fullAddress = null;
+    }
+
+    private void openSelectAddressScreen() {
+        Intent intent = new Intent(this, SelectAddressActivity.class);
+        startActivityForResult(intent, REQUEST_SELECT_ADDRESS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == REQUEST_SELECT_ADDRESS && resultCode == RESULT_OK && data != null) {
+            // Update address display with selected address
+            selectedAddressId = data.getLongExtra("selected_address_id", -1);
+            if (selectedAddressId == -1) selectedAddressId = null;
+            
+            recipientName = data.getStringExtra("recipient_name");
+            phoneNumber = data.getStringExtra("phone_number");
+            fullAddress = data.getStringExtra("full_address");
+
+            if (recipientName != null && phoneNumber != null && fullAddress != null) {
+                layoutAddressContent.setVisibility(View.VISIBLE);
+                layoutAddressEmpty.setVisibility(View.GONE);
+
+                tvSelectedRecipientName.setText(recipientName);
+                tvSelectedPhoneNumber.setText(phoneNumber);
+                tvSelectedAddress.setText(fullAddress);
+            }
+        }
     }
 
     private void loadCartData() {
@@ -306,56 +403,20 @@ public class CheckoutActivity extends AppCompatActivity {
 
     // Modify ValidateAndPlaceOrder to use currentCouponCode
     private void validateAndPlaceOrder() {
-        // ... (existing validation code) ...
-        String fullName = etFullName.getText().toString().trim();
-        String phone = etPhone.getText().toString().trim();
-        String address = etAddress.getText().toString().trim();
-        String city = etCity.getText().toString().trim();
+        // Validate address is selected
+        if (recipientName == null || phoneNumber == null || fullAddress == null) {
+            Toast.makeText(this, "Vui lòng chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Validation
-        if (fullName.isEmpty()) {
-            etFullName.setError("Vui lòng nhập họ tên");
-            etFullName.requestFocus();
-            return;
-        }
-        if (phone.isEmpty()) {
-            etPhone.setError("Vui lòng nhập số điện thoại");
-            etPhone.requestFocus();
-            return;
-        }
-        if (!phone.matches("^0[0-9]{9}$")) {
-            etPhone.setError("Số điện thoại không hợp lệ");
-            etPhone.requestFocus();
-            return;
-        }
-        if (address.isEmpty()) {
-            etAddress.setError("Vui lòng nhập địa chỉ");
-            etAddress.requestFocus();
-            return;
-        }
-        if (city.isEmpty()) {
-            etCity.setError("Vui lòng nhập thành phố");
-            etCity.requestFocus();
-            return;
-        }
-        
-        // Get district and note
-        String district = etDistrict.getText().toString().trim();
-        String note = etNote.getText().toString().trim();
-        
-        // Build shipping address: "address, district, city"
-        StringBuilder addressBuilder = new StringBuilder(address);
-        if (!district.isEmpty()) {
-            addressBuilder.append(", ").append(district);
-        }
-        addressBuilder.append(", ").append(city);
-        String shippingAddress = addressBuilder.toString();
+        // Get note
+        String note = etNote != null ? etNote.getText().toString().trim() : "";
 
         // Get payment method
         String paymentMethod = rbCOD.isChecked() ? "COD" : "VNPAY";
 
-        // Place order with receiver name, note, and coupon
-        placeOrder(fullName, shippingAddress, paymentMethod, phone, note);
+        // Place order with address info
+        placeOrder(recipientName, fullAddress, paymentMethod, phoneNumber, note);
     }
 
     private void placeOrder(String receiverName, String shippingAddress, String paymentMethod, String phone, String customerNote) {
