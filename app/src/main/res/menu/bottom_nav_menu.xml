@@ -9,10 +9,11 @@
         android:id="@+id/nav_favorites"
         android:icon="@drawable/ic_heart"
         android:title="Favorites" />
-        
+
     <item
         android:id="@+id/nav_placeholder"
         android:title=""
+        android:icon="@drawable/ic_transparent"
         android:enabled="false" />
         
     <item

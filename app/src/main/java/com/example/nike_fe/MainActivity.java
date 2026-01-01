@@ -70,6 +70,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View layoutMainContent;
     private List<Product> allProducts = new java.util.ArrayList<>();
 
+    // Banner Carousel
+    private androidx.viewpager2.widget.ViewPager2 bannerViewPager;
+    private com.example.nike_fe.adapter.BannerAdapter bannerAdapter;
+    private java.util.List<com.example.nike_fe.data.model.Banner> bannerList;
+    private android.os.Handler bannerHandler = new android.os.Handler();
+    private Runnable bannerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (bannerViewPager != null && bannerList != null && !bannerList.isEmpty()) {
+                performSlowScroll();
+                // Animation takes 1s. To pause for 3s, total interval must be 1s + 3s = 4s
+                bannerHandler.postDelayed(this, 4000);
+            }
+        }
+    };
+
+    // Helper to perform slow scroll
+    private void performSlowScroll() {
+        if (bannerViewPager == null)
+            return;
+
+        // Safety check: Don't drag if already dragging (manually or fake)
+        if (bannerViewPager.isFakeDragging())
+            return;
+
+        final int width = bannerViewPager.getWidth();
+        if (width == 0)
+            return;
+
+        // Try to begin fake drag. If returns false, something is preventing it (e.g.
+        // user touch)
+        if (!bannerViewPager.beginFakeDrag())
+            return;
+
+        // Animate from 0 to width over 1 second (1000ms)
+        android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofFloat(0f, (float) width);
+        animator.setDuration(1000);
+        animator.setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator());
+
+        final float[] previousValue = { 0f };
+
+        animator.addUpdateListener(animation -> {
+            float currentValue = (float) animation.getAnimatedValue();
+            float delta = currentValue - previousValue[0];
+            previousValue[0] = currentValue;
+
+            if (bannerViewPager != null && bannerViewPager.isFakeDragging()) {
+                bannerViewPager.fakeDragBy(-delta); // Negative to scroll right
+            }
+        });
+
+        animator.addListener(new android.animation.AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(android.animation.Animator animation) {
+                super.onAnimationEnd(animation);
+                if (bannerViewPager != null && bannerViewPager.isFakeDragging()) {
+                    bannerViewPager.endFakeDrag();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(android.animation.Animator animation) {
+                super.onAnimationCancel(animation);
+                if (bannerViewPager != null && bannerViewPager.isFakeDragging()) {
+                    bannerViewPager.endFakeDrag();
+                }
+            }
+        });
+
+        animator.start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
@@ -81,7 +153,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNavigationDrawer();
         setupRecyclerViews();
         setupBottomNavigation();
+        // setupFab(); // FAB Removed
+        setupHeader();
         // setupBottomNavigation(); // Duplicate remove
+        setupBannerCarousel(); // Init Banner
         fetchProducts(null);
         loadUserProfile();
     }
@@ -92,6 +167,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         updateUnreadCount();
         loadUserProfile(); // Refresh profile if needed
         loadCategoriesFromApi(); // Refresh categories when returning to MainActivity
+
+        if (bannerHandler != null && bannerRunnable != null) {
+            bannerHandler.postDelayed(bannerRunnable, 3000); // 3s delay initially
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Stop banner auto-scroll to save resources
+        if (bannerHandler != null && bannerRunnable != null) {
+            bannerHandler.removeCallbacks(bannerRunnable);
+        }
     }
 
     private void initViews() {
@@ -117,17 +205,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
         fabCart = findViewById(R.id.fabCart);
-        
+
         // Chat FAB - Draggable
         FloatingActionButton fabChat = findViewById(R.id.fabChat);
         if (fabChat != null) {
             // Make FAB draggable
-            final float[] dX = {0};
-            final float[] dY = {0};
-            final float[] downRawX = {0};
-            final float[] downRawY = {0};
-            final boolean[] isDragging = {false};
-            
+            final float[] dX = { 0 };
+            final float[] dY = { 0 };
+            final float[] downRawX = { 0 };
+            final float[] downRawY = { 0 };
+            final boolean[] isDragging = { false };
+
             fabChat.setOnTouchListener((v, event) -> {
                 switch (event.getAction()) {
                     case android.view.MotionEvent.ACTION_DOWN:
@@ -137,25 +225,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         dY[0] = v.getY() - downRawY[0];
                         isDragging[0] = false;
                         return true;
-                        
+
                     case android.view.MotionEvent.ACTION_MOVE:
                         float moveDeltaX = Math.abs(event.getRawX() - downRawX[0]);
                         float moveDeltaY = Math.abs(event.getRawY() - downRawY[0]);
-                        
+
                         // Only start dragging if moved more than 10dp
                         if (moveDeltaX > 10 || moveDeltaY > 10) {
                             isDragging[0] = true;
                         }
-                        
+
                         if (isDragging[0]) {
                             v.animate()
-                                .x(event.getRawX() + dX[0])
-                                .y(event.getRawY() + dY[0])
-                                .setDuration(0)
-                                .start();
+                                    .x(event.getRawX() + dX[0])
+                                    .y(event.getRawY() + dY[0])
+                                    .setDuration(0)
+                                    .start();
                         }
                         return true;
-                        
+
                     case android.view.MotionEvent.ACTION_UP:
                         if (!isDragging[0]) {
                             // If not dragged, treat as click
@@ -163,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             chatBox.show(getSupportFragmentManager(), "ChatBox");
                         }
                         return true;
-                        
+
                     default:
                         return false;
                 }
@@ -263,6 +351,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void setupHeader() {
+        // Header logic handled in initViews and loadUserProfile
+    }
+
     private void setupNavigationDrawer() {
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
@@ -320,6 +412,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
             rvSearchResults.setAdapter(searchAdapter);
         }
+    }
+
+    private void setupBannerCarousel() {
+        bannerViewPager = findViewById(R.id.bannerViewPager);
+        bannerList = new java.util.ArrayList<>();
+
+        // Dummy Data - Mimicking the original design
+        bannerList.add(new com.example.nike_fe.data.model.Banner(
+                R.drawable.banner_background,
+                "25%",
+                "Đặc biệt hôm nay!",
+                "Nhận giảm giá cho mỗi đơn hàng,\nchỉ áp dụng hôm nay",
+                R.drawable.banner1));
+
+        bannerList.add(new com.example.nike_fe.data.model.Banner(
+                R.drawable.banner_background, // Could use different bg if available
+                "30%",
+                "Bộ sưu tập mới",
+                "Khám phá phong cách mới nhất\ntừ Nike Summer Collection",
+                R.drawable.banner2));
+
+        bannerList.add(new com.example.nike_fe.data.model.Banner(
+                R.drawable.banner_background,
+                "40%",
+                "Flash Sale",
+                "Giảm giá cực sốc trong 24h\nĐừng bỏ lỡ cơ hội!",
+                R.drawable.banner3));
+
+        bannerAdapter = new com.example.nike_fe.adapter.BannerAdapter(bannerList);
+        bannerViewPager.setAdapter(bannerAdapter);
+
+        // Start in the middle to allow "infinite" scrolling in both directions
+        // Ensure it starts at the first item of the sequence
+        int middle = Integer.MAX_VALUE / 2;
+        int startIndex = middle - (middle % bannerList.size());
+        bannerViewPager.setCurrentItem(startIndex, false);
+
+        // Apply Diagonal Transition (Bottom-Left <-> Top-Right)
+        bannerViewPager.setPageTransformer(new com.example.nike_fe.ui.animation.DiagonalPageTransformer());
     }
 
     /**

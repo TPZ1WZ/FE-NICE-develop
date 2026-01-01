@@ -37,6 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText etName, etEmail, etPassword;
     private Button btnSave, btnMyOrders, btnAdminDashboard;
     private TextView tvLogout;
+    private View cvAdminDashboard;
 
     private UserApi userApi;
     private String token;
@@ -84,6 +85,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         btnMyOrders = findViewById(R.id.btnMyOrders);
         btnAdminDashboard = findViewById(R.id.btnAdminDashboard);
+        cvAdminDashboard = findViewById(R.id.cvAdminDashboard);
         tvLogout = findViewById(R.id.tvLogout);
 
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
@@ -157,9 +159,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Show Admin Dashboard if user has role
         if ("ADMIN".equalsIgnoreCase(user.getRole()) || "ROOT".equalsIgnoreCase(user.getRole())) {
-            btnAdminDashboard.setVisibility(View.VISIBLE);
+            cvAdminDashboard.setVisibility(View.VISIBLE);
         } else {
-            btnAdminDashboard.setVisibility(View.GONE);
+            cvAdminDashboard.setVisibility(View.GONE);
         }
     }
 
