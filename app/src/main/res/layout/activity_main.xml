@@ -42,29 +42,16 @@
                         android:src="@drawable/img_placeholder_shoe"
                         app:civ_border_width="0dp"/>
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Chào buổi sáng 👋"
-                            android:textColor="#757575"
-                            android:textSize="14sp"/>
-
-                        <TextView
-                            android:id="@+id/tvHeaderName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Andrew Ainsley"
-                            android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:textStyle="bold"/>
-                    </LinearLayout>
+                        android:text="NIKE"
+                        android:textColor="@color/black"
+                        android:textSize="47sp"
+                        android:textStyle="bold|italic"
+                        android:gravity="center"
+                        android:fontFamily="sans-serif-black"/>
 
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -377,8 +364,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@drawable/bg_category_selector"
-        android:backgroundTint="#000000"
+        android:background="@drawable/bg_drawer"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:itemIconTint="@color/white"

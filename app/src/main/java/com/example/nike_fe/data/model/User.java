@@ -94,6 +94,15 @@ public class User {
         this.avatarUrl = avatarUrl;
     }
 
+    // Helper method for consistency
+    public String getAvatar() {
+        return avatarUrl;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatarUrl = avatar;
+    }
+
     public String getRole() {
         return role;
     }

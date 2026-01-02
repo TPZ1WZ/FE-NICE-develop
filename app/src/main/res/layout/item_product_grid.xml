@@ -32,11 +32,10 @@
         <ImageView
             android:id="@+id/ivBottomBackground"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="85dp"
             android:src="@drawable/item_bot_background"
             android:scaleType="centerCrop"
             app:layout_constraintTop_toTopOf="@+id/llBottomInfo"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -68,7 +67,7 @@
         <LinearLayout
             android:id="@+id/llBottomInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="85dp"
             android:orientation="vertical"
             android:padding="12dp"
             android:background="@android:color/transparent"

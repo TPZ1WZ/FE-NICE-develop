@@ -2,8 +2,10 @@ package com.example.nike_fe.ui.profile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,7 +27,12 @@ import com.example.nike_fe.data.model.User;
 import com.example.nike_fe.ui.auth.LoginActivity;
 import com.example.nike_fe.ui.admin.AdminDashboardActivity;
 
+import java.io.File;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,6 +50,7 @@ public class ProfileActivity extends AppCompatActivity {
     private String token;
     private User currentUser;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private Uri selectedAvatarUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +73,13 @@ public class ProfileActivity extends AppCompatActivity {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         if (imageUri != null) {
+                            selectedAvatarUri = imageUri;
                             Glide.with(this)
                                     .load(imageUri)
-                                    .placeholder(R.drawable.img_placeholder_shoe)
-                                    .error(R.drawable.img_placeholder_shoe)
+                                    .placeholder(R.drawable.ic_user_placeholder)
+                                    .error(R.drawable.ic_user_placeholder)
                                     .into(ivAvatar);
-                            Toast.makeText(this, "Profile image selected", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Ảnh đã chọn, nhấn 'Lưu' để cập nhật", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -153,9 +162,34 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void displayProfile(User user) {
+        android.util.Log.d("ProfileActivity", "🔵 Displaying profile");
+        android.util.Log.d("ProfileActivity", "🔵 User avatar: " + user.getAvatar());
+        android.util.Log.d("ProfileActivity", "🔵 User avatarUrl: " + user.getAvatarUrl());
+        
         etName.setText(user.getFullName());
         etEmail.setText(user.getEmail());
         // Do not display password
+
+        // Load avatar
+        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+            String avatarUrl = user.getAvatar();
+            if (!avatarUrl.startsWith("http")) {
+                // Remove leading slash if exists to avoid double slash
+                if (avatarUrl.startsWith("/")) {
+                    avatarUrl = avatarUrl.substring(1);
+                }
+                avatarUrl = RetrofitClient.getInstance(this).getBaseUrl() + avatarUrl;
+            }
+            android.util.Log.d("ProfileActivity", "🟢 Loading avatar from: " + avatarUrl);
+            Glide.with(this)
+                    .load(avatarUrl)
+                    .placeholder(R.drawable.ic_user_placeholder)
+                    .error(R.drawable.ic_user_placeholder)
+                    .into(ivAvatar);
+        } else {
+            android.util.Log.d("ProfileActivity", "⚪ No avatar, using placeholder");
+            ivAvatar.setImageResource(R.drawable.ic_user_placeholder);
+        }
 
         // Show Admin Dashboard if user has role
         if ("ADMIN".equalsIgnoreCase(user.getRole()) || "ROOT".equalsIgnoreCase(user.getRole())) {
@@ -176,20 +210,87 @@ public class ProfileActivity extends AppCompatActivity {
         btnSave.setEnabled(false);
         btnSave.setText("Saving...");
 
+        // Upload avatar first if selected
+        if (selectedAvatarUri != null) {
+            uploadAvatar(() -> {
+                // After avatar uploaded, update profile name
+                updateProfileName(newName);
+            });
+        } else {
+            // No avatar selected, just update name
+            updateProfileName(newName);
+        }
+    }
+
+    private void uploadAvatar(Runnable onSuccess) {
+        try {
+            String filePath = getRealPathFromURI(selectedAvatarUri);
+            if (filePath == null) {
+                Toast.makeText(this, "Không thể đọc file ảnh", Toast.LENGTH_SHORT).show();
+                btnSave.setEnabled(true);
+                btnSave.setText("Lưu Thay Đổi");
+                return;
+            }
+
+            File file = new File(filePath);
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("avatar", file.getName(), requestFile);
+
+            userApi.updateAvatar("Bearer " + token, body).enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        currentUser = response.body();
+                        selectedAvatarUri = null; // Reset after successful upload
+                        
+                        android.util.Log.d("ProfileActivity", "🟢 Avatar uploaded successfully");
+                        android.util.Log.d("ProfileActivity", "🟢 Response avatar: " + currentUser.getAvatar());
+                        android.util.Log.d("ProfileActivity", "🟢 Response avatarUrl: " + currentUser.getAvatarUrl());
+                        
+                        displayProfile(currentUser); // Update UI with new avatar
+                        Toast.makeText(ProfileActivity.this, "Avatar đã cập nhật", Toast.LENGTH_SHORT).show();
+                        if (onSuccess != null) {
+                            onSuccess.run();
+                        }
+                    } else {
+                        android.util.Log.e("ProfileActivity", "🔴 Avatar upload failed: " + response.code());
+                        btnSave.setEnabled(true);
+                        btnSave.setText("Lưu Thay Đổi");
+                        Toast.makeText(ProfileActivity.this, "Upload avatar thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    android.util.Log.e("ProfileActivity", "🔴 Avatar upload error: " + t.getMessage());
+                    btnSave.setEnabled(true);
+                    btnSave.setText("Lưu Thay Đổi");
+                    Toast.makeText(ProfileActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            btnSave.setEnabled(true);
+            btnSave.setText("Lưu Thay Đổi");
+            Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateProfileName(String newName) {
         UpdateProfileRequest request = new UpdateProfileRequest(newName);
 
         userApi.updateProfile("Bearer " + token, request).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 btnSave.setEnabled(true);
-                btnSave.setText("Save Now");
+                btnSave.setText("Lưu Thay Đổi");
 
                 if (response.isSuccessful() && response.body() != null) {
                     currentUser = response.body();
-                    displayProfile(currentUser);
-                    Toast.makeText(ProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                    // Reload profile to get fresh data including avatar
+                    loadProfile();
+                    Toast.makeText(ProfileActivity.this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(ProfileActivity.this, "Update failed: " + response.code(), Toast.LENGTH_SHORT)
+                    Toast.makeText(ProfileActivity.this, "Cập nhật thất bại: " + response.code(), Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -197,10 +298,34 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 btnSave.setEnabled(true);
-                btnSave.setText("Save Now");
-                Toast.makeText(ProfileActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                btnSave.setText("Lưu Thay Đổi");
+                Toast.makeText(ProfileActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        try {
+            java.io.InputStream inputStream = getContentResolver().openInputStream(contentUri);
+            if (inputStream == null) return null;
+
+            File tempFile = new File(getCacheDir(), "temp_avatar_" + System.currentTimeMillis() + ".jpg");
+            java.io.FileOutputStream outputStream = new java.io.FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
+            return tempFile.getAbsolutePath();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void navigateToLogin() {
