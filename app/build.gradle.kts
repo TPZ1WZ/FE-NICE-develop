@@ -28,6 +28,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        encoding = "UTF-8"
+    }
+    
+    compileOptions.encoding = "UTF-8"
+    
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
     }
 }
 

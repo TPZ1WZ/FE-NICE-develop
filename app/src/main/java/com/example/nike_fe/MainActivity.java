@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private RecyclerView rvFilters, rvProductGrid;
-    private TextView tvHeaderName;
     private CircleImageView ivHeaderAvatar;
     private ImageView btnNotification;
     private TextView tvNotificationBadge; // New Badge TextView
@@ -211,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         layoutSearchResults = findViewById(R.id.layoutSearchResults);
         layoutMainContent = findViewById(R.id.layoutMainContent);
 
-        tvHeaderName = findViewById(R.id.tvHeaderName);
         ivHeaderAvatar = findViewById(R.id.ivHeaderAvatar);
         btnNotification = findViewById(R.id.btnNotification);
         tvNotificationBadge = findViewById(R.id.tvNotificationBadge); // Init Badge
@@ -715,8 +713,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         currentUser = response.body();
-                        if (tvHeaderName != null)
-                            tvHeaderName.setText(currentUser.getFullName());
+
+                        // Load avatar in main header
+                        if (ivHeaderAvatar != null && currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
+                            String avatarUrl = currentUser.getAvatar();
+                            if (!avatarUrl.startsWith("http")) {
+                                if (avatarUrl.startsWith("/")) {
+                                    avatarUrl = avatarUrl.substring(1);
+                                }
+                                avatarUrl = RetrofitClient.getInstance(MainActivity.this).getBaseUrl() + avatarUrl;
+                            }
+                            Glide.with(MainActivity.this)
+                                .load(avatarUrl)
+                                .placeholder(R.drawable.ic_user_placeholder)
+                                .error(R.drawable.ic_user_placeholder)
+                                .into(ivHeaderAvatar);
+                        }
 
                         // Also update Drawer
                         if (navigationView != null) {
@@ -724,10 +736,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if (headerView != null) {
                                 TextView tvName = headerView.findViewById(R.id.tvUserName);
                                 TextView tvEmail = headerView.findViewById(R.id.tvUserEmail);
+                                CircleImageView ivDrawerAvatar = headerView.findViewById(R.id.ivUserAvatar);
+                                
                                 if (tvName != null)
                                     tvName.setText(currentUser.getFullName());
                                 if (tvEmail != null)
                                     tvEmail.setText(currentUser.getEmail());
+                                
+                                // Load avatar in drawer
+                                if (ivDrawerAvatar != null && currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
+                                    String drawerAvatarUrl = currentUser.getAvatar();
+                                    if (!drawerAvatarUrl.startsWith("http")) {
+                                        if (drawerAvatarUrl.startsWith("/")) {
+                                            drawerAvatarUrl = drawerAvatarUrl.substring(1);
+                                        }
+                                        drawerAvatarUrl = RetrofitClient.getInstance(MainActivity.this).getBaseUrl() + drawerAvatarUrl;
+                                    }
+                                    Glide.with(MainActivity.this)
+                                        .load(drawerAvatarUrl)
+                                        .placeholder(R.drawable.ic_user_placeholder)
+                                        .error(R.drawable.ic_user_placeholder)
+                                        .into(ivDrawerAvatar);
+                                }
                             }
                         }
                     }

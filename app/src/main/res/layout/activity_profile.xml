@@ -135,7 +135,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/xanhla"
+                android:src="@drawable/mauden"
                 android:scaleType="centerCrop"/>
 
             <Button
@@ -161,7 +161,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/xanhbien"
+                android:src="@drawable/mauden"
                 android:scaleType="centerCrop"/>
 
             <Button
@@ -198,7 +198,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/mauvang"
+                android:src="@drawable/mauden"
                 android:scaleType="centerCrop"/>
 
             <Button
@@ -224,7 +224,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/maudo"
+                android:src="@drawable/mauden"
                 android:scaleType="centerCrop"/>
 
             <Button
