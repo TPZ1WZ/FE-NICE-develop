@@ -24,8 +24,7 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
     private RecyclerView rvNotifications;
     private TextView tvEmpty;
     private NotificationAdapter adapter;
-    private com.example.nike_fe.data.api.OrderApi orderApi;
-    private com.example.nike_fe.data.api.UserCouponApi userCouponApi;
+    private com.example.nike_fe.data.api.NotificationApi notificationApi;
     private String token;
 
     @Override
@@ -45,8 +44,7 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
 
         com.example.nike_fe.data.api.RetrofitClient retrofitClient = com.example.nike_fe.data.api.RetrofitClient
                 .getInstance(this);
-        orderApi = retrofitClient.getOrderApi();
-        userCouponApi = retrofitClient.getUserCouponApi();
+        notificationApi = retrofitClient.getNotificationApi();
         token = retrofitClient.getToken();
 
         if (ivBack != null) {
@@ -68,77 +66,41 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
             return;
         }
 
-        orderApi.getUserOrders("Bearer " + token)
-                .enqueue(new retrofit2.Callback<List<com.example.nike_fe.data.model.Order>>() {
+        notificationApi.getNotifications("Bearer " + token, 0, 50)
+                .enqueue(new retrofit2.Callback<com.example.nike_fe.data.model.NotificationResponse>() {
                     @Override
-                    public void onResponse(retrofit2.Call<List<com.example.nike_fe.data.model.Order>> call,
-                            retrofit2.Response<List<com.example.nike_fe.data.model.Order>> response) {
+                    public void onResponse(retrofit2.Call<com.example.nike_fe.data.model.NotificationResponse> call,
+                            retrofit2.Response<com.example.nike_fe.data.model.NotificationResponse> response) {
                         List<NotificationItem> notifications = new ArrayList<>();
 
-                        if (response.isSuccessful() && response.body() != null) {
-                            for (com.example.nike_fe.data.model.Order order : response.body()) {
-                                String title = "Đơn hàng #" + order.getId() + " - " + getStatusText(order.getStatus());
-                                String message = "Đơn hàng của bạn đang ở trạng thái: "
-                                        + getStatusText(order.getStatus());
-
+                        if (response.isSuccessful() && response.body() != null
+                                && response.body().getContent() != null) {
+                            for (com.example.nike_fe.data.model.Notification notif : response.body().getContent()) {
                                 notifications.add(new NotificationItem(
-                                        title,
-                                        message,
-                                        formatDate(order.getCreatedAt()), // Use helper if available or simple text
-                                        "order:" + order.getId(),
-                                        false));
+                                        notif.getId(),
+                                        notif.getTitle(),
+                                        notif.getMessage(),
+                                        formatDate(notif.getCreatedAt()),
+                                        notif.getType() != null ? notif.getType().toLowerCase() : "system",
+                                        notif.getIsRead() != null && notif.getIsRead(),
+                                        notif.getData())); // Pass data map here
                             }
                         }
-                        // Continue to fetch coupons
-                        fetchCoupons(notifications);
+
+                        displayNotifications(notifications);
                     }
 
                     @Override
-                    public void onFailure(retrofit2.Call<List<com.example.nike_fe.data.model.Order>> call,
+                    public void onFailure(retrofit2.Call<com.example.nike_fe.data.model.NotificationResponse> call,
                             Throwable t) {
-                        // Even if orders fail, try coupons
-                        fetchCoupons(new ArrayList<>());
+                        // On failure, maybe show empty or cached?
+                        // For now, just show empty
+                        displayNotifications(new ArrayList<>());
                     }
                 });
     }
 
-    private void fetchCoupons(List<NotificationItem> currentNotifications) {
-        userCouponApi.getValidCoupons("Bearer " + token)
-                .enqueue(new retrofit2.Callback<List<com.example.nike_fe.data.model.Coupon>>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<List<com.example.nike_fe.data.model.Coupon>> call,
-                            retrofit2.Response<List<com.example.nike_fe.data.model.Coupon>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            for (com.example.nike_fe.data.model.Coupon coupon : response.body()) {
-                                String title = "Mã giảm giá mới: " + coupon.getCode();
-                                String message = coupon.getDescription() + ". HSD: " + coupon.getEndDate();
-
-                                currentNotifications.add(new NotificationItem(
-                                        title,
-                                        message,
-                                        "Mới",
-                                        "promotion:" + coupon.getCode(), // Hack for click
-                                        false));
-                            }
-                        }
-                        finalizeNotifications(currentNotifications);
-                    }
-
-                    @Override
-                    public void onFailure(retrofit2.Call<List<com.example.nike_fe.data.model.Coupon>> call,
-                            Throwable t) {
-                        finalizeNotifications(currentNotifications);
-                    }
-                });
-    }
-
-    private void finalizeNotifications(List<NotificationItem> notifications) {
-        if (notifications.isEmpty()) {
-            loadDummyNotifications();
-        } else {
-            displayNotifications(notifications);
-        }
-    }
+    // Removed fetchCoupons and finalizeNotifications as they are no longer needed.
 
     private String formatDate(String dateStr) {
         // Simple helper or reuse existing util if accessible.
@@ -156,8 +118,8 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
         }
     }
 
-    private void displayNotifications(List<NotificationItem> items) {
-        if (items.isEmpty()) {
+    private void displayNotifications(List<NotificationItem> notifications) {
+        if (notifications == null || notifications.isEmpty()) {
             if (tvEmpty != null)
                 tvEmpty.setVisibility(View.VISIBLE);
             if (rvNotifications != null)
@@ -167,7 +129,10 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
                 tvEmpty.setVisibility(View.GONE);
             if (rvNotifications != null)
                 rvNotifications.setVisibility(View.VISIBLE);
-            adapter.setNotifications(items);
+
+            adapter = new NotificationAdapter(this, notifications, this);
+            if (rvNotifications != null)
+                rvNotifications.setAdapter(adapter);
         }
     }
 
@@ -179,8 +144,8 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
     // Helper to translate status
     private String getStatusText(String status) {
         if (status == null)
-            return "";
-        switch (status.toUpperCase()) {
+            return "Không xác định";
+        switch (status) {
             case "PENDING":
                 return "Chờ xác nhận";
             case "CONFIRMED":
@@ -198,59 +163,111 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
 
     private List<NotificationItem> getDummyNotifications() {
         List<NotificationItem> notifications = new ArrayList<>();
-
-        notifications.add(new NotificationItem(
-                "Đơn hàng đã được xác nhận",
-                "Đơn hàng #12345 của bạn đã được xác nhận và đang được chuẩn bị.",
-                "2 giờ trước",
-                "order",
-                false));
-
-        notifications.add(new NotificationItem(
-                "Sản phẩm yêu thích đang giảm giá",
-                "Nike Air Max 90 bạn đã yêu thích đang giảm giá 20%!",
-                "1 ngày trước",
-                "promotion",
-                false));
-
-        notifications.add(new NotificationItem(
-                "Đơn hàng đã giao thành công",
-                "Đơn hàng #12340 đã được giao thành công.",
-                "3 ngày trước",
-                "delivery",
-                true));
-
+        // Dummy data preserved but not used when logged in
         return notifications;
     }
 
     @Override
     public void onNotificationClick(NotificationItem notification) {
         // Mark as read (update UI)
-        notification.setRead(true);
-        adapter.notifyDataSetChanged();
+        if (!notification.isRead()) {
+            notification.setRead(true);
+            adapter.notifyDataSetChanged();
+
+            // Mark as read (API)
+            if (token != null && notification.getId() != null) {
+                notificationApi.markAsRead("Bearer " + token, notification.getId())
+                        .enqueue(new retrofit2.Callback<java.util.Map<String, String>>() {
+                            @Override
+                            public void onResponse(retrofit2.Call<java.util.Map<String, String>> call,
+                                    retrofit2.Response<java.util.Map<String, String>> response) {
+                                // Successfully marked as read
+                            }
+
+                            @Override
+                            public void onFailure(retrofit2.Call<java.util.Map<String, String>> call, Throwable t) {
+                                // Ignore error
+                            }
+                        });
+            }
+        }
 
         // Navigate based on type
         String type = notification.getType();
         Intent intent = null;
+        java.util.Map<String, Object> data = notification.getData();
+        android.util.Log.d("NotificationActivity",
+                "Clicked notification: " + notification.getTitle() + ", Type: " + type);
 
-        if (type.startsWith("order") || type.startsWith("delivery")) {
-            long orderId = 1L; // Default dummy
-            if (type.contains(":")) {
-                try {
-                    orderId = Long.parseLong(type.split(":")[1]);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+        if (type.equalsIgnoreCase("order") || type.startsWith("order")) {
+            long orderId = -1L;
+            if (data != null) {
+                if (data.containsKey("order_id")) {
+                    Object obj = data.get("order_id");
+                    if (obj instanceof Number) {
+                        orderId = ((Number) obj).longValue();
+                    } else if (obj instanceof String) {
+                        try {
+                            orderId = Long.parseLong((String) obj);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 
-            intent = new Intent(this, OrderDetailActivity.class);
-            intent.putExtra("order_id", orderId);
-            startActivity(intent);
-        } else if (type.startsWith("promotion")) {
+            // Fallback: Extract from Message or Title if data failed
+            if (orderId == -1L) {
+                orderId = extractIdFromText(notification.getMessage());
+                if (orderId == -1L) {
+                    orderId = extractIdFromText(notification.getTitle());
+                }
+            }
+
+            if (orderId != -1L) {
+                intent = new Intent(this, com.example.nike_fe.ui.order.OrderDetailActivity.class);
+                intent.putExtra("order_id", orderId);
+                startActivity(intent);
+            } else {
+                android.widget.Toast
+                        .makeText(this, "Không tìm thấy thông tin đơn hàng", android.widget.Toast.LENGTH_SHORT).show();
+            }
+
+        } else if (type.equalsIgnoreCase("coupon") || type.startsWith("promotion")) {
             // It's a coupon, extract code and copy to clipboard
             String code = "";
-            if (type.contains(":")) {
-                code = type.split(":")[1];
+            if (data != null) {
+                if (data.containsKey("couponCode")) {
+                    code = String.valueOf(data.get("couponCode"));
+                } else if (data.containsKey("coupon_code")) {
+                    code = String.valueOf(data.get("coupon_code"));
+                }
+            }
+
+            // Fallback: extract from title/message
+            if (code.isEmpty()) {
+                // Try to extract after "Mã giảm giá mới: " or similar
+                // Example format: "Mã giảm giá mới: tuankiet"
+                String combinedText = (notification.getTitle() + " " + notification.getMessage()).toLowerCase();
+                String prefix = "mã giảm giá mới: ";
+                int index = combinedText.indexOf(prefix);
+                if (index != -1) {
+                    String sub = combinedText.substring(index + prefix.length()).trim();
+                    // Take the first word
+                    String[] parts = sub.split("\\s+");
+                    if (parts.length > 0) {
+                        code = parts[0];
+                    }
+                }
+
+                // Fallback 2: look for just "Code: " or "Mã: "
+                if (code.isEmpty()) {
+                    java.util.regex.Pattern p = java.util.regex.Pattern.compile("(?i)(?:code|mã)[:\\s]+([a-zA-Z0-9]+)");
+                    java.util.regex.Matcher m = p.matcher(notification.getTitle() + " " + notification.getMessage());
+                    if (m.find()) {
+                        code = m.group(1);
+                    }
+                }
             }
 
             if (!code.isEmpty()) {
@@ -260,12 +277,10 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
                 clipboard.setPrimaryClip(clip);
                 android.widget.Toast.makeText(this, "Đã sao chép mã: " + code, android.widget.Toast.LENGTH_SHORT)
                         .show();
+            } else {
+                android.widget.Toast.makeText(this, "Không tìm thấy mã giảm giá", android.widget.Toast.LENGTH_SHORT)
+                        .show();
             }
-
-            // Optionally navigate to cart or stay
-            // intent = new Intent(this, com.example.nike_fe.ui.cart.CartActivity.class);
-            // startActivity(intent);
-
         } else if (type.startsWith("product")) {
             long productId = 1L;
             if (type.contains(":")) {
@@ -279,5 +294,21 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
             intent.putExtra("product_id", productId);
             startActivity(intent);
         }
+    }
+
+    private long extractIdFromText(String text) {
+        if (text == null || text.isEmpty())
+            return -1L;
+        // Regex to find # followed by digits
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile("#(\\d+)");
+        java.util.regex.Matcher m = p.matcher(text);
+        if (m.find()) {
+            try {
+                return Long.parseLong(m.group(1));
+            } catch (NumberFormatException e) {
+                return -1L;
+            }
+        }
+        return -1L;
     }
 }

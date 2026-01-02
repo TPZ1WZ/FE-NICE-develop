@@ -73,25 +73,25 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private RecyclerView rvTopProductsV2;
     private TopProductAdapter topProductAdapter;
     private TextView tvTopEmptyV2;
-    
+
     // Revenue chart views
     private Spinner spinnerRevenuePeriod;
     private TextView tvRevenueTotalV2Chart, tvRevenueChangeV2, tvRevenueCompareV2;
     private LineChart lineChartRevenue;
     private TextView tvRevenueEmptyV2;
     private int currentRevenuePeriod = 7; // 7=7 days (default), 30=30 days
-    
+
     // Quick action buttons
     private View btnQuickOrdersV2, btnQuickAddProductV2, btnQuickVoucherV2;
-    
+
     // Navigation menu items
-    private LinearLayout menuDashboardV2, menuProductsV2, menuOrdersV2, menuUsersV2, 
-            menuCategoriesV2, menuReviewsV2, menuCouponsV2, menuSettingsV2, menuLogoutV2;
+    private LinearLayout menuDashboardV2, menuProductsV2, menuOrdersV2, menuUsersV2,
+            menuCategoriesV2, menuReviewsV2, menuCouponsV2, menuSettingsV2, menuHomeV2, menuLogoutV2;
 
     private AdminApi adminApi;
     private AdminProductApi productApi;
     private String token;
-    
+
     // Auto-refresh
     private Handler refreshHandler;
     private Runnable refreshRunnable;
@@ -122,7 +122,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         loadRevenueChart(currentRevenuePeriod);
         startAutoRefresh();
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -133,10 +133,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
         try {
             // DrawerLayout
             drawerLayoutV2 = findViewById(R.id.drawerLayoutV2);
-            
+
             // Toolbar
             topAppBarV2 = findViewById(R.id.topAppBarV2);
-            
+
             // KPI Cards (4 cards)
             tvRevenueV2 = findViewById(R.id.tvRevenueV2);
             tvRevenueDeltaV2 = findViewById(R.id.tvRevenueDeltaV2);
@@ -146,23 +146,23 @@ public class AdminDashboardActivity extends AppCompatActivity {
             tvCustomersDeltaV2 = findViewById(R.id.tvCustomersDeltaV2);
             tvStockTotalV2 = findViewById(R.id.tvStockTotalV2);
             tvStockLowV2 = findViewById(R.id.tvStockLowV2);
-            
+
             // Alert card
             tvPendingAlertV2 = findViewById(R.id.tvPendingAlertV2);
-            
+
             // Quick action buttons
             btnQuickOrdersV2 = findViewById(R.id.btnQuickOrdersV2);
             btnQuickAddProductV2 = findViewById(R.id.btnQuickAddProductV2);
             btnQuickVoucherV2 = findViewById(R.id.btnQuickVoucherV2);
-            
+
             // Top products RecyclerView
             rvTopProductsV2 = findViewById(R.id.rvTopProductsV2);
             rvTopProductsV2.setLayoutManager(new LinearLayoutManager(this));
             topProductAdapter = new TopProductAdapter(this, new ArrayList<>());
             rvTopProductsV2.setAdapter(topProductAdapter);
-            
+
             tvTopEmptyV2 = findViewById(R.id.tvTopEmptyV2);
-            
+
             // Revenue chart views
             spinnerRevenuePeriod = findViewById(R.id.spinnerRevenuePeriod);
             tvRevenueTotalV2Chart = findViewById(R.id.tvRevenueTotalV2);
@@ -170,9 +170,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
             tvRevenueCompareV2 = findViewById(R.id.tvRevenueCompareV2);
             lineChartRevenue = findViewById(R.id.lineChartRevenue);
             tvRevenueEmptyV2 = findViewById(R.id.tvRevenueEmptyV2);
-            
+
             setupRevenuePeriodSpinner();
-            
+
             // Navigation menu items
             menuDashboardV2 = findViewById(R.id.menuDashboardV2);
             menuProductsV2 = findViewById(R.id.menuProductsV2);
@@ -182,6 +182,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             menuReviewsV2 = findViewById(R.id.menuReviewsV2);
             menuCouponsV2 = findViewById(R.id.menuCouponsV2);
             menuSettingsV2 = findViewById(R.id.menuSettingsV2);
+            menuHomeV2 = findViewById(R.id.menuHomeV2);
             menuLogoutV2 = findViewById(R.id.menuLogoutV2);
 
             RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
@@ -204,17 +205,17 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
     private void setupRevenuePeriodSpinner() {
-        String[] periods = {"7 ngày", "30 ngày"};
-        
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, 
-            android.R.layout.simple_spinner_item, periods);
+        String[] periods = { "7 ngày", "30 ngày" };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, periods);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        
+
         spinnerRevenuePeriod.setAdapter(adapter);
-        
+
         // Set default selection (7 days)
         spinnerRevenuePeriod.setSelection(0);
-        
+
         spinnerRevenuePeriod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -247,14 +248,16 @@ public class AdminDashboardActivity extends AppCompatActivity {
         // Navigation menu items
         if (menuDashboardV2 != null) {
             menuDashboardV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Toast.makeText(this, "Đã ở trang Dashboard", Toast.LENGTH_SHORT).show();
             });
         }
 
         if (menuProductsV2 != null) {
             menuProductsV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminProductsActivity.class);
                 startActivity(intent);
             });
@@ -262,7 +265,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (menuOrdersV2 != null) {
             menuOrdersV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminOrdersActivity.class);
                 startActivity(intent);
             });
@@ -270,7 +274,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (menuUsersV2 != null) {
             menuUsersV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminUsersActivity.class);
                 startActivity(intent);
             });
@@ -278,7 +283,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (menuCategoriesV2 != null) {
             menuCategoriesV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminCategoriesActivity.class);
                 startActivity(intent);
             });
@@ -286,7 +292,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (menuReviewsV2 != null) {
             menuReviewsV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminReviewsActivity.class);
                 startActivity(intent);
             });
@@ -294,7 +301,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (menuCouponsV2 != null) {
             menuCouponsV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminCouponsActivity.class);
                 startActivity(intent);
             });
@@ -302,7 +310,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (menuSettingsV2 != null) {
             menuSettingsV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminSettingsActivity.class);
                 startActivity(intent);
             });
@@ -310,8 +319,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (menuLogoutV2 != null) {
             menuLogoutV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null) drawerLayoutV2.closeDrawer(GravityCompat.START);
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
                 logout();
+            });
+        }
+
+        if (menuHomeV2 != null) {
+            menuHomeV2.setOnClickListener(v -> {
+                if (drawerLayoutV2 != null)
+                    drawerLayoutV2.closeDrawer(GravityCompat.START);
+                Intent intent = new Intent(this, com.example.nike_fe.MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             });
         }
 
@@ -347,7 +368,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             });
         }
-        
+
         // "Xem danh sách" text click - go to pending orders
         TextView tvViewPendingList = findViewById(R.id.tvViewPendingListV2);
         if (tvViewPendingList != null) {
@@ -433,29 +454,29 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void loadProductStats() {
         Log.d(TAG, "Loading product stats from products/stats API (only active products)...");
-        
+
         // Đọc ngưỡng tồn kho từ SharedPreferences
         android.content.SharedPreferences prefs = getSharedPreferences("AdminSettings", MODE_PRIVATE);
         int stockThreshold = prefs.getInt("stock_threshold", 10);
-        
+
         Log.d(TAG, "Using stock threshold: " + stockThreshold);
-        
+
         productApi.getStats("Bearer " + token, stockThreshold).enqueue(new Callback<ProductStats>() {
             @Override
             public void onResponse(Call<ProductStats> call, Response<ProductStats> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ProductStats stats = response.body();
-                    Log.d(TAG, "Product stats loaded: total=" + stats.getTotal() + 
-                            ", lowStock=" + stats.getLowStock() + 
+                    Log.d(TAG, "Product stats loaded: total=" + stats.getTotal() +
+                            ", lowStock=" + stats.getLowStock() +
                             ", outOfStock=" + stats.getOutOfStock());
-                    
+
                     // Update stock card with accurate data (only active products)
                     int totalStock = stats.getTotal();
                     int lowStock = stats.getLowStock(); // Products with stock <= threshold
-                    
+
                     tvStockTotalV2.setText("Sản phẩm: " + totalStock);
                     tvStockLowV2.setText("Gần hết (≤" + stockThreshold + "): " + lowStock);
-                    
+
                     Log.d(TAG, "Product stats displayed successfully (excluding hidden products)");
                 } else {
                     Log.e(TAG, "Error loading product stats: " + response.code());
@@ -509,7 +530,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void loadTopProducts() {
         Log.d(TAG, "Loading top products from database...");
-        
+
         // Show loading state
         if (rvTopProductsV2 != null) {
             rvTopProductsV2.setVisibility(View.VISIBLE);
@@ -517,46 +538,46 @@ public class AdminDashboardActivity extends AppCompatActivity {
         if (tvTopEmptyV2 != null) {
             tvTopEmptyV2.setVisibility(View.GONE);
         }
-        
+
         adminApi.getTopProducts("Bearer " + token, 5).enqueue(new Callback<TopProductsResponse>() {
             @Override
             public void onResponse(Call<TopProductsResponse> call, Response<TopProductsResponse> response) {
                 Log.d(TAG, "Top products response code: " + response.code());
-                
+
                 if (response.isSuccessful() && response.body() != null) {
                     TopProductsResponse responseBody = response.body();
                     Log.d(TAG, "Top products response body: " + responseBody);
-                    
+
                     List<TopProduct> products = responseBody.getProducts();
-                    
+
                     if (products != null && !products.isEmpty()) {
                         Log.d(TAG, "Top products loaded from database: " + products.size() + " items");
                         for (int i = 0; i < products.size(); i++) {
                             TopProduct p = products.get(i);
-                            Log.d(TAG, "  Product " + (i+1) + ": " + p.getName() + " - Sold: " + p.getSoldQuantity());
+                            Log.d(TAG, "  Product " + (i + 1) + ": " + p.getName() + " - Sold: " + p.getSoldQuantity());
                         }
-                        
+
                         if (topProductAdapter != null) {
                             topProductAdapter.setData(products);
                             Log.d(TAG, "Adapter updated with " + products.size() + " products");
                         } else {
                             Log.e(TAG, "TopProductAdapter is null!");
                         }
-                        
+
                         if (rvTopProductsV2 != null) {
                             rvTopProductsV2.setVisibility(View.VISIBLE);
                         }
-                        
+
                         if (tvTopEmptyV2 != null) {
                             tvTopEmptyV2.setVisibility(View.GONE);
                         }
                     } else {
                         Log.d(TAG, "No top products found in database (list is null or empty)");
-                        
+
                         if (rvTopProductsV2 != null) {
                             rvTopProductsV2.setVisibility(View.GONE);
                         }
-                        
+
                         if (tvTopEmptyV2 != null) {
                             tvTopEmptyV2.setVisibility(View.VISIBLE);
                         }
@@ -571,7 +592,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                             Log.e(TAG, "Could not read error body", e);
                         }
                     }
-                    
+
                     // Show empty state on error
                     if (rvTopProductsV2 != null) {
                         rvTopProductsV2.setVisibility(View.GONE);
@@ -586,7 +607,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             public void onFailure(Call<TopProductsResponse> call, Throwable t) {
                 Log.e(TAG, "Failed to load top products from database", t);
                 Log.e(TAG, "Error message: " + t.getMessage());
-                
+
                 // Show empty state on failure
                 if (rvTopProductsV2 != null) {
                     rvTopProductsV2.setVisibility(View.GONE);
@@ -594,10 +615,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 if (tvTopEmptyV2 != null) {
                     tvTopEmptyV2.setVisibility(View.VISIBLE);
                 }
-                
-                Toast.makeText(AdminDashboardActivity.this, 
-                    "Lỗi tải sản phẩm bán chạy: " + t.getMessage(), 
-                    Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(AdminDashboardActivity.this,
+                        "Lỗi tải sản phẩm bán chạy: " + t.getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -613,18 +634,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void loadRevenueChart(int days) {
         Log.d(TAG, "Loading revenue chart for period: " + days + " days");
-        
+
         adminApi.getRevenueChart("Bearer " + token, days).enqueue(new Callback<RevenueChartData>() {
             @Override
             public void onResponse(Call<RevenueChartData> call, Response<RevenueChartData> response) {
                 Log.d(TAG, "Revenue chart API response code: " + response.code());
-                
+
                 if (response.isSuccessful() && response.body() != null) {
                     RevenueChartData chartData = response.body();
                     Log.d(TAG, "Revenue chart data received: " + chartData.getTitle());
-                    Log.d(TAG, "Revenue chart labels: " + (chartData.getLabels() != null ? chartData.getLabels().size() : 0));
-                    Log.d(TAG, "Revenue chart data points: " + (chartData.getData() != null ? chartData.getData().size() : 0));
-                    
+                    Log.d(TAG, "Revenue chart labels: "
+                            + (chartData.getLabels() != null ? chartData.getLabels().size() : 0));
+                    Log.d(TAG, "Revenue chart data points: "
+                            + (chartData.getData() != null ? chartData.getData().size() : 0));
+
                     if (chartData.getData() != null && !chartData.getData().isEmpty()) {
                         // Calculate total and change percent
                         List<Double> values = chartData.getData();
@@ -632,9 +655,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         for (Double value : values) {
                             currentTotal += (value != null ? value : 0);
                         }
-                        
+
                         double changePercent;
-                        
+
                         // Check if backend provided changePercent or previousPeriodTotal
                         if (chartData.getChangePercent() != null) {
                             // Backend calculated the percentage - use it directly
@@ -648,7 +671,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                             } else {
                                 changePercent = ((currentTotal - previousTotal) / previousTotal) * 100;
                             }
-                            Log.d(TAG, "Calculated change from previous: current=" + currentTotal + 
+                            Log.d(TAG, "Calculated change from previous: current=" + currentTotal +
                                     ", previous=" + previousTotal + ", change=" + changePercent + "%");
                         } else {
                             // Fallback: Backend doesn't provide comparison data
@@ -657,7 +680,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                             Log.w(TAG, "Using fallback calculation (first half vs second half). " +
                                     "For accurate comparison, backend should return 'previousPeriodTotal' or 'changePercent'");
                         }
-                        
+
                         displayRevenueChart(chartData.getLabels(), values, days, currentTotal, changePercent);
                     } else {
                         Log.d(TAG, "No revenue data available - showing empty state");
@@ -684,31 +707,30 @@ public class AdminDashboardActivity extends AppCompatActivity {
             }
         });
     }
-    
-    private void displayRevenueChart(List<String> labels, List<Double> values, int days, double total, double changePercent) {
+
+    private void displayRevenueChart(List<String> labels, List<Double> values, int days, double total,
+            double changePercent) {
         if (labels == null || values == null || labels.isEmpty() || values.isEmpty()) {
             showEmptyRevenueChart();
             return;
         }
-        
+
         // Update summary UI
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         tvRevenueTotalV2Chart.setText(currencyFormat.format(total));
-        
-        String changeText = String.format(Locale.US, "%s%.1f%%", 
+
+        String changeText = String.format(Locale.US, "%s%.1f%%",
                 changePercent >= 0 ? "+" : "", changePercent);
         tvRevenueChangeV2.setText(changeText);
-        int changeColor = changePercent >= 0 ? 
-                Color.parseColor("#10B981") : 
-                Color.parseColor("#EF4444");
+        int changeColor = changePercent >= 0 ? Color.parseColor("#10B981") : Color.parseColor("#EF4444");
         tvRevenueChangeV2.setTextColor(changeColor);
-        
+
         // Prepare chart entries
         List<Entry> entries = new ArrayList<>();
         for (int i = 0; i < values.size(); i++) {
             entries.add(new Entry(i, values.get(i).floatValue()));
         }
-        
+
         // Create dataset
         LineDataSet dataSet = new LineDataSet(entries, "Doanh thu");
         dataSet.setColor(Color.parseColor("#3B82F6")); // Blue line
@@ -723,9 +745,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         dataSet.setFillAlpha(30);
         dataSet.setHighLightColor(Color.parseColor("#1E40AF"));
         dataSet.setHighlightLineWidth(1.5f);
-        
+
         LineData lineData = new LineData(dataSet);
-        
+
         // Configure chart
         lineChartRevenue.setData(lineData);
         lineChartRevenue.setDrawGridBackground(false);
@@ -736,11 +758,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
         lineChartRevenue.setScaleEnabled(false);
         lineChartRevenue.setPinchZoom(false);
         lineChartRevenue.setDoubleTapToZoomEnabled(false);
-        
+
         Description description = new Description();
         description.setText("");
         lineChartRevenue.setDescription(description);
-        
+
         // Configure X axis
         XAxis xAxis = lineChartRevenue.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -748,7 +770,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         xAxis.setGranularity(1f);
         xAxis.setTextColor(Color.parseColor("#9CA3AF"));
         xAxis.setTextSize(10f);
-        
+
         // Set labels for X axis
         final List<String> xLabels = labels;
         xAxis.setValueFormatter(new ValueFormatter() {
@@ -761,7 +783,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 return "";
             }
         });
-        
+
         // Configure Y axis
         YAxis leftAxis = lineChartRevenue.getAxisLeft();
         leftAxis.setDrawGridLines(true);
@@ -779,10 +801,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 return String.format(Locale.US, "%.0f", value);
             }
         });
-        
+
         YAxis rightAxis = lineChartRevenue.getAxisRight();
         rightAxis.setEnabled(false);
-        
+
         // Add value selection listener for tooltip
         final NumberFormat tooltipFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         lineChartRevenue.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -791,51 +813,53 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 int index = (int) e.getX();
                 String date = index >= 0 && index < xLabels.size() ? xLabels.get(index) : "";
                 String revenue = tooltipFormat.format(e.getY());
-                Toast.makeText(AdminDashboardActivity.this, 
-                    date + "\n" + revenue, 
-                    Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminDashboardActivity.this,
+                        date + "\n" + revenue,
+                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNothingSelected() {
             }
         });
-        
+
         lineChartRevenue.animateX(800);
         lineChartRevenue.invalidate();
-        
+
         // Show chart, hide empty state
         lineChartRevenue.setVisibility(View.VISIBLE);
         tvRevenueEmptyV2.setVisibility(View.GONE);
-        
+
         Log.d(TAG, "Revenue chart displayed: total=" + total + ", change=" + changePercent + "%");
     }
-    
+
     private double calculateChangePercent(List<Double> data) {
-        if (data == null || data.size() < 2) return 0;
-        
+        if (data == null || data.size() < 2)
+            return 0;
+
         int halfSize = data.size() / 2;
         double firstHalfSum = 0;
         double secondHalfSum = 0;
-        
+
         for (int i = 0; i < halfSize; i++) {
             firstHalfSum += (data.get(i) != null ? data.get(i) : 0);
         }
-        
+
         for (int i = halfSize; i < data.size(); i++) {
             secondHalfSum += (data.get(i) != null ? data.get(i) : 0);
         }
-        
-        if (firstHalfSum == 0) return secondHalfSum > 0 ? 100 : 0;
-        
+
+        if (firstHalfSum == 0)
+            return secondHalfSum > 0 ? 100 : 0;
+
         return ((secondHalfSum - firstHalfSum) / firstHalfSum) * 100;
     }
-    
+
     private void showEmptyRevenueChart() {
         lineChartRevenue.clear();
         lineChartRevenue.setVisibility(View.GONE);
         tvRevenueEmptyV2.setVisibility(View.VISIBLE);
-        
+
         tvRevenueTotalV2Chart.setText("0đ");
         tvRevenueChangeV2.setText("+0%");
         tvRevenueChangeV2.setTextColor(Color.parseColor("#6B7280"));
@@ -845,7 +869,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         if (refreshHandler == null) {
             refreshHandler = new Handler(Looper.getMainLooper());
         }
-        
+
         if (refreshRunnable == null) {
             refreshRunnable = new Runnable() {
                 @Override
@@ -855,17 +879,17 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 }
             };
         }
-        
+
         // Start the refresh cycle
         refreshHandler.postDelayed(refreshRunnable, REFRESH_INTERVAL);
     }
-    
+
     private void stopAutoRefresh() {
         if (refreshHandler != null && refreshRunnable != null) {
             refreshHandler.removeCallbacks(refreshRunnable);
         }
     }
-    
+
     private void refreshData() {
         Log.d(TAG, "Auto-refreshing dashboard data...");
         loadDashboardStats();
@@ -883,7 +907,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -891,4 +915,3 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
 }
-

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <!-- Notification Badge View -->
+    <com.example.nike_fe.NotificationBadgeView
+        android:id="@+id/notification_badge_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Buttons để test -->
+    <Button
+        android:id="@+id/btn_increase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tăng số thông báo (+1)"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_decrease"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Giảm số thông báo (-1)"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_reset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reset về 0"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_set"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set số random" />
+
+</LinearLayout>

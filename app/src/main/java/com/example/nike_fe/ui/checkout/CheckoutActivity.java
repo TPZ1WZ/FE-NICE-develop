@@ -489,6 +489,7 @@ public class CheckoutActivity extends AppCompatActivity {
             dialog.dismiss();
             Intent intent = new Intent(CheckoutActivity.this, com.example.nike_fe.MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("REFRESH_BADGE", true);
             startActivity(intent);
             finish();
         });

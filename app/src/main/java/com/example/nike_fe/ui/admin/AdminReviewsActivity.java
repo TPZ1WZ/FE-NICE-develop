@@ -84,7 +84,8 @@ public class AdminReviewsActivity extends AppCompatActivity {
 
     private void setupFilters() {
         // Status filter
-        String[] statuses = { "Tất cả", "Chờ duyệt", "Đã duyệt" };
+        String[] statuses = { "Tất cả", "Chờ duyệt (Pending)", "An toàn (SAFE)", "Cảnh báo (WARNING)",
+                "Đã chặn (BLOCK)" };
         ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, statuses);
         statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -101,7 +102,13 @@ public class AdminReviewsActivity extends AppCompatActivity {
                         selectedStatus = "pending";
                         break;
                     case 2:
-                        selectedStatus = "approved";
+                        selectedStatus = "SAFE";
+                        break;
+                    case 3:
+                        selectedStatus = "WARNING";
+                        break;
+                    case 4:
+                        selectedStatus = "BLOCK";
                         break;
                 }
                 currentPage = 0;
@@ -181,8 +188,9 @@ public class AdminReviewsActivity extends AppCompatActivity {
                                 adapter.updateReviews(reviews);
                             }
                         } else {
-                            Toast.makeText(AdminReviewsActivity.this,
-                                    "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
+                            // If reviews list is empty or null, show empty view
+                            adapter.updateReviews(new ArrayList<>());
+                            tvEmpty.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -204,11 +212,27 @@ public class AdminReviewsActivity extends AppCompatActivity {
                 review.setId(((Double) item.get("id")).longValue());
                 review.setProductName((String) item.get("productName"));
                 review.setUserName((String) item.get("userName"));
+                review.setUserId(((Double) item.get("userId")).longValue()); // Make sure this exists in DTO
                 review.setRating(((Double) item.get("rating")).intValue());
                 review.setComment((String) item.get("comment"));
                 review.setTitle((String) item.get("title"));
                 review.setCreatedAt((String) item.get("createdAt"));
                 review.setApproved((Boolean) item.get("approved"));
+
+                // New fields
+                if (item.containsKey("reviewStatus")) {
+                    review.setReviewStatus((String) item.get("reviewStatus"));
+                }
+                if (item.containsKey("aiSuggestion")) {
+                    review.setAiSuggestion((String) item.get("aiSuggestion"));
+                }
+                if (item.containsKey("aiReasons")) {
+                    review.setAiReasons((List<String>) item.get("aiReasons"));
+                }
+                if (item.containsKey("adminNote")) {
+                    review.setAdminNote((String) item.get("adminNote"));
+                }
+
                 reviews.add(review);
             }
         }
@@ -228,6 +252,12 @@ public class AdminReviewsActivity extends AppCompatActivity {
                 break;
             case "reply":
                 showReplyDialog(review);
+                break;
+            case "ban":
+                showBanUserDialog(review);
+                break;
+            case "restore":
+                showRestoreDialog(review);
                 break;
         }
     }
@@ -358,6 +388,81 @@ public class AdminReviewsActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showBanUserDialog(Review review) {
+        EditText input = new EditText(this);
+        input.setHint("Lý do ban (VD: Spam, Lừa đảo)");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Cấm người dùng")
+                .setMessage("Bạn có chắc muốn cấm người dùng " + review.getUserName() + " không?")
+                .setView(input)
+                .setPositiveButton("Ban User", (dialog, which) -> {
+                    String reason = input.getText().toString();
+                    if (reason.isEmpty())
+                        reason = "Vi phạm quy tắc cộng đồng";
+
+                    Map<String, Object> body = new HashMap<>();
+                    body.put("reason", reason);
+
+                    adminApi.banUser(token, review.getUserId(), body)
+                            .enqueue(new Callback<Map<String, Object>>() {
+                                @Override
+                                public void onResponse(Call<Map<String, Object>> call,
+                                        Response<Map<String, Object>> response) {
+                                    if (response.isSuccessful()) {
+                                        Toast.makeText(AdminReviewsActivity.this,
+                                                "Đã cấm người dùng!", Toast.LENGTH_LONG).show();
+                                        // Optional: Delete user's reviews
+                                        // deleteUserReviews(review.getUserId());
+                                    } else {
+                                        Toast.makeText(AdminReviewsActivity.this, "Lỗi khi ban", Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                                    Toast.makeText(AdminReviewsActivity.this, "Lỗi mạng: " + t.getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void showRestoreDialog(Review review) {
+        new AlertDialog.Builder(this)
+                .setTitle("Khôi phục đánh giá")
+                .setMessage("Bạn có chắc muốn khôi phục đánh giá này về trạng thái SAFE không?")
+                .setPositiveButton("Khôi phục", (dialog, which) -> {
+                    adminApi.restoreReview(token, review.getId())
+                            .enqueue(new Callback<Map<String, Object>>() {
+                                @Override
+                                public void onResponse(Call<Map<String, Object>> call,
+                                        Response<Map<String, Object>> response) {
+                                    if (response.isSuccessful()) {
+                                        Toast.makeText(AdminReviewsActivity.this,
+                                                "Đã khôi phục đánh giá", Toast.LENGTH_SHORT).show();
+                                        loadReviews();
+                                        loadStatistics();
+                                    } else {
+                                        Toast.makeText(AdminReviewsActivity.this,
+                                                "Lỗi khi khôi phục", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                                    Toast.makeText(AdminReviewsActivity.this,
+                                            "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         finish();
@@ -402,8 +507,8 @@ public class AdminReviewsActivity extends AppCompatActivity {
         }
 
         static class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvProductName, tvUserName, tvRating, tvComment, tvDate, tvStatus;
-            Button btnApprove, btnReject, btnDelete, btnReply;
+            TextView tvProductName, tvUserName, tvRating, tvComment, tvDate, tvStatus, tvAiWarning;
+            Button btnApprove, btnReject, btnDelete, btnReply, btnBan, btnRestore;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -413,10 +518,13 @@ public class AdminReviewsActivity extends AppCompatActivity {
                 tvComment = itemView.findViewById(R.id.tvComment);
                 tvDate = itemView.findViewById(R.id.tvDate);
                 tvStatus = itemView.findViewById(R.id.tvStatus);
+                tvAiWarning = itemView.findViewById(R.id.tvAiWarning);
                 btnApprove = itemView.findViewById(R.id.btnApprove);
                 btnReject = itemView.findViewById(R.id.btnReject);
                 btnDelete = itemView.findViewById(R.id.btnDelete);
                 btnReply = itemView.findViewById(R.id.btnReply);
+                btnBan = itemView.findViewById(R.id.btnBan);
+                btnRestore = itemView.findViewById(R.id.btnRestore);
             }
 
             void bind(Review review, OnReviewActionListener listener) {
@@ -426,22 +534,67 @@ public class AdminReviewsActivity extends AppCompatActivity {
                 tvComment.setText(review.getComment());
                 tvDate.setText(review.getCreatedAt());
 
-                if (review.getApproved()) {
-                    tvStatus.setText("✓ Đã duyệt");
+                // Get review status
+                String status = review.getReviewStatus();
+                boolean isSafe = "SAFE".equals(status);
+                boolean isWarning = "WARNING".equals(status);
+                boolean isBlock = "BLOCK".equals(status);
+
+                // ======== STATUS DISPLAY ========
+                if (isSafe && review.getApproved()) {
+                    tvStatus.setText("🟢 An toàn (SAFE)");
                     tvStatus.setTextColor(0xFF4CAF50);
-                    btnApprove.setVisibility(View.GONE);
-                    btnReject.setVisibility(View.GONE);
+                } else if (isWarning) {
+                    tvStatus.setText("🟡 Cảnh báo (WARNING)");
+                    tvStatus.setTextColor(0xFFFFC107);
+                } else if (isBlock) {
+                    tvStatus.setText("🔴 Đã chặn (BLOCK)");
+                    tvStatus.setTextColor(0xFFF44336);
                 } else {
                     tvStatus.setText("⏳ Chờ duyệt");
-                    tvStatus.setTextColor(0xFFFFC107);
-                    btnApprove.setVisibility(View.VISIBLE);
-                    btnReject.setVisibility(View.VISIBLE);
+                    tvStatus.setTextColor(0xFF9E9E9E);
                 }
 
+                // Show AI reasons if available
+                if (review.getAiReasons() != null && !review.getAiReasons().isEmpty()) {
+                    tvAiWarning.setText("🔍 AI: " + String.join(", ", review.getAiReasons()));
+                    tvAiWarning.setVisibility(View.VISIBLE);
+                } else {
+                    tvAiWarning.setVisibility(View.GONE);
+                }
+
+                // ======== BUTTON VISIBILITY BY STATUS ========
+                // Hide all first
+                btnApprove.setVisibility(View.GONE);
+                btnReject.setVisibility(View.GONE);
+                btnDelete.setVisibility(View.GONE);
+                btnReply.setVisibility(View.GONE);
+                btnBan.setVisibility(View.GONE);
+                btnRestore.setVisibility(View.GONE);
+
+                if (isSafe) {
+                    // SAFE: Reply | Delete
+                    btnReply.setVisibility(View.VISIBLE);
+                    btnDelete.setVisibility(View.VISIBLE);
+                } else if (isWarning) {
+                    // WARNING: Approve | Reject | Ban
+                    btnApprove.setVisibility(View.VISIBLE);
+                    btnReject.setVisibility(View.VISIBLE);
+                    btnBan.setVisibility(View.VISIBLE);
+                } else if (isBlock) {
+                    // BLOCK: Restore | Delete | Ban
+                    btnRestore.setVisibility(View.VISIBLE);
+                    btnDelete.setVisibility(View.VISIBLE);
+                    btnBan.setVisibility(View.VISIBLE);
+                }
+
+                // ======== BUTTON CLICK LISTENERS ========
                 btnApprove.setOnClickListener(v -> listener.onAction(review, "approve"));
                 btnReject.setOnClickListener(v -> listener.onAction(review, "reject"));
                 btnDelete.setOnClickListener(v -> listener.onAction(review, "delete"));
                 btnReply.setOnClickListener(v -> listener.onAction(review, "reply"));
+                btnBan.setOnClickListener(v -> listener.onAction(review, "ban"));
+                btnRestore.setOnClickListener(v -> listener.onAction(review, "restore"));
             }
         }
     }

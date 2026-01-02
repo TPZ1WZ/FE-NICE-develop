@@ -319,8 +319,22 @@ public class AdminCouponFormActivity extends AppCompatActivity {
                     Toast.makeText(AdminCouponFormActivity.this, "Tạo coupon thành công", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(AdminCouponFormActivity.this, "Lỗi tạo: " + response.code(), Toast.LENGTH_SHORT)
-                            .show();
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "";
+                        if (errorBody.contains("tồn tại") || errorBody.contains("exists")) {
+                            Toast.makeText(AdminCouponFormActivity.this,
+                                    "Mã giảm giá này đã tồn tại trong hệ thống. Vui lòng nhập mã khác.",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        } else {
+                            Toast.makeText(AdminCouponFormActivity.this, "Lỗi tạo: " + response.code(),
+                                    Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(AdminCouponFormActivity.this, "Lỗi tạo: " + response.code(), Toast.LENGTH_SHORT)
+                                .show();
+                    }
                 }
             }
 

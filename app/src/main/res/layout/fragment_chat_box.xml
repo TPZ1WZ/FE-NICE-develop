@@ -119,7 +119,8 @@
                 android:background="@drawable/edit_text_background"
                 android:padding="12dp"
                 android:maxLines="4"
-                android:inputType="textMultiLine"
+                android:inputType="textCapSentences|textMultiLine|textAutoCorrect"
+                android:imeOptions="flagNoExtractUi"
                 android:textSize="15sp"/>
 
             <ImageButton

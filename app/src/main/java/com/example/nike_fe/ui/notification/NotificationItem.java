@@ -1,18 +1,44 @@
 package com.example.nike_fe.ui.notification;
 
 public class NotificationItem {
+    private Long id;
     private String title;
     private String message;
     private String time;
     private String type; // order, promotion, delivery, system
     private boolean isRead;
 
-    public NotificationItem(String title, String message, String time, String type, boolean isRead) {
+    private java.util.Map<String, Object> data;
+
+    public NotificationItem(Long id, String title, String message, String time, String type, boolean isRead) {
+        this(id, title, message, time, type, isRead, null);
+    }
+
+    public NotificationItem(Long id, String title, String message, String time, String type, boolean isRead,
+            java.util.Map<String, Object> data) {
+        this.id = id;
         this.title = title;
         this.message = message;
         this.time = time;
         this.type = type;
         this.isRead = isRead;
+        this.data = data;
+    }
+
+    public java.util.Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(java.util.Map<String, Object> data) {
+        this.data = data;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {

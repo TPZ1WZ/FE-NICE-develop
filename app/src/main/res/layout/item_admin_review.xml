@@ -40,7 +40,7 @@
                 android:background="@android:color/transparent"/>
         </LinearLayout>
 
-        <!-- User and Rating -->
+        <!-- User and Rating + Ban -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,13 +57,38 @@
                 android:textSize="14sp"
                 android:textColor="#757575"/>
 
+            <Button
+                 android:id="@+id/btnBan"
+                 android:layout_width="wrap_content"
+                 android:layout_height="30dp"
+                 android:text="🚫 Ban"
+                 android:textSize="10sp"
+                 android:backgroundTint="#000000"
+                 android:textColor="#FFFFFF"
+                 android:padding="0dp"
+                 android:visibility="gone"/>
+
             <TextView
                 android:id="@+id/tvRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="⭐⭐⭐⭐⭐"
                 android:textSize="14sp"/>
         </LinearLayout>
+
+        <!-- AI Analysis Result -->
+        <TextView
+            android:id="@+id/tvAiWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="#FFEBEE"
+            android:padding="8dp"
+            android:text="⚠️ AI nghi ngờ: spam, lừa đảo"
+            android:textColor="#D32F2F"
+            android:textSize="12sp"
+            android:visibility="gone"/>
 
         <!-- Comment -->
         <TextView
@@ -122,9 +147,20 @@
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="💬 Phản hồi"
+                android:text="💬 Trả lời"
                 android:textSize="12sp"
                 android:backgroundTint="#2196F3"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/btnRestore"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="♻️ Khôi phục"
+                android:textSize="12sp"
+                android:backgroundTint="#FF9800"
                 android:textColor="#FFFFFF"/>
 
             <Button

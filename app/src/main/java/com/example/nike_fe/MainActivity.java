@@ -164,7 +164,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        updateUnreadCount();
+        
+        // Check if coming back from order - need delay for backend to save notification
+        boolean needRefresh = getIntent().getBooleanExtra("REFRESH_BADGE", false);
+        if (needRefresh) {
+            getIntent().removeExtra("REFRESH_BADGE");
+            android.util.Log.d("MainActivity", "⏳ Will refresh badge in 3 seconds...");
+            // Wait 3000ms for backend to complete async notification creation and commit to DB
+            new android.os.Handler().postDelayed(() -> {
+                android.util.Log.d("MainActivity", "🔔 Refreshing badge after order (1st attempt)...");
+                updateUnreadCount();
+                // Try again after another 2 seconds in case first attempt was too early
+                new android.os.Handler().postDelayed(() -> {
+                    android.util.Log.d("MainActivity", "🔔 Refreshing badge (2nd attempt - safety check)...");
+                    updateUnreadCount();
+                }, 2000);
+            }, 3000);
+        } else {
+            updateUnreadCount();
+        }
+        
         loadUserProfile(); // Refresh profile if needed
         loadCategoriesFromApi(); // Refresh categories when returning to MainActivity
 
@@ -871,36 +890,67 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateUnreadCount() {
+        android.util.Log.d("MainActivity", "========================================");
+        android.util.Log.d("MainActivity", "🔔 updateUnreadCount() called");
+        android.util.Log.d("MainActivity", "   Badge view is " + (tvNotificationBadge == null ? "NULL ❌" : "OK ✅"));
+        
         String token = RetrofitClient.getInstance(this).getToken();
+        android.util.Log.d("MainActivity", "   Token: " + (token == null ? "NULL" : "EXISTS ✅"));
+        
         if (token == null) {
+            android.util.Log.d("MainActivity", "   No token - hiding badge");
             if (tvNotificationBadge != null)
                 tvNotificationBadge.setVisibility(View.GONE);
             return;
         }
 
-        RetrofitClient.getInstance(this).getNotificationApi().getUnreadCount()
+        android.util.Log.d("MainActivity", "🌐 Calling API: /api/notifications/count-unread");
+        
+        RetrofitClient.getInstance(this).getNotificationApi().getUnreadCount("Bearer " + token)
                 .enqueue(new Callback<com.example.nike_fe.data.model.UnreadCountResponse>() {
                     @Override
                     public void onResponse(Call<com.example.nike_fe.data.model.UnreadCountResponse> call,
                             Response<com.example.nike_fe.data.model.UnreadCountResponse> response) {
+                        android.util.Log.d("MainActivity", "📥 API Response code: " + response.code());
+                        
                         if (response.isSuccessful() && response.body() != null) {
                             long count = response.body().getCount();
+                            android.util.Log.d("MainActivity", "✅ API Response - Unread count: " + count);
+                            
                             if (tvNotificationBadge != null) {
+                                android.util.Log.d("MainActivity", "   Setting badge text to: " + count);
                                 if (count > 0) {
                                     tvNotificationBadge.setText(String.valueOf(count));
                                     tvNotificationBadge.setVisibility(View.VISIBLE);
+                                    android.util.Log.d("MainActivity", "🔴 Badge set to VISIBLE with number: " + count);
                                 } else {
                                     tvNotificationBadge.setVisibility(View.GONE);
+                                    android.util.Log.d("MainActivity", "⭕ Badge HIDDEN (no notifications)");
                                 }
+                            } else {
+                                android.util.Log.e("MainActivity", "❌ Badge view NULL after API response!");
+                            }
+                        } else {
+                            android.util.Log.e("MainActivity", "❌ API failed: " + response.code());
+                            try {
+                                if (response.errorBody() != null) {
+                                    android.util.Log.e("MainActivity", "Error: " + response.errorBody().string());
+                                }
+                            } catch (Exception e) {
+                                android.util.Log.e("MainActivity", "Can't read error body");
                             }
                         }
+                        android.util.Log.d("MainActivity", "========================================");
                     }
 
                     @Override
                     public void onFailure(Call<com.example.nike_fe.data.model.UnreadCountResponse> call, Throwable t) {
+                        android.util.Log.e("MainActivity", "❌ Network error: " + t.getMessage());
+                        t.printStackTrace();
                         // Ignore error, just hide badge
                         if (tvNotificationBadge != null)
                             tvNotificationBadge.setVisibility(View.GONE);
+                        android.util.Log.d("MainActivity", "========================================");
                     }
                 });
     }

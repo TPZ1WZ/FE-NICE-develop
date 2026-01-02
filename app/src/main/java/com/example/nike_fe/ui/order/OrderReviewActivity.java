@@ -30,6 +30,8 @@ import com.example.nike_fe.data.model.Order;
 import com.example.nike_fe.data.model.OrderItem;
 import com.example.nike_fe.data.model.Review;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -40,6 +42,7 @@ import java.util.List;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -134,9 +137,8 @@ public class OrderReviewActivity extends AppCompatActivity implements OrderRevie
 
     private void openGallery() {
         Log.d(TAG, "openGallery: Opening image picker...");
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     @Override
@@ -185,34 +187,42 @@ public class OrderReviewActivity extends AppCompatActivity implements OrderRevie
 
             Toast.makeText(this, "Đang tải ảnh lên...", Toast.LENGTH_SHORT).show();
 
-            uploadApi.uploadImage(body).enqueue(new Callback<String>() {
+            uploadApi.uploadImage(body).enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        String imageUrl = response.body();
-                        Log.d(TAG, "Upload successful! Image URL: " + imageUrl);
-                        // Add to current item
-                        if (currentItemForImage != null) {
-                            if (currentItemForImage.getReviewImages() == null) {
-                                currentItemForImage.setReviewImages(new ArrayList<>());
-                                Log.d(TAG, "Created new ArrayList for review images");
-                            }
-                            currentItemForImage.getReviewImages().add(imageUrl);
-                            Log.d(TAG, "Added image to list. Total images: " + currentItemForImage.getReviewImages().size());
-                            
-                            // Find position of current item and notify adapter
-                            int position = orderItems.indexOf(currentItemForImage);
-                            if (position != -1) {
-                                Log.d(TAG, "Notifying adapter at position: " + position);
-                                adapter.notifyItemChanged(position);
+                        try {
+                            String imageUrl = response.body().string();
+                            Log.d(TAG, "Upload successful! Image URL: " + imageUrl);
+                            // Add to current item
+                            if (currentItemForImage != null) {
+                                if (currentItemForImage.getReviewImages() == null) {
+                                    currentItemForImage.setReviewImages(new ArrayList<>());
+                                    Log.d(TAG, "Created new ArrayList for review images");
+                                }
+                                currentItemForImage.getReviewImages().add(imageUrl);
+                                Log.d(TAG, "Added image to list. Total images: "
+                                        + currentItemForImage.getReviewImages().size());
+
+                                // Find position of current item and notify adapter
+                                int position = orderItems.indexOf(currentItemForImage);
+                                if (position != -1) {
+                                    Log.d(TAG, "Notifying adapter at position: " + position);
+                                    adapter.notifyItemChanged(position);
+                                } else {
+                                    Log.w(TAG, "Could not find item position, calling notifyDataSetChanged");
+                                    adapter.notifyDataSetChanged();
+                                }
+
+                                Toast.makeText(OrderReviewActivity.this, "Tải ảnh thành công", Toast.LENGTH_SHORT)
+                                        .show();
                             } else {
-                                Log.w(TAG, "Could not find item position, calling notifyDataSetChanged");
-                                adapter.notifyDataSetChanged();
+                                Log.e(TAG, "currentItemForImage is null!");
                             }
-                            
-                            Toast.makeText(OrderReviewActivity.this, "Tải ảnh thành công", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.e(TAG, "currentItemForImage is null!");
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error parsing upload response", e);
+                            Toast.makeText(OrderReviewActivity.this, "Lỗi đọc phản hồi server", Toast.LENGTH_SHORT)
+                                    .show();
                         }
                     } else {
                         Log.e(TAG, "Upload failed. Response code: " + response.code());
@@ -221,7 +231,7 @@ public class OrderReviewActivity extends AppCompatActivity implements OrderRevie
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Toast.makeText(OrderReviewActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT)
                             .show();
                 }
@@ -258,15 +268,16 @@ public class OrderReviewActivity extends AppCompatActivity implements OrderRevie
 
     @Override
     public void onReviewSubmit(OrderItem item, int rating, String comment) {
-        Log.d(TAG, "onReviewSubmit: Product=" + item.getProductName() + ", Rating=" + rating + ", Comment length=" + comment.length());
+        Log.d(TAG, "onReviewSubmit: Product=" + item.getProductName() + ", Rating=" + rating + ", Comment length="
+                + comment.length());
         Log.d(TAG, "Review images count: " + (item.getReviewImages() != null ? item.getReviewImages().size() : 0));
-        
+
         CreateReviewRequest request = new CreateReviewRequest(
                 item.getProductId(),
                 orderId,
                 rating,
                 comment,
-                "Review for " + item.getProductName(),
+                "Đánh giá sản phẩm " + item.getProductName(),
                 item.getReviewImages() // Pass the uploaded images
         );
 
@@ -275,13 +286,43 @@ public class OrderReviewActivity extends AppCompatActivity implements OrderRevie
             public void onResponse(Call<Review> call, Response<Review> response) {
                 Log.d(TAG, "Review submit response code: " + response.code());
                 if (response.isSuccessful()) {
-                    Toast.makeText(OrderReviewActivity.this, "Đánh giá thành công! Đang chờ duyệt.", Toast.LENGTH_LONG)
-                            .show();
+                    Review review = response.body();
+                    String message;
+
+                    // Check if review is approved (SAFE) or pending (WARNING)
+                    if (review != null && review.getApproved() != null && review.getApproved()) {
+                        message = "✅ Đánh giá thành công! Đã được hiển thị ngay.";
+                    } else {
+                        message = "⚠️ Đánh giá thành công! Đang chờ Admin duyệt.";
+                    }
+
+                    Toast.makeText(OrderReviewActivity.this, message, Toast.LENGTH_LONG).show();
                     item.setReviewed(true);
                     adapter.notifyDataSetChanged();
                 } else {
-                    Log.e(TAG, "Review submit failed: " + response.message());
-                    Toast.makeText(OrderReviewActivity.this, "Lỗi: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Parse error message from backend
+                    String errorMessage = "Đã có lỗi xảy ra";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorBody = response.errorBody().string();
+                            Log.e(TAG, "Error body: " + errorBody);
+
+                            JSONObject errorJson = new JSONObject(errorBody);
+                            String message = errorJson.optString("message", "");
+                            String suggestion = errorJson.optString("suggestion", "");
+
+                            if (!message.isEmpty()) {
+                                errorMessage = message;
+                                if (!suggestion.isEmpty()) {
+                                    errorMessage += "\n\n" + suggestion;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to parse error: " + e.getMessage());
+                    }
+
+                    Toast.makeText(OrderReviewActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 }
             }
 

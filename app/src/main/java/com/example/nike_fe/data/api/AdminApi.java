@@ -153,6 +153,24 @@ public interface AdminApi {
                         @Header("Authorization") String token,
                         @Body java.util.Map<String, java.util.List<Long>> body);
 
+        // Restore Review (BLOCK → SAFE)
+        @PATCH("api/v1/admin/reviews/{reviewId}/restore")
+        Call<java.util.Map<String, Object>> restoreReview(
+                        @Header("Authorization") String token,
+                        @Path("reviewId") Long reviewId);
+
+        // Moderation - User Bans
+        @POST("api/v1/admin/users/{userId}/ban")
+        Call<java.util.Map<String, Object>> banUser(
+                        @Header("Authorization") String token,
+                        @Path("userId") Long userId,
+                        @Body java.util.Map<String, Object> body);
+
+        @DELETE("api/v1/admin/users/{userId}/reviews")
+        Call<java.util.Map<String, Object>> deleteUserReviews(
+                        @Header("Authorization") String token,
+                        @Path("userId") Long userId);
+
         // Settings APIs
         @POST("/api/v1/auth/change-password")
         Call<okhttp3.ResponseBody> changePassword(

@@ -865,7 +865,8 @@
                         android:padding="12dp"
                         android:gravity="center_vertical"
                         android:clickable="true"
-                        android:focusable="true">
+                        android:focusable="true"
+                        android:layout_marginBottom="8dp">
 
                         <ImageView
                             android:layout_width="20dp"
@@ -877,6 +878,31 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Cài đặt"
+                            android:textSize="14sp"
+                            android:textColor="@color/gray_400"
+                            android:layout_marginStart="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/menuHomeV2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="12dp"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_back"
+                            android:tint="@color/gray_400" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Về trang chủ"
                             android:textSize="14sp"
                             android:textColor="@color/gray_400"
                             android:layout_marginStart="12dp" />

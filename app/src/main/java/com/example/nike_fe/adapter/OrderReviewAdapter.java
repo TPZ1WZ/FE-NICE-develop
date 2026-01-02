@@ -49,6 +49,10 @@ public class OrderReviewAdapter extends RecyclerView.Adapter<OrderReviewAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         OrderItem item = orderItems.get(position);
 
+        android.util.Log.d("OrderReviewAdapter", "=== onBindViewHolder called for position " + position + " ===");
+        android.util.Log.d("OrderReviewAdapter", "Product: " + item.getProductName());
+        android.util.Log.d("OrderReviewAdapter", "Review images count: " + (item.getReviewImages() != null ? item.getReviewImages().size() : 0));
+
         holder.tvProductName.setText(item.getProductName());
         holder.tvProductSize.setText("Size: " + item.getSize());
 
@@ -68,6 +72,9 @@ public class OrderReviewAdapter extends RecyclerView.Adapter<OrderReviewAdapter.
         if (item.getReviewImages() != null && !item.getReviewImages().isEmpty()) {
             android.util.Log.d("OrderReviewAdapter",
                     "Setting up image adapter with " + item.getReviewImages().size() + " images");
+            for (int i = 0; i < item.getReviewImages().size(); i++) {
+                android.util.Log.d("OrderReviewAdapter", "Image " + i + ": " + item.getReviewImages().get(i));
+            }
             ReviewImageAdapter imageAdapter = new ReviewImageAdapter(context, item.getReviewImages());
             holder.rvReviewImages.setAdapter(imageAdapter);
             holder.rvReviewImages.setVisibility(View.VISIBLE);

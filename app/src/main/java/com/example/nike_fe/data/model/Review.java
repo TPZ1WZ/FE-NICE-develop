@@ -6,42 +6,55 @@ import java.util.List;
 public class Review {
     @SerializedName("id")
     private Long id;
-    
+
     @SerializedName("productId")
     private Long productId;
-    
+
     @SerializedName("productName")
     private String productName;
-    
+
     @SerializedName("userId")
     private Long userId;
-    
+
     @SerializedName("userName")
     private String userName;
-    
+
     @SerializedName("rating")
     private Integer rating;
-    
+
     @SerializedName("comment")
     private String comment;
-    
+
     @SerializedName("title")
     private String title;
-    
+
     @SerializedName("images")
     private List<String> images;
-    
+
     @SerializedName("createdAt")
     private String createdAt;
-    
+
     @SerializedName("approved")
     private Boolean approved;
-    
+
+    @SerializedName("reviewStatus")
+    private String reviewStatus; // SAFE, WARNING, BLOCK
+
+    @SerializedName("adminNote")
+    private String adminNote;
+
+    @SerializedName("aiSuggestion")
+    private String aiSuggestion;
+
+    @SerializedName("aiReasons")
+    private List<String> aiReasons;
+
     @SerializedName("replies")
     private List<ReviewReply> replies;
 
     // Constructors
-    public Review() {}
+    public Review() {
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -132,6 +145,38 @@ public class Review {
         this.approved = approved;
     }
 
+    public String getReviewStatus() {
+        return reviewStatus;
+    }
+
+    public void setReviewStatus(String reviewStatus) {
+        this.reviewStatus = reviewStatus;
+    }
+
+    public String getAdminNote() {
+        return adminNote;
+    }
+
+    public void setAdminNote(String adminNote) {
+        this.adminNote = adminNote;
+    }
+
+    public String getAiSuggestion() {
+        return aiSuggestion;
+    }
+
+    public void setAiSuggestion(String aiSuggestion) {
+        this.aiSuggestion = aiSuggestion;
+    }
+
+    public List<String> getAiReasons() {
+        return aiReasons;
+    }
+
+    public void setAiReasons(List<String> aiReasons) {
+        this.aiReasons = aiReasons;
+    }
+
     public List<ReviewReply> getReplies() {
         return replies;
     }
@@ -144,16 +189,16 @@ public class Review {
     public static class ReviewReply {
         @SerializedName("id")
         private Long id;
-        
+
         @SerializedName("comment")
         private String comment;
-        
+
         @SerializedName("userName")
         private String userName;
-        
+
         @SerializedName("isAdminReply")
         private Boolean isAdminReply;
-        
+
         @SerializedName("createdAt")
         private String createdAt;
 
