@@ -3,6 +3,8 @@ package com.example.nike_fe.data.api;
 import com.example.nike_fe.data.model.UpdateProfileRequest;
 import com.example.nike_fe.data.model.User;
 
+import java.util.List;
+
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -16,6 +18,9 @@ public interface UserApi {
     
     @GET("/api/v1/users/me")
     Call<User> getProfile(@Header("Authorization") String token);
+    
+    @GET("/api/v1/users")
+    Call<List<User>> getAllUsers(@Header("Authorization") String token);
     
     @PATCH("/api/v1/users/me")
     Call<User> updateProfile(

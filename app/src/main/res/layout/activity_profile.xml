@@ -135,15 +135,21 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/mauden"
+                android:src="@drawable/button_profile"
                 android:scaleType="centerCrop"/>
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_save_white"/>
 
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:text="Lưu Thay Đổi"
+                android:text=""
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -161,15 +167,21 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/mauden"
+                android:src="@drawable/button_profile"
                 android:scaleType="centerCrop"/>
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_cart_white"/>
 
             <Button
                 android:id="@+id/btnMyOrders"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:text="Đơn Hàng"
+                android:text=""
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -198,15 +210,21 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/mauden"
+                android:src="@drawable/button_profile"
                 android:scaleType="centerCrop"/>
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_admin_white"/>
 
             <Button
                 android:id="@+id/btnAdminDashboard"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:text="Trang Quản Trị"
+                android:text=""
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -224,15 +242,21 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/mauden"
+                android:src="@drawable/button_profile"
                 android:scaleType="centerCrop"/>
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_logout_white"/>
 
             <Button
                 android:id="@+id/tvLogout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:text="Đăng Xuất"
+                android:text=""
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="20sp"

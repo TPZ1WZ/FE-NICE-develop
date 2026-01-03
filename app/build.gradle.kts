@@ -74,6 +74,12 @@ dependencies {
     // MPAndroidChart - Thư viện vẽ biểu đồ
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     
+    // WebSocket & STOMP
+    implementation("org.java-websocket:Java-WebSocket:1.5.3")
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

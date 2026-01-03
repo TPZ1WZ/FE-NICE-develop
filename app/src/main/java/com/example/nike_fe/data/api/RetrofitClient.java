@@ -10,10 +10,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * RetrofitClient - Singleton để kết nối với backend NICESTORE-develop
- * Backend URL: http://10.0.2.2:8080/ (Emulator -> localhost)
+ * Backend URL: http://192.168.1.9:8080/ (Real device - replace with your PC IP)
+ * For emulator use: http://10.0.2.2:8080/
  */
 public class RetrofitClient {
-    private static final String BASE_URL = "http://10.0.2.2:8080/";
+    // TODO: Replace 192.168.1.9 with your PC's IP address (check with ipconfig)
+    private static final String BASE_URL = "http://192.168.1.9:8080/";
     private static RetrofitClient instance;
     private Retrofit retrofit;
     private Context context;
@@ -121,5 +123,9 @@ public class RetrofitClient {
 
     public UploadApi getUploadApi() {
         return retrofit.create(UploadApi.class);
+    }
+
+    public ChatApi getChatApi() {
+        return retrofit.create(ChatApi.class);
     }
 }

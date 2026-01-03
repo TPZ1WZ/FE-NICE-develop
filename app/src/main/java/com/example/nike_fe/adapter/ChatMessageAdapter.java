@@ -19,27 +19,52 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.MessageViewHolder> {
+public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int VIEW_TYPE_SENT = 1;
+    private static final int VIEW_TYPE_RECEIVED = 2;
 
     private List<ChatMessage> messages;
+    private Long currentUserId;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-    public ChatMessageAdapter(List<ChatMessage> messages) {
+    public ChatMessageAdapter(List<ChatMessage> messages, Long currentUserId) {
         this.messages = messages;
+        this.currentUserId = currentUserId;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        ChatMessage message = messages.get(position);
+        if (message.getSenderId() != null && message.getSenderId().equals(currentUserId)) {
+            return VIEW_TYPE_SENT;
+        } else {
+            return VIEW_TYPE_RECEIVED;
+        }
     }
 
     @NonNull
     @Override
-    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_chat_message, parent, false);
-        return new MessageViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == VIEW_TYPE_SENT) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_sent, parent, false);
+            return new SentMessageViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_received, parent, false);
+            return new ReceivedMessageViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessage message = messages.get(position);
-        holder.bind(message);
+        if (holder instanceof SentMessageViewHolder) {
+            ((SentMessageViewHolder) holder).bind(message);
+        } else if (holder instanceof ReceivedMessageViewHolder) {
+            ((ReceivedMessageViewHolder) holder).bind(message);
+        }
     }
 
     @Override
@@ -47,37 +72,63 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         return messages.size();
     }
 
-    class MessageViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout messageContainer;
-        private TextView tvMessage;
-        private TextView tvTime;
+    public void addMessage(ChatMessage message) {
+        messages.add(message);
+        notifyItemInserted(messages.size() - 1);
+    }
 
-        public MessageViewHolder(@NonNull View itemView) {
+    public void clearMessages() {
+        messages.clear();
+        notifyDataSetChanged();
+    }
+
+    // ViewHolder for sent messages (blue, right)
+    class SentMessageViewHolder extends RecyclerView.ViewHolder {
+        private TextView tvMessageContent;
+        private TextView tvMessageTime;
+
+        public SentMessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            messageContainer = itemView.findViewById(R.id.messageContainer);
-            tvMessage = itemView.findViewById(R.id.tvMessage);
-            tvTime = itemView.findViewById(R.id.tvTime);
+            tvMessageContent = itemView.findViewById(R.id.tvMessageContent);
+            tvMessageTime = itemView.findViewById(R.id.tvMessageTime);
         }
 
         public void bind(ChatMessage message) {
-            tvMessage.setText(message.getMessage());
-            tvTime.setText(timeFormat.format(new Date(message.getTimestamp())));
-
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) messageContainer.getLayoutParams();
+            tvMessageContent.setText(message.getContent());
             
-            if (message.isFromUser()) {
-                // User message - right aligned, blue background
-                params.gravity = Gravity.END;
-                messageContainer.setBackgroundResource(R.drawable.user_message_background);
-                tvMessage.setTextColor(itemView.getContext().getColor(android.R.color.white));
-            } else {
-                // Bot message - left aligned, gray background
-                params.gravity = Gravity.START;
-                messageContainer.setBackgroundResource(R.drawable.bot_message_background);
-                tvMessage.setTextColor(itemView.getContext().getColor(android.R.color.black));
+            // Format time
+            String time = timeFormat.format(new Date());
+            if (message.getSentAt() != null) {
+                time = message.getSentAt().substring(11, 16); // Extract HH:mm from ISO format
             }
+            tvMessageTime.setText(time);
+        }
+    }
+
+    // ViewHolder for received messages (white, left)
+    class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
+        private TextView tvSenderName;
+        private TextView tvMessageContent;
+        private TextView tvMessageTime;
+
+        public ReceivedMessageViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvSenderName = itemView.findViewById(R.id.tvSenderName);
+            tvMessageContent = itemView.findViewById(R.id.tvMessageContent);
+            tvMessageTime = itemView.findViewById(R.id.tvMessageTime);
+        }
+
+        public void bind(ChatMessage message) {
+            // Always show "Nhân viên hỗ trợ" for received messages
+            tvSenderName.setText("Nhân viên hỗ trợ");
+            tvMessageContent.setText(message.getContent());
             
-            messageContainer.setLayoutParams(params);
+            // Format time
+            String time = timeFormat.format(new Date());
+            if (message.getSentAt() != null) {
+                time = message.getSentAt().substring(11, 16); // Extract HH:mm from ISO format
+            }
+            tvMessageTime.setText(time);
         }
     }
 }

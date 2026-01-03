@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Black background for received messages -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#2C2C2C"/>
+    <corners android:radius="18dp"/>
+</shape>

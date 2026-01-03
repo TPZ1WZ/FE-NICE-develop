@@ -24,6 +24,9 @@ import com.example.nike_fe.data.api.UserApi;
 import com.example.nike_fe.data.model.Category;
 import com.example.nike_fe.data.model.Product;
 import com.example.nike_fe.data.model.User;
+import com.example.nike_fe.data.model.ChatMessage;
+import com.example.nike_fe.service.ChatWebSocketService;
+import com.example.nike_fe.service.WebSocketChatManager;
 import com.example.nike_fe.ui.auth.LoginActivity;
 import com.example.nike_fe.ui.chat.ChatBoxFragment;
 
@@ -61,6 +64,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Bottom Navigation
     private BottomNavigationView bottomNavigation;
     private FloatingActionButton fabCart;
+
+    // WebSocket Chat (removed old popup variables)
+    private FloatingActionButton fabWebSocketChat;
+    private TextView tvChatBadge; // Badge for unread messages
+    private WebSocketChatManager.UnreadMessageListener unreadListener;
 
     // Search Fields
     private RecyclerView rvSearchResults;
@@ -156,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupHeader();
         // setupBottomNavigation(); // Duplicate remove
         setupBannerCarousel(); // Init Banner
+        setupWebSocketChatFab(); // Setup WebSocket Chat FAB
         fetchProducts(null);
         loadUserProfile();
     }
@@ -189,6 +198,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (bannerHandler != null && bannerRunnable != null) {
             bannerHandler.postDelayed(bannerRunnable, 3000); // 3s delay initially
         }
+        
+        // Register WebSocket listener for badge updates
+        setupWebSocketListener();
     }
 
     @Override
@@ -213,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ivHeaderAvatar = findViewById(R.id.ivHeaderAvatar);
         btnNotification = findViewById(R.id.btnNotification);
         tvNotificationBadge = findViewById(R.id.tvNotificationBadge); // Init Badge
+        tvChatBadge = findViewById(R.id.tvChatBadge); // Init Chat Badge
 
         // Notification button click
         btnNotification.setOnClickListener(v -> {
@@ -223,55 +236,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigation = findViewById(R.id.bottomNavigation);
         fabCart = findViewById(R.id.fabCart);
 
-        // Chat FAB - Draggable
-        FloatingActionButton fabChat = findViewById(R.id.fabChat);
-        if (fabChat != null) {
-            // Make FAB draggable
-            final float[] dX = { 0 };
-            final float[] dY = { 0 };
-            final float[] downRawX = { 0 };
-            final float[] downRawY = { 0 };
-            final boolean[] isDragging = { false };
-
-            fabChat.setOnTouchListener((v, event) -> {
-                switch (event.getAction()) {
-                    case android.view.MotionEvent.ACTION_DOWN:
-                        downRawX[0] = event.getRawX();
-                        downRawY[0] = event.getRawY();
-                        dX[0] = v.getX() - downRawX[0];
-                        dY[0] = v.getY() - downRawY[0];
-                        isDragging[0] = false;
-                        return true;
-
-                    case android.view.MotionEvent.ACTION_MOVE:
-                        float moveDeltaX = Math.abs(event.getRawX() - downRawX[0]);
-                        float moveDeltaY = Math.abs(event.getRawY() - downRawY[0]);
-
-                        // Only start dragging if moved more than 10dp
-                        if (moveDeltaX > 10 || moveDeltaY > 10) {
-                            isDragging[0] = true;
-                        }
-
-                        if (isDragging[0]) {
-                            v.animate()
-                                    .x(event.getRawX() + dX[0])
-                                    .y(event.getRawY() + dY[0])
-                                    .setDuration(0)
-                                    .start();
-                        }
-                        return true;
-
-                    case android.view.MotionEvent.ACTION_UP:
-                        if (!isDragging[0]) {
-                            // If not dragged, treat as click
-                            ChatBoxFragment chatBox = new ChatBoxFragment();
-                            chatBox.show(getSupportFragmentManager(), "ChatBox");
-                        }
-                        return true;
-
-                    default:
-                        return false;
-                }
+        // Chat Bot Assistant FAB - Draggable
+        FloatingActionButton fabChatBot = findViewById(R.id.fabChat);
+        if (fabChatBot != null) {
+            setupDraggableFAB(fabChatBot, () -> {
+                ChatBoxFragment chatBox = new ChatBoxFragment();
+                chatBox.show(getSupportFragmentManager(), "ChatBox");
             });
         }
 
@@ -366,6 +336,79 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (fabCart != null) {
             fabCart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
         }
+    }
+
+    private void setupWebSocketChatFab() {
+        fabWebSocketChat = findViewById(R.id.fabWebSocketChat);
+        
+        if (fabWebSocketChat != null) {
+            setupDraggableFAB(fabWebSocketChat, () -> {
+                // Notify manager that chat window is opening
+                WebSocketChatManager.getInstance().setChatWindowOpen(true);
+                
+                // Check if user is admin
+                if (currentUser != null && "ADMIN".equals(currentUser.getRole())) {
+                    // Show user list for admin
+                    com.example.nike_fe.ui.chat.ChatRoomListFragment chatRoomList = 
+                        new com.example.nike_fe.ui.chat.ChatRoomListFragment();
+                    chatRoomList.show(getSupportFragmentManager(), "ChatRoomList");
+                } else {
+                    // Show direct chat for regular users
+                    com.example.nike_fe.ui.chat.WebSocketChatFragment chatFragment = 
+                        new com.example.nike_fe.ui.chat.WebSocketChatFragment();
+                    chatFragment.show(getSupportFragmentManager(), "WebSocketChat");
+                }
+            });
+        }
+    }
+
+    // Helper method to make FAB draggable with click support
+    private void setupDraggableFAB(FloatingActionButton fab, Runnable onClick) {
+        final float[] dX = { 0 };
+        final float[] dY = { 0 };
+        final float[] downRawX = { 0 };
+        final float[] downRawY = { 0 };
+        final boolean[] isDragging = { false };
+
+        fab.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    downRawX[0] = event.getRawX();
+                    downRawY[0] = event.getRawY();
+                    dX[0] = v.getX() - downRawX[0];
+                    dY[0] = v.getY() - downRawY[0];
+                    isDragging[0] = false;
+                    return true;
+
+                case android.view.MotionEvent.ACTION_MOVE:
+                    float moveDeltaX = Math.abs(event.getRawX() - downRawX[0]);
+                    float moveDeltaY = Math.abs(event.getRawY() - downRawY[0]);
+
+                    if (moveDeltaX > 10 || moveDeltaY > 10) {
+                        isDragging[0] = true;
+                    }
+
+                    if (isDragging[0]) {
+                        v.animate()
+                                .x(event.getRawX() + dX[0])
+                                .y(event.getRawY() + dY[0])
+                                .setDuration(0)
+                                .start();
+                    }
+                    return true;
+
+                case android.view.MotionEvent.ACTION_UP:
+                    if (!isDragging[0]) {
+                        // Click - run onClick action
+                        onClick.run();
+                    }
+                    v.performClick();
+                    return true;
+
+                default:
+                    return false;
+            }
+        });
     }
 
     private void setupHeader() {
@@ -713,6 +756,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         currentUser = response.body();
+                        
+                        // Initialize WebSocket connection for this user
+                        WebSocketChatManager.getInstance().initialize(MainActivity.this, currentUser);
+                        Log.d("MainActivity", "✅ WebSocket initialized for user: " + currentUser.getFullName());
 
                         // Load avatar in main header
                         if (ivHeaderAvatar != null && currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
@@ -990,6 +1037,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setTitle("Đăng xuất")
                 .setMessage("Bạn có chắc chắn muốn đăng xuất?")
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
+                    // Clear chat data before logout
+                    com.example.nike_fe.ui.chat.WebSocketChatFragment.clearChatHistory();
+                    WebSocketChatManager.getInstance().disconnect();
+                    
                     RetrofitClient.getInstance(this).clearToken();
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -998,5 +1049,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
+    }
+    
+    private void setupWebSocketListener() {
+        if (unreadListener == null) {
+            unreadListener = new WebSocketChatManager.UnreadMessageListener() {
+                @Override
+                public void onUnreadCountChanged(int count) {
+                    runOnUiThread(() -> updateChatBadge(count));
+                }
+                
+                @Override
+                public void onNewMessage(ChatMessage message) {
+                    // Can add notification sound/vibration here if needed
+                    Log.d("MainActivity", "📩 New message: " + message.getContent());
+                }
+                
+                @Override
+                public void onUserUnreadChanged(Long userId, int count) {
+                    // This is for ChatRoomListFragment to update per-user badges
+                    // MainActivity only shows total count
+                }
+            };
+            WebSocketChatManager.getInstance().addListener(unreadListener);
+        }
+        
+        // Update badge with current count
+        updateChatBadge(WebSocketChatManager.getInstance().getUnreadCount());
+    }
+    
+    private void updateChatBadge(int count) {
+        if (tvChatBadge != null) {
+            if (count > 0) {
+                tvChatBadge.setText(String.valueOf(count));
+                tvChatBadge.setVisibility(View.VISIBLE);
+            } else {
+                tvChatBadge.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        
+        // Remove WebSocket listener
+        if (unreadListener != null) {
+            WebSocketChatManager.getInstance().removeListener(unreadListener);
+        }
+        
+        // Stop banner animation
+        if (bannerHandler != null) {
+            bannerHandler.removeCallbacks(bannerRunnable);
+        }
     }
 }

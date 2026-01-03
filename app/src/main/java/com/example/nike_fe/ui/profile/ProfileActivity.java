@@ -79,7 +79,6 @@ public class ProfileActivity extends AppCompatActivity {
                                     .placeholder(R.drawable.ic_user_placeholder)
                                     .error(R.drawable.ic_user_placeholder)
                                     .into(ivAvatar);
-                            Toast.makeText(this, "Ảnh đã chọn, nhấn 'Lưu' để cập nhật", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -208,7 +207,6 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         btnSave.setEnabled(false);
-        btnSave.setText("Saving...");
 
         // Upload avatar first if selected
         if (selectedAvatarUri != null) {
@@ -228,7 +226,6 @@ public class ProfileActivity extends AppCompatActivity {
             if (filePath == null) {
                 Toast.makeText(this, "Không thể đọc file ảnh", Toast.LENGTH_SHORT).show();
                 btnSave.setEnabled(true);
-                btnSave.setText("Lưu Thay Đổi");
                 return;
             }
 
@@ -255,7 +252,6 @@ public class ProfileActivity extends AppCompatActivity {
                     } else {
                         android.util.Log.e("ProfileActivity", "🔴 Avatar upload failed: " + response.code());
                         btnSave.setEnabled(true);
-                        btnSave.setText("Lưu Thay Đổi");
                         Toast.makeText(ProfileActivity.this, "Upload avatar thất bại: " + response.code(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -264,13 +260,11 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onFailure(Call<User> call, Throwable t) {
                     android.util.Log.e("ProfileActivity", "🔴 Avatar upload error: " + t.getMessage());
                     btnSave.setEnabled(true);
-                    btnSave.setText("Lưu Thay Đổi");
                     Toast.makeText(ProfileActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (Exception e) {
             btnSave.setEnabled(true);
-            btnSave.setText("Lưu Thay Đổi");
             Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -282,7 +276,6 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 btnSave.setEnabled(true);
-                btnSave.setText("Lưu Thay Đổi");
 
                 if (response.isSuccessful() && response.body() != null) {
                     currentUser = response.body();
@@ -298,7 +291,6 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 btnSave.setEnabled(true);
-                btnSave.setText("Lưu Thay Đổi");
                 Toast.makeText(ProfileActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });

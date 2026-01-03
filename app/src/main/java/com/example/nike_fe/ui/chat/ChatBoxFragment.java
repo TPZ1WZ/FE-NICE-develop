@@ -127,7 +127,8 @@ public class ChatBoxFragment extends DialogFragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new ChatMessageAdapter(messageList);
+        // For chatbot, use -1L as userId since we don't need real user ID
+        adapter = new ChatMessageAdapter(messageList, -1L);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setStackFromEnd(true);
         rvMessages.setLayoutManager(layoutManager);
@@ -146,30 +147,44 @@ public class ChatBoxFragment extends DialogFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupDraggable(View view) {
-        tvDragHandle.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    dX = event.getRawX() - getDialog().getWindow().getAttributes().x;
-                    dY = event.getRawY() + getDialog().getWindow().getAttributes().y;
-                    isDragging = false;
-                    return true;
+        if (tvDragHandle != null && getDialog() != null && getDialog().getWindow() != null) {
+            View dialogView = getDialog().getWindow().getDecorView();
+            
+            tvDragHandle.setOnTouchListener((v, event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = dialogView.getX() - event.getRawX();
+                        dY = dialogView.getY() - event.getRawY();
+                        isDragging = false;
+                        return true;
 
-                case MotionEvent.ACTION_MOVE:
-                    isDragging = true;
-                    WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-                    params.x = (int) (event.getRawX() - dX);
-                    params.y = (int) (dY - event.getRawY());
-                    getDialog().getWindow().setAttributes(params);
-                    return true;
+                    case MotionEvent.ACTION_MOVE:
+                        float newX = event.getRawX() + dX;
+                        float newY = event.getRawY() + dY;
+                        
+                        if (Math.abs(newX - dialogView.getX()) > 10 ||
+                            Math.abs(newY - dialogView.getY()) > 10) {
+                            isDragging = true;
+                        }
+                        
+                        if (isDragging) {
+                            dialogView.animate()
+                                .x(newX)
+                                .y(newY)
+                                .setDuration(0)
+                                .start();
+                        }
+                        return true;
 
-                case MotionEvent.ACTION_UP:
-                    if (!isDragging) {
-                        v.performClick();
-                    }
-                    return true;
-            }
-            return false;
-        });
+                    case MotionEvent.ACTION_UP:
+                        if (!isDragging) {
+                            v.performClick();
+                        }
+                        return true;
+                }
+                return false;
+            });
+        }
     }
 
     private void sendMessage() {
@@ -219,6 +234,7 @@ public class ChatBoxFragment extends DialogFragment {
         chatMessage.setMessage(message);
         chatMessage.setFromUser(true);
         chatMessage.setTimestamp(System.currentTimeMillis());
+        chatMessage.setSenderId(-1L); // Set to match adapter's userId for chatbot
         
         messageList.add(chatMessage);
         adapter.notifyItemInserted(messageList.size() - 1);
@@ -230,6 +246,7 @@ public class ChatBoxFragment extends DialogFragment {
         chatMessage.setMessage(message);
         chatMessage.setFromUser(false);
         chatMessage.setTimestamp(System.currentTimeMillis());
+        chatMessage.setSenderId(0L); // Bot messages have different senderId
         
         messageList.add(chatMessage);
         adapter.notifyItemInserted(messageList.size() - 1);
