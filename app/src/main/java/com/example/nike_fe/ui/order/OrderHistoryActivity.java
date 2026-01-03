@@ -55,6 +55,14 @@ public class OrderHistoryActivity extends AppCompatActivity {
         loadOrders();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh danh sách đơn hàng mỗi khi quay lại trang này
+        // (ví dụ sau khi hủy đơn từ OrderDetailActivity)
+        loadOrders();
+    }
+
     private void initViews() {
         rvOrders = findViewById(R.id.rvOrders);
         layoutLoading = findViewById(R.id.layoutLoading);
@@ -129,8 +137,8 @@ public class OrderHistoryActivity extends AppCompatActivity {
 
         for (Order order : allOrders) {
             String status = order.getStatus() != null ? order.getStatus().toUpperCase() : "";
-            boolean isCompleted = status.equals("COMPLETED") || status.equals("CANCELLED")
-                    || status.equals("DELIVERED");
+            boolean isCompleted = status.equals("COMPLETED") || status.equals("CANCELLED") 
+                    || status.equals("CANCELED") || status.equals("DELIVERED");
 
             if (tabIndex == 0) { // Active
                 if (!isCompleted) {
