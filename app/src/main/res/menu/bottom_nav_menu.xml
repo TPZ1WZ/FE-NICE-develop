@@ -17,9 +17,9 @@
         android:enabled="false" />
         
     <item
-        android:id="@+id/nav_notifications"
-        android:icon="@drawable/ic_notification"
-        android:title="Alerts" />
+        android:id="@+id/nav_lucky_wheel"
+        android:icon="@drawable/ic_lucky_wheel"
+        android:title="Vòng Quay" />
         
     <item
         android:id="@+id/nav_profile"

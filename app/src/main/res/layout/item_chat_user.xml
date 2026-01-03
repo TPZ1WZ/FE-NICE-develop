@@ -24,7 +24,7 @@
             android:layout_height="48dp"
             android:src="@drawable/ic_user_placeholder"
             app:civ_border_width="2dp"
-            app:civ_border_color="@color/nike_green"/>
+            app:civ_border_color="#10B981"/>
 
         <!-- User Info -->
         <LinearLayout
@@ -41,7 +41,7 @@
                 android:text="User Name"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary"/>
+                android:textColor="#1F2937"/>
 
             <TextView
                 android:id="@+id/tvUserEmail"
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:text="user@email.com"
                 android:textSize="14sp"
-                android:textColor="@color/text_secondary"
+                android:textColor="#6B7280"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
 
@@ -81,7 +81,7 @@
             android:layout_height="24dp"
             android:src="@drawable/ic_arrow_right"
             android:layout_marginStart="8dp"
-            android:tint="@color/text_secondary"/>
+            android:tint="#6B7280"/>
 
     </LinearLayout>
 

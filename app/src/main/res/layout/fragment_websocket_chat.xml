@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/nike_green"
+            android:background="#10B981"
             android:padding="16dp">
 
             <!-- Drag Handle -->
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="12dp"
-            android:background="@color/gray_50"
+            android:background="#F9FAFB"
             android:gravity="center_vertical">
 
             <EditText

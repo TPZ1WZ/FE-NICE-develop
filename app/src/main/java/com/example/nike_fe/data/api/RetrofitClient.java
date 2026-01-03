@@ -10,12 +10,13 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * RetrofitClient - Singleton để kết nối với backend NICESTORE-develop
- * Backend URL: http://192.168.1.9:8080/ (Real device - replace with your PC IP)
- * For emulator use: http://10.0.2.2:8080/
+ * Backend URL: http://10.0.2.2:8080/ (For emulator)
+ * For real device use: http://192.168.1.108:8080/
  */
 public class RetrofitClient {
-    // TODO: Replace 192.168.1.9 with your PC's IP address (check with ipconfig)
-    private static final String BASE_URL = "http://192.168.1.9:8080/";
+    // Use 10.0.2.2 for EMULATOR (maps to host machine's localhost)
+    // Use 192.168.1.108 for REAL DEVICE (your PC's actual IP)
+    private static final String BASE_URL = "http://10.0.2.2:8080/";
     private static RetrofitClient instance;
     private Retrofit retrofit;
     private Context context;
@@ -28,8 +29,9 @@ public class RetrofitClient {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(logging)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -100,6 +102,10 @@ public class RetrofitClient {
 
     public AddressApi getAddressApi() {
         return retrofit.create(AddressApi.class);
+    }
+
+    public LuckyWheelApi getLuckyWheelApi() {
+        return retrofit.create(LuckyWheelApi.class);
     }
 
     public void saveToken(String token) {

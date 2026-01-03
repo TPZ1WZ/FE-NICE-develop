@@ -143,11 +143,19 @@ public class AdminCouponFormActivity extends AppCompatActivity {
             // ignore
         }
 
-        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-            Calendar selectedDate = Calendar.getInstance();
-            selectedDate.set(year, month, dayOfMonth);
-            editText.setText(dateFormat.format(selectedDate.getTime()));
-        }, dateCal.get(Calendar.YEAR), dateCal.get(Calendar.MONTH), dateCal.get(Calendar.DAY_OF_MONTH)).show();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, 
+            android.R.style.Theme_DeviceDefault_Light_Dialog,
+            (view, year, month, dayOfMonth) -> {
+                Calendar selectedDate = Calendar.getInstance();
+                selectedDate.set(year, month, dayOfMonth);
+                editText.setText(dateFormat.format(selectedDate.getTime()));
+            }, dateCal.get(Calendar.YEAR), dateCal.get(Calendar.MONTH), dateCal.get(Calendar.DAY_OF_MONTH));
+        
+        datePickerDialog.setOnShowListener(dialog -> {
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        });
+        datePickerDialog.show();
     }
 
     private void loadCouponDetails() {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- Color Badge -->
+        <View
+            android:id="@+id/viewColorBadge"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="12dp"
+            android:background="#FF6B6B" />
+
+        <!-- Content -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvPrizeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Giảm 10%"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1F2937" />
+
+            <TextView
+                android:id="@+id/tvSpinTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🕐 01/01/2026 10:30"
+                android:textSize="13sp"
+                android:textColor="#6B7280"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tvPrizeCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mã: LUCKY2026"
+                android:textSize="13sp"
+                android:textColor="#3B82F6"
+                android:layout_marginTop="4dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✅ Đã nhận"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#10B981"
+            android:padding="6dp"
+            android:background="@drawable/bg_rounded_light"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

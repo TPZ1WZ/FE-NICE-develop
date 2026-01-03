@@ -123,7 +123,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:background="@drawable/bg_circle_black"
-                        android:backgroundTint="@color/black"
+                        app:backgroundTint="#10B981"
                         android:clickable="true"
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackground">
@@ -313,7 +313,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_shopping_bag"
             app:tint="@color/white"
-            app:backgroundTint="@color/nike_black"
+            app:backgroundTint="#000000"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="32dp"
             app:maxImageSize="32dp"
@@ -332,7 +332,7 @@
             android:layout_marginBottom="96dp"
             android:src="@drawable/ic_chat"
             app:tint="@color/white"
-            app:backgroundTint="@color/nike_blue"
+            app:backgroundTint="#1E88E5"
             app:maxImageSize="28dp"
             app:elevation="6dp"
             app:pressedTranslationZ="12dp" />
@@ -347,7 +347,7 @@
             android:layout_marginBottom="176dp"
             android:src="@drawable/chat_wsc_icon"
             app:tint="@null"
-            app:backgroundTint="@color/nike_green"
+            app:backgroundTint="#1E88E5"
             app:maxImageSize="32dp"
             app:elevation="6dp"
             app:pressedTranslationZ="12dp" />

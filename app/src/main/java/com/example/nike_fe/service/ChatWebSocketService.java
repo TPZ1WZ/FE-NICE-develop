@@ -18,8 +18,9 @@ import ua.naiksoftware.stomp.dto.LifecycleEvent;
 
 public class ChatWebSocketService {
     private static final String TAG = "ChatWebSocket";
-    // TODO: Replace 192.168.1.9 with your PC's IP address (check with ipconfig)
-    private static final String WS_URL = "ws://192.168.1.9:8080/ws-chat/websocket";
+    // Use ws://10.0.2.2:8080 for EMULATOR
+    // Use ws://192.168.1.108:8080 for REAL DEVICE
+    private static final String WS_URL = "ws://10.0.2.2:8080/ws-chat/websocket";
 
     private StompClient stompClient;
     private CompositeDisposable compositeDisposable;

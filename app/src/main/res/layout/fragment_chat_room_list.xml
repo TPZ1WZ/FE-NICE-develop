@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/nike_green"
+            android:background="#10B981"
             android:padding="16dp">
 
             <!-- Drag Handle -->
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:text="Không có người dùng nào"
                 android:textSize="16sp"
-                android:textColor="@color/text_secondary"/>
+                android:textColor="#6B7280"/>
         </LinearLayout>
 
     </LinearLayout>

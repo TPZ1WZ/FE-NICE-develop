@@ -17,6 +17,7 @@
     
     <!-- Green colors -->
     <color name="green_100">#DCFCE7</color>
+    <color name="green_500">#10B981</color>
     <color name="green_800">#166534</color>
     
     <!-- Blue colors -->
@@ -24,10 +25,16 @@
     <color name="blue_500">#3B82F6</color>
     
     <!-- Red colors -->
+    <color name="red_500">#EF4444</color>
     <color name="red_600">#DC2626</color>
+    <color name="error">#EF4444</color>
     
     <!-- Orange colors -->
+    <color name="orange_500">#F97316</color>
     <color name="orange_600">#EA580C</color>
+    
+    <!-- Purple colors -->
+    <color name="purple_500">#A855F7</color>
     
     <!-- Splash colors -->
     <color name="splash_blue">#1E88E5</color>
@@ -44,4 +51,8 @@
     <color name="light_gray">#F5F5F5</color>
     <color name="text_primary">#1F2937</color>
     <color name="text_secondary">#6B7280</color>
+    
+    <!-- Theme Colors -->
+    <color name="primary">#1E88E5</color>
+    <color name="background">#FFFFFF</color>
 </resources>
