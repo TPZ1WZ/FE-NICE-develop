@@ -280,17 +280,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (btnFilter != null) {
             btnFilter.setOnClickListener(v -> {
                 com.example.nike_fe.ui.home.FilterBottomSheetFragment filterFragment = new com.example.nike_fe.ui.home.FilterBottomSheetFragment();
-                filterFragment.setOnApplyFilterListener((min, max) -> {
+                filterFragment.setOnApplyFilterListener((min, max, sortOption, selectedSizes) -> {
+                    // Fetch products with price filter
                     fetchProducts(currentBrandQuery, (double) min, (double) max);
+                    
+                    // Wait a bit for products to load, then apply size filter and sort
+                    new android.os.Handler().postDelayed(() -> {
+                        // Filter by sizes if any selected
+                        if (selectedSizes != null && !selectedSizes.isEmpty()) {
+                            filterProductsBySize(selectedSizes);
+                        }
+                        
+                        // Apply sort if selected
+                        if (sortOption >= 0) {
+                            sortProducts(sortOption);
+                        }
+                    }, 500);
                 });
                 filterFragment.show(getSupportFragmentManager(), "filter_dialog");
             });
-        }
-
-        // Sort Button Logic (New)
-        View btnSort = findViewById(R.id.btnSort);
-        if (btnSort != null) {
-            btnSort.setOnClickListener(v -> showSortDialog());
         }
 
         // ... (rest of initViews) ...
@@ -874,18 +882,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void showSortDialog() {
-        String[] options = { "Mới nhất", "Giá tăng dần", "Giá giảm dần", "Tên A-Z", "Đánh giá cao nhất" };
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Sắp xếp theo")
-                .setSingleChoiceItems(options, -1, (dialog, which) -> {
-                    sortProducts(which);
-                    dialog.dismiss();
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
-    }
-
     private void sortProducts(int sortOption) {
         if (allProducts == null || allProducts.isEmpty())
             return;
@@ -894,14 +890,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             switch (sortOption) {
                 case 0: // Mới nhất (Newest) - Mock by ID descending
                     return Long.compare(p2.getId(), p1.getId());
-                case 1: // Giá tăng dần
+                case 1: // Bán chạy nhất - Mock
+                    return 0; // No sales data yet
+                case 2: // Giá: Thấp đến Cao
                     return Double.compare(p1.getPrice(), p2.getPrice());
-                case 2: // Giá giảm dần
+                case 3: // Giá: Cao đến Thấp
                     return Double.compare(p2.getPrice(), p1.getPrice());
-                case 3: // Tên A-Z
-                    return p1.getName().compareToIgnoreCase(p2.getName());
-                case 4: // Đánh giá cao nhất - Mock
-                    return 0; // No rating field yet
                 default:
                     return 0;
             }
@@ -916,6 +910,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (productAdapter != null) {
                 productAdapter.setProducts(allProducts);
             }
+        }
+    }
+
+    private void filterProductsBySize(java.util.List<String> selectedSizes) {
+        if (allProducts == null || allProducts.isEmpty() || selectedSizes == null || selectedSizes.isEmpty())
+            return;
+
+        Log.d("MainActivity", "Filtering by sizes: " + selectedSizes.toString());
+        Log.d("MainActivity", "Total products to filter: " + allProducts.size());
+
+        // Filter products that have at least one of the selected sizes
+        java.util.List<Product> filteredProducts = new java.util.ArrayList<>();
+        for (Product product : allProducts) {
+            Log.d("MainActivity", "Product: " + product.getName() + " has sizes: " + 
+                (product.getSizes() != null ? product.getSizes().toString() : "null"));
+            
+            if (product.getSizes() != null && !product.getSizes().isEmpty()) {
+                // Check if product has any of the selected sizes
+                for (String selectedSize : selectedSizes) {
+                    if (product.getSizes().contains(selectedSize)) {
+                        filteredProducts.add(product);
+                        Log.d("MainActivity", "  -> MATCH! Found size: " + selectedSize);
+                        break; // Found a match, add product and move to next
+                    }
+                }
+            }
+        }
+
+        Log.d("MainActivity", "Filtered " + filteredProducts.size() + " products with selected sizes");
+
+        // Update adapter with filtered list
+        if (productAdapter != null) {
+            productAdapter.setProducts(filteredProducts);
         }
     }
 

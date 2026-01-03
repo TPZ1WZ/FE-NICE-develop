@@ -171,6 +171,7 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
                     return "Đã giao hàng";
                 case "COMPLETED":
                     return "Hoàn tất";
+                case "CANCELED":
                 case "CANCELLED":
                     return "Đã hủy";
                 default:
@@ -192,6 +193,7 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
                 case "DELIVERED":
                 case "COMPLETED":
                     return R.drawable.status_completed;
+                case "CANCELED":
                 case "CANCELLED":
                     return R.drawable.status_canceled;
                 default:

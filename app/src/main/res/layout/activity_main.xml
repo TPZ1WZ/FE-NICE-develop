@@ -129,7 +129,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:background="@drawable/bg_circle_black"
-                        android:backgroundTint="@color/nike_blue"
+                        android:backgroundTint="@color/black"
                         android:clickable="true"
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackground">
@@ -141,21 +141,6 @@
                             android:src="@drawable/ic_filter"
                             app:tint="@color/white"/>
                     </FrameLayout>
-
-                    <!-- Sort Button -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/btnSort"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_marginStart="8dp"
-                        android:text="Sắp xếp"
-                        android:textColor="@color/white"
-                        app:chipBackgroundColor="@color/black"
-                        app:chipIcon="@drawable/ic_filter"
-                        app:chipIconTint="@color/white"
-                        style="@style/Widget.MaterialComponents.Chip.Action"
-                        android:gravity="center"
-                        />
 
                 </LinearLayout>
 

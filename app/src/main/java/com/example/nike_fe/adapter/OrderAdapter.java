@@ -128,7 +128,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         if (status == null)
             return false;
         String s = status.toUpperCase();
-        return s.equals("COMPLETED") || s.equals("DELIVERED") || s.equals("CANCELLED");
+        // Chỉ hiển thị nút "Mua lại" và "Đánh giá" cho đơn hàng đã hoàn thành hoặc đã giao
+        // KHÔNG hiển thị cho đơn đã hủy
+        return s.equals("COMPLETED") || s.equals("DELIVERED");
     }
 
     private String formatPrice(Double price) {
@@ -167,6 +169,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                 return "Đã giao hàng";
             case "COMPLETED":
                 return "Hoàn tất";
+            case "CANCELED":
             case "CANCELLED":
                 return "Đã hủy";
             default:

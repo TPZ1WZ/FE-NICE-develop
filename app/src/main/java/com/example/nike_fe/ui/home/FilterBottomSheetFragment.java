@@ -26,6 +26,12 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
     private ChipGroup cgSize, cgSort;
     private Button btnReset, btnApply;
 
+    // Static variables to preserve state across dialog reopens
+    private static float savedMinPrice = 0f;
+    private static float savedMaxPrice = 10000000f;
+    private static java.util.List<String> savedSelectedSizes = new java.util.ArrayList<>();
+    private static int savedSortOption = -1;
+
     public FilterBottomSheetFragment() {
         // Required empty public constructor
     }
@@ -51,11 +57,12 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
         btnApply = view.findViewById(R.id.btnApply);
 
         setupListeners();
+        restoreSavedState();
     }
 
     // Interface for callback
     public interface OnApplyFilterListener {
-        void onApplyFilter(float minPrice, float maxPrice);
+        void onApplyFilter(float minPrice, float maxPrice, int sortOption, java.util.List<String> selectedSizes);
     }
 
     private OnApplyFilterListener listener;
@@ -93,8 +100,11 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
             if (sliderPrice != null)
                 sliderPrice.setValues(0f, 10000000f);
 
-            // Optional: Auto-apply reset or just wait for Apply click?
-            // Usually wait for Apply.
+            // Reset static saved state
+            savedMinPrice = 0f;
+            savedMaxPrice = 10000000f;
+            savedSelectedSizes.clear();
+            savedSortOption = -1;
         });
 
         btnApply.setOnClickListener(v -> {
@@ -110,10 +120,83 @@ public class FilterBottomSheetFragment extends BottomSheetDialogFragment {
                 }
             }
 
-            if (listener != null) {
-                listener.onApplyFilter(min, max);
+            // Collect Selected Sizes
+            java.util.List<String> selectedSizes = new java.util.ArrayList<>();
+            if (cgSize != null) {
+                for (int i = 0; i < cgSize.getChildCount(); i++) {
+                    View child = cgSize.getChildAt(i);
+                    if (child instanceof Chip) {
+                        Chip chip = (Chip) child;
+                        if (chip.isChecked()) {
+                            selectedSizes.add(chip.getText().toString());
+                        }
+                    }
+                }
             }
+
+            // Collect Sort Option
+            int sortOption = -1; // -1 means no sort selected
+            if (cgSort != null) {
+                int checkedId = cgSort.getCheckedChipId();
+                if (checkedId != View.NO_ID) {
+                    // Map chip position to sort option
+                    for (int i = 0; i < cgSort.getChildCount(); i++) {
+                        View child = cgSort.getChildAt(i);
+                        if (child.getId() == checkedId) {
+                            sortOption = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Save state for next time
+            savedMinPrice = min;
+            savedMaxPrice = max;
+            savedSelectedSizes = new java.util.ArrayList<>(selectedSizes);
+            savedSortOption = sortOption;
+
+            if (listener != null) {
+                listener.onApplyFilter(min, max, sortOption, selectedSizes);
+            }
+            
+            // Dismiss dialog after applying
             dismiss();
         });
+    }
+
+    private void restoreSavedState() {
+        // Restore price range
+        if (sliderPrice != null) {
+            sliderPrice.setValues(savedMinPrice, savedMaxPrice);
+            java.text.DecimalFormat formatter = new java.text.DecimalFormat("#,###đ");
+            if (tvMinPrice != null) {
+                tvMinPrice.setText(formatter.format(savedMinPrice));
+            }
+            if (tvMaxPrice != null) {
+                tvMaxPrice.setText(formatter.format(savedMaxPrice));
+            }
+        }
+
+        // Restore selected sizes
+        if (cgSize != null && !savedSelectedSizes.isEmpty()) {
+            for (int i = 0; i < cgSize.getChildCount(); i++) {
+                View child = cgSize.getChildAt(i);
+                if (child instanceof Chip) {
+                    Chip chip = (Chip) child;
+                    if (savedSelectedSizes.contains(chip.getText().toString())) {
+                        chip.setChecked(true);
+                    }
+                }
+            }
+        }
+
+        // Restore sort option
+        if (cgSort != null && savedSortOption >= 0 && savedSortOption < cgSort.getChildCount()) {
+            View child = cgSort.getChildAt(savedSortOption);
+            if (child instanceof Chip) {
+                ((Chip) child).setChecked(true);
+            }
+        }
     }
 }

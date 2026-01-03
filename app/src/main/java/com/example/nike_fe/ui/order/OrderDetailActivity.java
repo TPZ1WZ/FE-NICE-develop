@@ -45,7 +45,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     private RecyclerView rvOrderItems;
     private FrameLayout layoutLoading;
     private LinearLayout layoutActionButtons;
-    private Button btnReorder, btnReview;
+    private LinearLayout layoutCancelButton;
+    private Button btnReorder, btnReview, btnCancelOrder;
 
     private OrderItemAdapter orderItemAdapter;
     private OrderApi orderApi;
@@ -89,8 +90,10 @@ public class OrderDetailActivity extends AppCompatActivity {
         rvOrderItems = findViewById(R.id.rvOrderItems);
         layoutLoading = findViewById(R.id.layoutLoading);
         layoutActionButtons = findViewById(R.id.layoutActionButtons);
+        layoutCancelButton = findViewById(R.id.layoutCancelButton);
         btnReorder = findViewById(R.id.btnReorder);
         btnReview = findViewById(R.id.btnReview);
+        btnCancelOrder = findViewById(R.id.btnCancelOrder);
 
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         orderApi = retrofitClient.getOrderApi();
@@ -106,6 +109,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         ivBack.setOnClickListener(v -> finish());
         btnReorder.setOnClickListener(v -> handleReorder());
         btnReview.setOnClickListener(v -> handleReview());
+        btnCancelOrder.setOnClickListener(v -> handleCancelOrder());
     }
 
     private void setupRecyclerView() {
@@ -241,6 +245,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 return "Đã giao hàng";
             case "COMPLETED":
                 return "Hoàn thành";
+            case "CANCELED":
             case "CANCELLED":
                 return "Đã hủy";
             default:
@@ -262,14 +267,25 @@ public class OrderDetailActivity extends AppCompatActivity {
     private void updateActionButtons(String status) {
         if (status == null) {
             layoutActionButtons.setVisibility(View.GONE);
+            layoutCancelButton.setVisibility(View.GONE);
             return;
         }
 
         String upperStatus = status.toUpperCase();
+        
+        // Hiển thị nút Mua lại và Đánh giá cho đơn hàng đã hoàn thành
         if (upperStatus.equals("COMPLETED") || upperStatus.equals("DELIVERED")) {
             layoutActionButtons.setVisibility(View.VISIBLE);
-        } else {
+            layoutCancelButton.setVisibility(View.GONE);
+        } 
+        // Hiển thị nút Hủy đơn hàng cho đơn hàng Chờ xác nhận hoặc Đã xác nhận
+        else if (upperStatus.equals("PENDING") || upperStatus.equals("CONFIRMED")) {
             layoutActionButtons.setVisibility(View.GONE);
+            layoutCancelButton.setVisibility(View.VISIBLE);
+        } 
+        else {
+            layoutActionButtons.setVisibility(View.GONE);
+            layoutCancelButton.setVisibility(View.GONE);
         }
     }
 
@@ -326,5 +342,55 @@ public class OrderDetailActivity extends AppCompatActivity {
         Intent intent = new Intent(this, OrderReviewActivity.class);
         intent.putExtra("order_id", orderId);
         startActivity(intent);
+    }
+
+    private void handleCancelOrder() {
+        if (currentOrder == null) {
+            Toast.makeText(this, "Không thể hủy đơn hàng này", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Hiển thị dialog xác nhận
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Xác nhận hủy đơn hàng")
+            .setMessage("Bạn có chắc chắn muốn hủy đơn hàng #" + currentOrder.getId() + " không?")
+            .setPositiveButton("Hủy đơn hàng", (dialog, which) -> {
+                showLoading(true);
+                orderApi.cancelOrder("Bearer " + token, currentOrder.getId())
+                    .enqueue(new Callback<Map<String, Object>>() {
+                        @Override
+                        public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                            showLoading(false);
+                            
+                            if (response.isSuccessful() && response.body() != null) {
+                                Map<String, Object> result = response.body();
+                                String message = (String) result.get("message");
+                                Toast.makeText(OrderDetailActivity.this, 
+                                    message != null ? message : "Đơn hàng đã được hủy thành công", 
+                                    Toast.LENGTH_SHORT).show();
+                                
+                                // Tải lại chi tiết đơn hàng để cập nhật trạng thái
+                                loadOrderDetail();
+                                
+                                // Thông báo cho Activity trước đó biết cần refresh danh sách
+                                setResult(RESULT_OK);
+                            } else {
+                                Toast.makeText(OrderDetailActivity.this, 
+                                    "Không thể hủy đơn hàng. Vui lòng thử lại", 
+                                    Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                            showLoading(false);
+                            Toast.makeText(OrderDetailActivity.this, 
+                                "Lỗi: " + t.getMessage(), 
+                                Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            })
+            .setNegativeButton("Không", null)
+            .show();
     }
 }
