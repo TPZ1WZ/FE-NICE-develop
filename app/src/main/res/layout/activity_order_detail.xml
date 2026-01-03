@@ -184,6 +184,27 @@
                     android:textSize="15sp"
                     android:textColor="@color/black"
                     android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvAdminNoteLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thông báo từ Admin:"
+                    android:textSize="14sp"
+                    android:textColor="#DC2626"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="2dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvAdminNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="15sp"
+                    android:textColor="#DC2626"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout

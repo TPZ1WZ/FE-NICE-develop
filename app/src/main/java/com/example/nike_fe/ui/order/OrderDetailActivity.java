@@ -42,6 +42,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private TextView tvFullName, tvPhone, tvAddress;
     private TextView tvPaymentMethod, tvSubtotal, tvDiscount, tvShipping, tvTotal;
     private TextView tvCustomerNote, tvCustomerNoteLabel;
+    private TextView tvAdminNote, tvAdminNoteLabel;
     private RecyclerView rvOrderItems;
     private FrameLayout layoutLoading;
     private LinearLayout layoutActionButtons;
@@ -87,6 +88,8 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvTotal = findViewById(R.id.tvTotal);
         tvCustomerNote = findViewById(R.id.tvCustomerNote);
         tvCustomerNoteLabel = findViewById(R.id.tvCustomerNoteLabel);
+        tvAdminNote = findViewById(R.id.tvAdminNote);
+        tvAdminNoteLabel = findViewById(R.id.tvAdminNoteLabel);
         rvOrderItems = findViewById(R.id.rvOrderItems);
         layoutLoading = findViewById(R.id.layoutLoading);
         layoutActionButtons = findViewById(R.id.layoutActionButtons);
@@ -182,6 +185,16 @@ public class OrderDetailActivity extends AppCompatActivity {
         } else {
             tvCustomerNote.setVisibility(View.GONE);
             tvCustomerNoteLabel.setVisibility(View.GONE);
+        }
+
+        // Admin note
+        if (order.getAdminNote() != null && !order.getAdminNote().trim().isEmpty()) {
+            tvAdminNote.setText(order.getAdminNote());
+            tvAdminNote.setVisibility(View.VISIBLE);
+            tvAdminNoteLabel.setVisibility(View.VISIBLE);
+        } else {
+            tvAdminNote.setVisibility(View.GONE);
+            tvAdminNoteLabel.setVisibility(View.GONE);
         }
 
         // Order items
