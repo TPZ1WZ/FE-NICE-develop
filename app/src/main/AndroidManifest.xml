@@ -250,6 +250,13 @@
             android:name=".ui.coin.NikeCoinActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
+            
+        <!-- LuckyWheelActivity - Vòng Quay May Mắn -->
+        <activity
+            android:name=".ui.luckywheel.LuckyWheelActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Nikefe" />
     </application>
 
 </manifest>

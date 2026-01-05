@@ -21,6 +21,10 @@
             android:icon="@drawable/ic_truck"
             android:title="Orders" />
         <item
+            android:id="@+id/nav_lucky_wheel"
+            android:icon="@drawable/ic_lucky_wheel"
+            android:title="Vòng Quay May Mắn" />
+        <item
             android:id="@+id/nav_notifications"
             android:icon="@drawable/ic_notification"
             android:title="Notifications" />

@@ -915,6 +915,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(this, com.example.nike_fe.ui.favorite.FavoriteActivity.class));
         } else if (id == R.id.nav_orders) {
             startActivity(new Intent(this, com.example.nike_fe.ui.order.OrderHistoryActivity.class));
+        } else if (id == R.id.nav_lucky_wheel) {
+            startActivity(new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class));
         } else if (id == R.id.nav_notifications) {
             startActivity(new Intent(this, com.example.nike_fe.ui.notification.NotificationActivity.class));
         } else if (id == R.id.nav_settings) {
