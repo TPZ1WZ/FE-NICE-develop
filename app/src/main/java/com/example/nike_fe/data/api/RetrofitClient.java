@@ -134,4 +134,8 @@ public class RetrofitClient {
     public ChatApi getChatApi() {
         return retrofit.create(ChatApi.class);
     }
+
+    public LuckyWheelApi getLuckyWheelApi() {
+        return retrofit.create(LuckyWheelApi.class);
+    }
 }

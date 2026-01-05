@@ -55,4 +55,15 @@
     <!-- Theme Colors -->
     <color name="primary">#1E88E5</color>
     <color name="background">#FFFFFF</color>
+
+    <!-- Lucky Wheel Colors -->
+    <color name="card_glass_bg">#80FFFFFF</color>
+    <color name="card_glass_border">#4DFFFFFF</color>
+    <color name="premium_bg_start">#FDBB2D</color>
+    <color name="premium_bg_end">#22C55E</color>
+    <color name="progress_bg">#E5E7EB</color>
+    <color name="progress_fill">#FDBB2D</color>
+    <color name="spin_btn_start">#F97316</color>
+    <color name="spin_btn_end">#EA580C</color>
+    <color name="text_gold">#FDBB2D</color>
 </resources>
