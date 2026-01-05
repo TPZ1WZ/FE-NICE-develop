@@ -14,6 +14,7 @@ public class Order {
     private Double totalDiscount;
     private Double finalAmount;
     private Double shippingFee;
+    private Integer nikeCoinUsed;
     private Integer quantity;
     private String receiverName;  // Tên người nhận hàng
     private String phone;
@@ -123,6 +124,14 @@ public class Order {
     
     public void setShippingFee(Double shippingFee) {
         this.shippingFee = shippingFee;
+    }
+    
+    public Integer getNikeCoinUsed() {
+        return nikeCoinUsed;
+    }
+    
+    public void setNikeCoinUsed(Integer nikeCoinUsed) {
+        this.nikeCoinUsed = nikeCoinUsed;
     }
     
     public Integer getQuantity() {

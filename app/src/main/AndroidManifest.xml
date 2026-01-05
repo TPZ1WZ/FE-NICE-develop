@@ -143,17 +143,6 @@
             android:name=".ui.notification.NotificationActivity"
             android:exported="false" />
         
-        <!-- LuckyWheelActivity - Vòng quay may mắn -->
-        <activity
-            android:name=".ui.luckywheel.LuckyWheelActivity"
-            android:exported="false" />
-        
-        <!-- SpinHistoryActivity - Lịch sử quay thưởng -->
-        <activity
-            android:name=".ui.luckywheel.SpinHistoryActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.luckywheel.LuckyWheelActivity" />
-        
         <!-- SettingsActivity - Cài đặt -->
         <activity
             android:name=".ui.settings.SettingsActivity"
@@ -228,45 +217,15 @@
             android:label="Cài đặt Admin"
             android:parentActivityName=".ui.admin.AdminDashboardActivity" />
             
-        <!-- AdminLuckyWheelActivity - Admin Lucky Wheel Management -->
-        <activity
-            android:name=".ui.admin.AdminLuckyWheelActivity"
-            android:exported="false"
-            android:label="Vòng quay may mắn"
-            android:parentActivityName=".ui.admin.AdminDashboardActivity" />
-            
-        <!-- AdminPrizesActivity - Admin Prizes Management -->
-        <activity
-            android:name=".ui.admin.AdminPrizesActivity"
-            android:exported="false"
-            android:label="Quản lý phần thưởng"
-            android:parentActivityName=".ui.admin.AdminLuckyWheelActivity" />
-            
-        <!-- AdminProbabilityActivity - Admin Probability Configuration -->
-        <activity
-            android:name=".ui.admin.AdminProbabilityActivity"
-            android:exported="false"
-            android:label="Cấu hình xác suất"
-            android:parentActivityName=".ui.admin.AdminLuckyWheelActivity" />
-            
-        <!-- AdminWheelConfigActivity - Admin Wheel Configuration -->
-        <activity
-            android:name=".ui.admin.AdminWheelConfigActivity"
-            android:exported="false"
-            android:label="Quản lý sự kiện"
-            android:parentActivityName=".ui.admin.AdminLuckyWheelActivity" />
-            
-        <!-- AdminUserSpinsActivity - Admin User Spins Management -->
-        <activity
-            android:name=".ui.admin.AdminUserSpinsActivity"
-            android:exported="false"
-            android:label="Quản lý lượt quay"
-            android:parentActivityName=".ui.admin.AdminLuckyWheelActivity" />
-            
         <!-- OrderReviewActivity - User Review -->
         <activity
             android:name=".ui.order.OrderReviewActivity"
             android:exported="false" />
+        <!-- NikeCoinActivity - Nike Coin Rewards -->
+        <activity
+            android:name=".ui.coin.NikeCoinActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

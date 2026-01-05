@@ -22,6 +22,9 @@ public class OrderRequest {
     @SerializedName("customer_note")
     private String customerNote;
     
+    @SerializedName("nike_coin_used")
+    private Integer nikeCoinUsed;
+    
     public OrderRequest(String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode) {
         this.receiverName = receiverName;
         this.shippingAddress = shippingAddress;
@@ -29,6 +32,7 @@ public class OrderRequest {
         this.phone = phone;
         this.couponCode = couponCode;
         this.customerNote = ""; // Default empty
+        this.nikeCoinUsed = 0; // Default 0
     }
     
     public String getReceiverName() {
@@ -77,5 +81,13 @@ public class OrderRequest {
     
     public void setCustomerNote(String customerNote) {
         this.customerNote = customerNote;
+    }
+    
+    public Integer getNikeCoinUsed() {
+        return nikeCoinUsed;
+    }
+    
+    public void setNikeCoinUsed(Integer nikeCoinUsed) {
+        this.nikeCoinUsed = nikeCoinUsed;
     }
 }

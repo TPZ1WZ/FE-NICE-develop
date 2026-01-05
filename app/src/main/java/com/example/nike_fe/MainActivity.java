@@ -172,13 +172,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         // Check if coming back from order - need delay for backend to save notification
         boolean needRefresh = getIntent().getBooleanExtra("REFRESH_BADGE", false);
         if (needRefresh) {
             getIntent().removeExtra("REFRESH_BADGE");
             android.util.Log.d("MainActivity", "⏳ Will refresh badge in 3 seconds...");
-            // Wait 3000ms for backend to complete async notification creation and commit to DB
+            // Wait 3000ms for backend to complete async notification creation and commit to
+            // DB
             new android.os.Handler().postDelayed(() -> {
                 android.util.Log.d("MainActivity", "🔔 Refreshing badge after order (1st attempt)...");
                 updateUnreadCount();
@@ -191,14 +192,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             updateUnreadCount();
         }
-        
+
         loadUserProfile(); // Refresh profile if needed
         loadCategoriesFromApi(); // Refresh categories when returning to MainActivity
 
         if (bannerHandler != null && bannerRunnable != null) {
             bannerHandler.postDelayed(bannerRunnable, 3000); // 3s delay initially
         }
-        
+
         // Register WebSocket listener for badge updates
         setupWebSocketListener();
     }
@@ -253,14 +254,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 filterFragment.setOnApplyFilterListener((min, max, sortOption, selectedSizes) -> {
                     // Fetch products with price filter
                     fetchProducts(currentBrandQuery, (double) min, (double) max);
-                    
+
                     // Wait a bit for products to load, then apply size filter and sort
                     new android.os.Handler().postDelayed(() -> {
                         // Filter by sizes if any selected
                         if (selectedSizes != null && !selectedSizes.isEmpty()) {
                             filterProductsBySize(selectedSizes);
                         }
-                        
+
                         // Apply sort if selected
                         if (sortOption >= 0) {
                             sortProducts(sortOption);
@@ -305,7 +306,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
 
         if (tvViewAllSpecial != null)
-            tvViewAllSpecial.setOnClickListener(viewAllListener);
+            tvViewAllSpecial.setOnClickListener(v -> startActivity(
+                    new Intent(MainActivity.this, com.example.nike_fe.ui.coin.NikeCoinActivity.class)));
         if (tvViewAllPopular != null)
             tvViewAllPopular.setOnClickListener(viewAllListener);
 
@@ -330,9 +332,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else if (id == R.id.nav_favorites) {
                     startActivity(new Intent(this, com.example.nike_fe.ui.favorite.FavoriteActivity.class));
                     return true;
-                } else if (id == R.id.nav_lucky_wheel) {
-                    startActivity(new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class));
-                    return true;
                 } else if (id == R.id.nav_profile) {
                     startActivity(new Intent(this, ProfileActivity.class));
                     return true;
@@ -348,22 +347,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupWebSocketChatFab() {
         fabWebSocketChat = findViewById(R.id.fabWebSocketChat);
-        
+
         if (fabWebSocketChat != null) {
             setupDraggableFAB(fabWebSocketChat, () -> {
                 // Notify manager that chat window is opening
                 WebSocketChatManager.getInstance().setChatWindowOpen(true);
-                
+
                 // Check if user is admin
                 if (currentUser != null && "ADMIN".equals(currentUser.getRole())) {
                     // Show user list for admin
-                    com.example.nike_fe.ui.chat.ChatRoomListFragment chatRoomList = 
-                        new com.example.nike_fe.ui.chat.ChatRoomListFragment();
+                    com.example.nike_fe.ui.chat.ChatRoomListFragment chatRoomList = new com.example.nike_fe.ui.chat.ChatRoomListFragment();
                     chatRoomList.show(getSupportFragmentManager(), "ChatRoomList");
                 } else {
                     // Show direct chat for regular users
-                    com.example.nike_fe.ui.chat.WebSocketChatFragment chatFragment = 
-                        new com.example.nike_fe.ui.chat.WebSocketChatFragment();
+                    com.example.nike_fe.ui.chat.WebSocketChatFragment chatFragment = new com.example.nike_fe.ui.chat.WebSocketChatFragment();
                     chatFragment.show(getSupportFragmentManager(), "WebSocketChat");
                 }
             });
@@ -764,13 +761,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         currentUser = response.body();
-                        
+
                         // Initialize WebSocket connection for this user
                         WebSocketChatManager.getInstance().initialize(MainActivity.this, currentUser);
                         Log.d("MainActivity", "✅ WebSocket initialized for user: " + currentUser.getFullName());
 
                         // Load avatar in main header
-                        if (ivHeaderAvatar != null && currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
+                        if (ivHeaderAvatar != null && currentUser.getAvatar() != null
+                                && !currentUser.getAvatar().isEmpty()) {
                             String avatarUrl = currentUser.getAvatar();
                             if (!avatarUrl.startsWith("http")) {
                                 if (avatarUrl.startsWith("/")) {
@@ -779,10 +777,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 avatarUrl = RetrofitClient.getInstance(MainActivity.this).getBaseUrl() + avatarUrl;
                             }
                             Glide.with(MainActivity.this)
-                                .load(avatarUrl)
-                                .placeholder(R.drawable.ic_user_placeholder)
-                                .error(R.drawable.ic_user_placeholder)
-                                .into(ivHeaderAvatar);
+                                    .load(avatarUrl)
+                                    .placeholder(R.drawable.ic_user_placeholder)
+                                    .error(R.drawable.ic_user_placeholder)
+                                    .into(ivHeaderAvatar);
                         }
 
                         // Also update Drawer
@@ -792,26 +790,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 TextView tvName = headerView.findViewById(R.id.tvUserName);
                                 TextView tvEmail = headerView.findViewById(R.id.tvUserEmail);
                                 CircleImageView ivDrawerAvatar = headerView.findViewById(R.id.ivUserAvatar);
-                                
+
                                 if (tvName != null)
                                     tvName.setText(currentUser.getFullName());
                                 if (tvEmail != null)
                                     tvEmail.setText(currentUser.getEmail());
-                                
+
                                 // Load avatar in drawer
-                                if (ivDrawerAvatar != null && currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
+                                if (ivDrawerAvatar != null && currentUser.getAvatar() != null
+                                        && !currentUser.getAvatar().isEmpty()) {
                                     String drawerAvatarUrl = currentUser.getAvatar();
                                     if (!drawerAvatarUrl.startsWith("http")) {
                                         if (drawerAvatarUrl.startsWith("/")) {
                                             drawerAvatarUrl = drawerAvatarUrl.substring(1);
                                         }
-                                        drawerAvatarUrl = RetrofitClient.getInstance(MainActivity.this).getBaseUrl() + drawerAvatarUrl;
+                                        drawerAvatarUrl = RetrofitClient.getInstance(MainActivity.this).getBaseUrl()
+                                                + drawerAvatarUrl;
                                     }
                                     Glide.with(MainActivity.this)
-                                        .load(drawerAvatarUrl)
-                                        .placeholder(R.drawable.ic_user_placeholder)
-                                        .error(R.drawable.ic_user_placeholder)
-                                        .into(ivDrawerAvatar);
+                                            .load(drawerAvatarUrl)
+                                            .placeholder(R.drawable.ic_user_placeholder)
+                                            .error(R.drawable.ic_user_placeholder)
+                                            .into(ivDrawerAvatar);
                                 }
                             }
                         }
@@ -916,8 +916,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(this, com.example.nike_fe.ui.order.OrderHistoryActivity.class));
         } else if (id == R.id.nav_notifications) {
             startActivity(new Intent(this, com.example.nike_fe.ui.notification.NotificationActivity.class));
-        } else if (id == R.id.nav_lucky_wheel) {
-            startActivity(new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class));
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, com.example.nike_fe.ui.settings.SettingsActivity.class));
         } else if (id == R.id.nav_sign_out) {
@@ -972,9 +970,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Filter products that have at least one of the selected sizes
         java.util.List<Product> filteredProducts = new java.util.ArrayList<>();
         for (Product product : allProducts) {
-            Log.d("MainActivity", "Product: " + product.getName() + " has sizes: " + 
-                (product.getSizes() != null ? product.getSizes().toString() : "null"));
-            
+            Log.d("MainActivity", "Product: " + product.getName() + " has sizes: " +
+                    (product.getSizes() != null ? product.getSizes().toString() : "null"));
+
             if (product.getSizes() != null && !product.getSizes().isEmpty()) {
                 // Check if product has any of the selected sizes
                 for (String selectedSize : selectedSizes) {
@@ -999,10 +997,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         android.util.Log.d("MainActivity", "========================================");
         android.util.Log.d("MainActivity", "🔔 updateUnreadCount() called");
         android.util.Log.d("MainActivity", "   Badge view is " + (tvNotificationBadge == null ? "NULL ❌" : "OK ✅"));
-        
+
         String token = RetrofitClient.getInstance(this).getToken();
         android.util.Log.d("MainActivity", "   Token: " + (token == null ? "NULL" : "EXISTS ✅"));
-        
+
         if (token == null) {
             android.util.Log.d("MainActivity", "   No token - hiding badge");
             if (tvNotificationBadge != null)
@@ -1011,18 +1009,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         android.util.Log.d("MainActivity", "🌐 Calling API: /api/notifications/count-unread");
-        
+
         RetrofitClient.getInstance(this).getNotificationApi().getUnreadCount("Bearer " + token)
                 .enqueue(new Callback<com.example.nike_fe.data.model.UnreadCountResponse>() {
                     @Override
                     public void onResponse(Call<com.example.nike_fe.data.model.UnreadCountResponse> call,
                             Response<com.example.nike_fe.data.model.UnreadCountResponse> response) {
                         android.util.Log.d("MainActivity", "📥 API Response code: " + response.code());
-                        
+
                         if (response.isSuccessful() && response.body() != null) {
                             long count = response.body().getCount();
                             android.util.Log.d("MainActivity", "✅ API Response - Unread count: " + count);
-                            
+
                             if (tvNotificationBadge != null) {
                                 android.util.Log.d("MainActivity", "   Setting badge text to: " + count);
                                 if (count > 0) {
@@ -1069,7 +1067,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Clear chat data before logout
                     com.example.nike_fe.ui.chat.WebSocketChatFragment.clearChatHistory();
                     WebSocketChatManager.getInstance().disconnect();
-                    
+
                     RetrofitClient.getInstance(this).clearToken();
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1079,7 +1077,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setNegativeButton("Hủy", null)
                 .show();
     }
-    
+
     private void setupWebSocketListener() {
         if (unreadListener == null) {
             unreadListener = new WebSocketChatManager.UnreadMessageListener() {
@@ -1087,13 +1085,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onUnreadCountChanged(int count) {
                     runOnUiThread(() -> updateChatBadge(count));
                 }
-                
+
                 @Override
                 public void onNewMessage(ChatMessage message) {
                     // Can add notification sound/vibration here if needed
                     Log.d("MainActivity", "📩 New message: " + message.getContent());
                 }
-                
+
                 @Override
                 public void onUserUnreadChanged(Long userId, int count) {
                     // This is for ChatRoomListFragment to update per-user badges
@@ -1102,11 +1100,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             };
             WebSocketChatManager.getInstance().addListener(unreadListener);
         }
-        
+
         // Update badge with current count
         updateChatBadge(WebSocketChatManager.getInstance().getUnreadCount());
     }
-    
+
     private void updateChatBadge(int count) {
         if (tvChatBadge != null) {
             if (count > 0) {
@@ -1121,12 +1119,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+
         // Remove WebSocket listener
         if (unreadListener != null) {
             WebSocketChatManager.getInstance().removeListener(unreadListener);
         }
-        
+
         // Stop banner animation
         if (bannerHandler != null) {
             bannerHandler.removeCallbacks(bannerRunnable);

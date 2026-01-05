@@ -86,7 +86,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     // Navigation menu items
     private LinearLayout menuDashboardV2, menuProductsV2, menuOrdersV2, menuUsersV2,
-            menuCategoriesV2, menuReviewsV2, menuCouponsV2, menuLuckyWheelV2, menuSettingsV2, menuHomeV2, menuLogoutV2;
+            menuCategoriesV2, menuReviewsV2, menuCouponsV2, menuSettingsV2, menuHomeV2, menuLogoutV2;
 
     private AdminApi adminApi;
     private AdminProductApi productApi;
@@ -181,7 +181,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
             menuCategoriesV2 = findViewById(R.id.menuCategoriesV2);
             menuReviewsV2 = findViewById(R.id.menuReviewsV2);
             menuCouponsV2 = findViewById(R.id.menuCouponsV2);
-            menuLuckyWheelV2 = findViewById(R.id.menuLuckyWheelV2);
             menuSettingsV2 = findViewById(R.id.menuSettingsV2);
             menuHomeV2 = findViewById(R.id.menuHomeV2);
             menuLogoutV2 = findViewById(R.id.menuLogoutV2);
@@ -305,15 +304,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 if (drawerLayoutV2 != null)
                     drawerLayoutV2.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(this, AdminCouponsActivity.class);
-                startActivity(intent);
-            });
-        }
-
-        if (menuLuckyWheelV2 != null) {
-            menuLuckyWheelV2.setOnClickListener(v -> {
-                if (drawerLayoutV2 != null)
-                    drawerLayoutV2.closeDrawer(GravityCompat.START);
-                Intent intent = new Intent(this, AdminLuckyWheelActivity.class);
                 startActivity(intent);
             });
         }

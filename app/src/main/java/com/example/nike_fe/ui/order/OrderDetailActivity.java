@@ -41,6 +41,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     private TextView tvOrderId, tvOrderDate, tvOrderStatus;
     private TextView tvFullName, tvPhone, tvAddress;
     private TextView tvPaymentMethod, tvSubtotal, tvDiscount, tvShipping, tvTotal;
+    private TextView tvNikeCoinDiscount;
+    private LinearLayout layoutNikeCoinDiscount;
     private TextView tvCustomerNote, tvCustomerNoteLabel;
     private TextView tvAdminNote, tvAdminNoteLabel;
     private RecyclerView rvOrderItems;
@@ -84,6 +86,8 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvPaymentMethod = findViewById(R.id.tvPaymentMethod);
         tvSubtotal = findViewById(R.id.tvSubtotal);
         tvDiscount = findViewById(R.id.tvDiscount);
+        tvNikeCoinDiscount = findViewById(R.id.tvNikeCoinDiscount);
+        layoutNikeCoinDiscount = findViewById(R.id.layoutNikeCoinDiscount);
         tvShipping = findViewById(R.id.tvShipping);
         tvTotal = findViewById(R.id.tvTotal);
         tvCustomerNote = findViewById(R.id.tvCustomerNote);
@@ -206,9 +210,28 @@ public class OrderDetailActivity extends AppCompatActivity {
         // Pricing
         tvSubtotal.setText(formatPrice(order.getTotalAmount()));
 
-        // Discount
+        // Discount (coupon only - backend đã tách riêng)
         Double discount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
-        tvDiscount.setText(formatPrice(discount));
+        
+        if (discount > 0) {
+            tvDiscount.setText("-" + formatPrice(discount));
+            tvDiscount.setTextColor(getResources().getColor(android.R.color.holo_orange_dark));
+        } else {
+            tvDiscount.setText("0 ₫");
+            tvDiscount.setTextColor(getResources().getColor(R.color.black));
+        }
+        
+        // Nike Coin discount (field riêng từ backend)
+        Integer nikeCoin = order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0;
+        android.util.Log.d("OrderDetailActivity", "Nike Coin Used: " + nikeCoin);
+        if (nikeCoin > 0) {
+            layoutNikeCoinDiscount.setVisibility(View.VISIBLE);
+            tvNikeCoinDiscount.setText("-" + formatPrice(nikeCoin.doubleValue()));
+            android.util.Log.d("OrderDetailActivity", "Nike Coin section VISIBLE");
+        } else {
+            layoutNikeCoinDiscount.setVisibility(View.GONE);
+            android.util.Log.d("OrderDetailActivity", "Nike Coin section GONE");
+        }
 
         // Shipping fee
         Double shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0.0;

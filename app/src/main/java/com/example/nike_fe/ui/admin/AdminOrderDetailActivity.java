@@ -32,6 +32,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     
     private TextView tvOrderId, tvStatus, tvCustomerName, tvPhone, tvAddress;
     private TextView tvPaymentMethod, tvTotalAmount, tvDiscount, tvShippingFee, tvFinalAmount;
+    private TextView tvNikeCoinDiscount;
+    private LinearLayout layoutNikeCoinDiscount;
     private TextView tvCreatedAt, tvQuantity;
     private TextView tvCustomerNote, tvCustomerNoteLabel;
     private RecyclerView recyclerViewItems;
@@ -78,6 +80,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         tvPaymentMethod = findViewById(R.id.tvPaymentMethod);
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
         tvDiscount = findViewById(R.id.tvDiscount);
+        tvNikeCoinDiscount = findViewById(R.id.tvNikeCoinDiscount);
+        layoutNikeCoinDiscount = findViewById(R.id.layoutNikeCoinDiscount);
         tvShippingFee = findViewById(R.id.tvShippingFee);
         tvFinalAmount = findViewById(R.id.tvFinalAmount);
         tvCreatedAt = findViewById(R.id.tvCreatedAt);
@@ -176,11 +180,32 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
             // Hiển thị số tiền
             Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
             Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+            Integer nikeCoin = order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0;
             Double shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0.0;
             Double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
             
             tvTotalAmount.setText(currencyFormat.format(totalAmount));
-            tvDiscount.setText(currencyFormat.format(totalDiscount));
+            
+            // Hiển thị giảm giá coupon (backend đã tách riêng)
+            if (totalDiscount > 0) {
+                tvDiscount.setText("-" + currencyFormat.format(totalDiscount));
+                tvDiscount.setTextColor(getResources().getColor(android.R.color.holo_orange_dark));
+            } else {
+                tvDiscount.setText("0 ₫");
+                tvDiscount.setTextColor(getResources().getColor(android.R.color.black));
+            }
+            
+            // Hiển thị Nike Coin nếu có
+            android.util.Log.d("AdminOrderDetail", "Nike Coin Used: " + nikeCoin);
+            if (nikeCoin > 0) {
+                layoutNikeCoinDiscount.setVisibility(View.VISIBLE);
+                tvNikeCoinDiscount.setText("-" + currencyFormat.format(nikeCoin));
+                android.util.Log.d("AdminOrderDetail", "Nike Coin section VISIBLE");
+            } else {
+                layoutNikeCoinDiscount.setVisibility(View.GONE);
+                android.util.Log.d("AdminOrderDetail", "Nike Coin section GONE");
+            }
+            
             tvShippingFee.setText(currencyFormat.format(shippingFee));
             tvFinalAmount.setText(currencyFormat.format(finalAmount));
             

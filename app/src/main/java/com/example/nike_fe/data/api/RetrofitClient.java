@@ -104,8 +104,8 @@ public class RetrofitClient {
         return retrofit.create(AddressApi.class);
     }
 
-    public LuckyWheelApi getLuckyWheelApi() {
-        return retrofit.create(LuckyWheelApi.class);
+    public LoyaltyApi getLoyaltyApi() {
+        return retrofit.create(LoyaltyApi.class);
     }
 
     public void saveToken(String token) {

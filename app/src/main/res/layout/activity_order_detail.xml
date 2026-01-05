@@ -322,6 +322,31 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layoutNikeCoinDiscount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Đã dùng Nike Coin"
+                        android:textSize="15sp"
+                        android:textColor="@color/gray_700" />
+
+                    <TextView
+                        android:id="@+id/tvNikeCoinDiscount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 ₫"
+                        android:textSize="15sp"
+                        android:textColor="#FF6B35" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"

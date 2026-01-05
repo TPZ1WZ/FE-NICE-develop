@@ -22,10 +22,12 @@ import com.example.nike_fe.data.api.AddressApi;
 import com.example.nike_fe.data.api.OrderApi;
 import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.api.UserCouponApi;
+import com.example.nike_fe.data.api.LoyaltyApi;
 import com.example.nike_fe.data.model.Address;
 import com.example.nike_fe.data.model.Coupon;
 import com.example.nike_fe.data.model.OrderRequest;
 import com.example.nike_fe.data.model.OrderResponse;
+import com.example.nike_fe.data.model.LoyaltyPointsResponse;
 import com.example.nike_fe.ui.address.SelectAddressActivity;
 import com.example.nike_fe.ui.auth.LoginActivity;
 import com.example.nike_fe.ui.checkout.adapter.CouponSelectionAdapter;
@@ -54,8 +56,16 @@ public class CheckoutActivity extends AppCompatActivity {
     private FrameLayout layoutLoading;
     private NestedScrollView layoutCheckoutContent;
 
+    // Nike Coin views
+    private androidx.appcompat.widget.SwitchCompat switchNikeCoin;
+    private TextView tvNikeCoinBalance;
+    private TextView tvNikeCoinMessage;
+    private TextView tvNikeCoinDiscount;
+    private LinearLayout layoutNikeCoinDiscount;
+
     private OrderApi orderApi;
     private AddressApi addressApi;
+    private LoyaltyApi loyaltyApi;
     private String token;
     
     // Address data
@@ -68,6 +78,10 @@ public class CheckoutActivity extends AppCompatActivity {
     private static final double SHIPPING_FEE = 30000.0;
     private static final int REQUEST_SELECT_ADDRESS = 100;
 
+    // Nike Coin data
+    private int userNikeCoinBalance = 0;
+    private int nikeCoinUsed = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +90,8 @@ public class CheckoutActivity extends AppCompatActivity {
         initViews();
         setupToolbar();
         loadCartData();
+        loadNikeCoinBalance();
+        setupNikeCoinSwitch();
         setupPaymentMethod();
         setupConfirmButton();
     }
@@ -108,10 +124,18 @@ public class CheckoutActivity extends AppCompatActivity {
         btnApplyCoupon = findViewById(R.id.btnApplyCoupon);
         tvCouponMessage = findViewById(R.id.tvCouponMessage);
 
+        // Nike Coin views
+        switchNikeCoin = findViewById(R.id.switchNikeCoin);
+        tvNikeCoinBalance = findViewById(R.id.tvNikeCoinBalance);
+        tvNikeCoinMessage = findViewById(R.id.tvNikeCoinMessage);
+        tvNikeCoinDiscount = findViewById(R.id.tvNikeCoinDiscount);
+        layoutNikeCoinDiscount = findViewById(R.id.layoutNikeCoinDiscount);
+
         RetrofitClient retrofitClient = RetrofitClient.getInstance(this);
         orderApi = retrofitClient.getOrderApi();
         addressApi = retrofitClient.getAddressApi();
         userCouponApi = retrofitClient.getUserCouponApi();
+        loyaltyApi = retrofitClient.getLoyaltyApi();
         token = retrofitClient.getToken();
 
         if (token == null || token.isEmpty()) {
@@ -131,8 +155,10 @@ public class CheckoutActivity extends AppCompatActivity {
         userCouponApi.getValidCoupons("Bearer " + token).enqueue(new Callback<List<Coupon>>() {
             @Override
             public void onResponse(Call<List<Coupon>> call, Response<List<Coupon>> response) {
+                android.util.Log.d("CheckoutActivity", "Coupons API response: " + response.code());
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     List<Coupon> coupons = response.body();
+                    android.util.Log.d("CheckoutActivity", "Found " + coupons.size() + " valid coupons");
                     tvCouponMessage.setVisibility(View.VISIBLE);
                     tvCouponMessage.setText("Bạn có " + coupons.size() + " mã giảm giá khả dụng. Nhấn để xem.");
                     tvCouponMessage.setTextColor(getResources().getColor(android.R.color.holo_purple));
@@ -141,11 +167,14 @@ public class CheckoutActivity extends AppCompatActivity {
 
                     // Also auto-show dialog if no coupon applied yet?
                     // Maybe just showing the message is enough "Auto-display suggestion"
+                } else {
+                    android.util.Log.d("CheckoutActivity", "No valid coupons found");
                 }
             }
 
             @Override
             public void onFailure(Call<List<Coupon>> call, Throwable t) {
+                android.util.Log.e("CheckoutActivity", "Failed to load coupons: " + t.getMessage());
                 // Ignore
             }
         });
@@ -389,12 +418,28 @@ public class CheckoutActivity extends AppCompatActivity {
         NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
 
         tvSubtotal.setText(formatter.format(subtotal) + " ₫");
-        tvDiscount.setText(formatter.format(currentDiscountAmount) + " ₫");
+        
+        // Show discount with minus sign and orange color when applied
+        if (currentDiscountAmount > 0) {
+            tvDiscount.setText("-" + formatter.format(currentDiscountAmount) + " ₫");
+            tvDiscount.setTextColor(getResources().getColor(android.R.color.holo_orange_dark));
+        } else {
+            tvDiscount.setText("0 ₫");
+            tvDiscount.setTextColor(getResources().getColor(R.color.black));
+        }
+        
         tvShippingFee.setText(formatter.format(SHIPPING_FEE) + " ₫");
 
-        // Show discount if applied (maybe add a row for it in layout later, for now
-        // just update total)
-        double finalTotal = subtotal + SHIPPING_FEE - currentDiscountAmount;
+        // Show Nike Coin discount if used
+        if (nikeCoinUsed > 0) {
+            layoutNikeCoinDiscount.setVisibility(View.VISIBLE);
+            tvNikeCoinDiscount.setText("-" + formatter.format(nikeCoinUsed) + " ₫");
+        } else {
+            layoutNikeCoinDiscount.setVisibility(View.GONE);
+        }
+
+        // Calculate final total: subtotal + shipping - coupon discount - nike coin
+        double finalTotal = subtotal + SHIPPING_FEE - currentDiscountAmount - nikeCoinUsed;
         if (finalTotal < 0)
             finalTotal = 0;
 
@@ -424,6 +469,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         OrderRequest request = new OrderRequest(receiverName, shippingAddress, paymentMethod, phone, currentCouponCode);
         request.setCustomerNote(customerNote);
+        request.setNikeCoinUsed(nikeCoinUsed);
 
         orderApi.createOrder("Bearer " + token, request).enqueue(new Callback<OrderResponse>() {
             @Override
@@ -509,5 +555,62 @@ public class CheckoutActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    // Nike Coin Methods
+    private void loadNikeCoinBalance() {
+        if (loyaltyApi == null || token == null) return;
+
+        loyaltyApi.getLoyaltyPoints("Bearer " + token).enqueue(new Callback<LoyaltyPointsResponse>() {
+            @Override
+            public void onResponse(Call<LoyaltyPointsResponse> call, Response<LoyaltyPointsResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    userNikeCoinBalance = response.body().getCurrentPoints();
+                    NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+                    tvNikeCoinBalance.setText("Số dư: " + formatter.format(userNikeCoinBalance) + " Nike Coin");
+                    
+                    // Disable switch if no balance
+                    if (userNikeCoinBalance <= 0) {
+                        switchNikeCoin.setEnabled(false);
+                        tvNikeCoinMessage.setVisibility(View.VISIBLE);
+                        tvNikeCoinMessage.setText("Bạn chưa có Nike Coin");
+                        tvNikeCoinMessage.setTextColor(getResources().getColor(android.R.color.darker_gray));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoyaltyPointsResponse> call, Throwable t) {
+                // Silent fail - user can still checkout without Nike Coin
+                switchNikeCoin.setEnabled(false);
+            }
+        });
+    }
+
+    private void setupNikeCoinSwitch() {
+        switchNikeCoin.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // Calculate max Nike Coin can use (cannot exceed total bill)
+                double currentTotal = subtotal + SHIPPING_FEE - currentDiscountAmount;
+                int maxUsable = (int) Math.min(userNikeCoinBalance, currentTotal);
+                
+                if (maxUsable <= 0) {
+                    switchNikeCoin.setChecked(false);
+                    Toast.makeText(this, "Không thể sử dụng Nike Coin cho đơn hàng này", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                nikeCoinUsed = maxUsable;
+                NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+                tvNikeCoinMessage.setVisibility(View.VISIBLE);
+                tvNikeCoinMessage.setText("Sử dụng " + formatter.format(nikeCoinUsed) + " Nike Coin (1 Coin = 1 ₫)");
+                tvNikeCoinMessage.setTextColor(getResources().getColor(R.color.black));
+            } else {
+                nikeCoinUsed = 0;
+                tvNikeCoinMessage.setVisibility(View.GONE);
+            }
+            
+            updatePriceSummary();
+        });
     }
 }

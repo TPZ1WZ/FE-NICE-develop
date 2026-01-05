@@ -106,7 +106,12 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
                 tvStatus.setText(getStatusText(status));
                 tvStatus.setBackgroundResource(getStatusBackground(status));
 
-                Double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
+                // Tính finalAmount từ các thành phần để đảm bảo đúng
+                Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
+                Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+                Integer nikeCoinUsed = order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0;
+                Double shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 0.0;
+                Double finalAmount = totalAmount - totalDiscount - nikeCoinUsed + shippingFee;
                 tvAmount.setText(currencyFormat.format(finalAmount));
 
                 tvPaymentMethod.setText(order.getPaymentMethod() != null ? order.getPaymentMethod() : "COD");
