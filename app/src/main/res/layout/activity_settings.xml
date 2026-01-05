@@ -158,40 +158,6 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_settings"
-                    app:tint="@color/gray_700" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:text="Chế độ tối"
-                    android:textSize="15sp"
-                    android:textColor="@color/black" />
-
-                <Switch
-                    android:id="@+id/switchDarkMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="16dp"
-                android:background="@color/gray_200" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:paddingHorizontal="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
                     android:src="@drawable/ic_notification"
                     app:tint="@color/gray_700" />
 
@@ -208,51 +174,6 @@
                     android:id="@+id/switchNotifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="16dp"
-                android:background="@color/gray_200" />
-
-            <LinearLayout
-                android:id="@+id/layoutLanguage"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:paddingHorizontal="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:background="?attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_settings"
-                    app:tint="@color/gray_700" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:text="Ngôn ngữ"
-                    android:textSize="15sp"
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="Tiếng Việt"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray_500" />
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_arrow_right"
-                    app:tint="@color/gray_500" />
             </LinearLayout>
 
         </LinearLayout>
@@ -275,43 +196,6 @@
             android:background="@color/white"
             android:orientation="vertical"
             android:paddingVertical="8dp">
-
-            <LinearLayout
-                android:id="@+id/layoutNotificationSettings"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:paddingHorizontal="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:background="?attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_notification"
-                    app:tint="@color/gray_700" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:text="Cài đặt thông báo"
-                    android:textSize="15sp"
-                    android:textColor="@color/black" />
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_arrow_right"
-                    app:tint="@color/gray_500" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="16dp"
-                android:background="@color/gray_200" />
 
             <LinearLayout
                 android:id="@+id/layoutPrivacy"

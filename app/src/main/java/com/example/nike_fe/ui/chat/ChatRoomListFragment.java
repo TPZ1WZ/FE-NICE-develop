@@ -70,13 +70,12 @@ public class ChatRoomListFragment extends DialogFragment {
         Window window = dialog.getWindow();
         if (window != null) {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.setGravity(Gravity.BOTTOM | Gravity.END);
+            window.setGravity(Gravity.CENTER);
 
             WindowManager.LayoutParams params = window.getAttributes();
+            // Fixed 85% screen size, centered (same as chat fragments)
             params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
-            params.height = (int) (getResources().getDisplayMetrics().heightPixels * 0.65);
-            params.x = 20;
-            params.y = 100;
+            params.height = (int) (getResources().getDisplayMetrics().heightPixels * 0.85);
             window.setAttributes(params);
         }
 
@@ -240,7 +239,7 @@ public class ChatRoomListFragment extends DialogFragment {
                         layoutEmpty.setVisibility(View.GONE);
                         rvUserList.setVisibility(View.VISIBLE);
                         adapter.setUsers(users);
-                        tvUserCount.setText(users.size() + " người dùng");
+                        tvUserCount.setText(users.size() + " khách hàng");
                     }
                 } else {
                     Toast.makeText(requireContext(), "Không thể tải danh sách người dùng", Toast.LENGTH_SHORT).show();

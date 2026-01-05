@@ -322,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (bottomNavigation != null) {
             bottomNavigation.setBackground(null); // Clear background for FAB curve
             bottomNavigation.getMenu().getItem(2).setEnabled(false); // Disable placeholder item for FAB
+            bottomNavigation.getMenu().getItem(3).setEnabled(false); // Disable placeholder2 item
 
             bottomNavigation.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
@@ -329,9 +330,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     return true;
                 } else if (id == R.id.nav_favorites) {
                     startActivity(new Intent(this, com.example.nike_fe.ui.favorite.FavoriteActivity.class));
-                    return true;
-                } else if (id == R.id.nav_lucky_wheel) {
-                    startActivity(new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class));
                     return true;
                 } else if (id == R.id.nav_profile) {
                     startActivity(new Intent(this, ProfileActivity.class));
@@ -916,8 +914,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(this, com.example.nike_fe.ui.order.OrderHistoryActivity.class));
         } else if (id == R.id.nav_notifications) {
             startActivity(new Intent(this, com.example.nike_fe.ui.notification.NotificationActivity.class));
-        } else if (id == R.id.nav_lucky_wheel) {
-            startActivity(new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class));
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, com.example.nike_fe.ui.settings.SettingsActivity.class));
         } else if (id == R.id.nav_sign_out) {
@@ -1068,6 +1064,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
                     // Clear chat data before logout
                     com.example.nike_fe.ui.chat.WebSocketChatFragment.clearChatHistory();
+                    com.example.nike_fe.ui.chat.ChatBoxFragment.clearChatHistory();
                     WebSocketChatManager.getInstance().disconnect();
                     
                     RetrofitClient.getInstance(this).clearToken();

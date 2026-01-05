@@ -44,6 +44,10 @@ import retrofit2.Response;
 
 public class ChatBoxFragment extends DialogFragment {
 
+    // History loaded flag
+    private static boolean historyLoaded = false;
+    private static List<ChatMessage> savedMessageList = new ArrayList<>();
+
     private RecyclerView rvMessages;
     private EditText etMessage;
     private ImageButton btnSend;
@@ -78,17 +82,16 @@ public class ChatBoxFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         
-        // Make dialog draggable
+        // Make dialog fixed size
         Window window = dialog.getWindow();
         if (window != null) {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.setGravity(Gravity.BOTTOM | Gravity.END);
+            window.setGravity(Gravity.CENTER);
             
             WindowManager.LayoutParams params = window.getAttributes();
-            params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9);
-            params.height = (int) (getResources().getDisplayMetrics().heightPixels * 0.7);
-            params.x = 20; // margin from right
-            params.y = 100; // margin from bottom
+            // Fixed 85% screen size, centered
+            params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
+            params.height = (int) (getResources().getDisplayMetrics().heightPixels * 0.85);
             window.setAttributes(params);
         }
         
@@ -113,8 +116,20 @@ public class ChatBoxFragment extends DialogFragment {
         setupListeners();
         setupDraggable(view);
         
-        // Show welcome message
-        addBotMessage("Xin chào! Tôi là trợ lý AI của Nike Store. Tôi có thể giúp gì cho bạn? 😊");
+        // Load chat history if exists
+        if (!historyLoaded || savedMessageList.isEmpty()) {
+            // Show welcome message only on first open
+            addBotMessage("Xin chào! Tôi là trợ lý AI của Nike Store. Tôi có thể giúp gì cho bạn? 😊");
+            historyLoaded = true;
+        } else {
+            // Restore chat history
+            messageList.clear();
+            messageList.addAll(savedMessageList);
+            adapter.notifyDataSetChanged();
+            if (!messageList.isEmpty()) {
+                rvMessages.scrollToPosition(messageList.size() - 1);
+            }
+        }
     }
 
     private void initViews(View view) {
@@ -237,6 +252,7 @@ public class ChatBoxFragment extends DialogFragment {
         chatMessage.setSenderId(-1L); // Set to match adapter's userId for chatbot
         
         messageList.add(chatMessage);
+        savedMessageList.add(chatMessage); // Save to history
         adapter.notifyItemInserted(messageList.size() - 1);
         rvMessages.scrollToPosition(messageList.size() - 1);
     }
@@ -249,6 +265,7 @@ public class ChatBoxFragment extends DialogFragment {
         chatMessage.setSenderId(0L); // Bot messages have different senderId
         
         messageList.add(chatMessage);
+        savedMessageList.add(chatMessage); // Save to history
         adapter.notifyItemInserted(messageList.size() - 1);
         rvMessages.scrollToPosition(messageList.size() - 1);
     }
@@ -296,5 +313,13 @@ public class ChatBoxFragment extends DialogFragment {
         } else {
             super.dismiss();
         }
+    }
+
+    /**
+     * Clear chat history - call this when user logs out
+     */
+    public static void clearChatHistory() {
+        historyLoaded = false;
+        savedMessageList.clear();
     }
 }
