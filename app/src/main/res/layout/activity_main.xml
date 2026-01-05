@@ -264,10 +264,6 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Special Offers Section -->
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
                 <!-- Special Offers Banner Carousel -->
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/bannerViewPager"
