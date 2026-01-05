@@ -311,13 +311,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (tvViewAllPopular != null)
             tvViewAllPopular.setOnClickListener(viewAllListener);
 
-        // Lucky Wheel Card Click
-        androidx.cardview.widget.CardView cardLuckyWheel = findViewById(R.id.cardLuckyWheel);
-        if (cardLuckyWheel != null) {
-            cardLuckyWheel.setOnClickListener(v -> startActivity(
-                    new Intent(MainActivity.this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class)));
-        }
-
         // Open drawer when clicking avatar
         if (ivHeaderAvatar != null) {
             ivHeaderAvatar.setOnClickListener(v -> {
@@ -350,6 +343,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (fabCart != null) {
             fabCart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
+        }
+
+        // Lucky Wheel FAB
+        FloatingActionButton fabLuckyWheel = findViewById(R.id.fabLuckyWheel);
+        if (fabLuckyWheel != null) {
+            fabLuckyWheel.setOnClickListener(v -> startActivity(
+                    new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class)));
         }
     }
 
