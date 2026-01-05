@@ -164,17 +164,16 @@ public class WebSocketChatFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         
-        // Make dialog draggable
+        // Make dialog fixed size
         Window window = dialog.getWindow();
         if (window != null) {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.setGravity(Gravity.BOTTOM | Gravity.END);
+            window.setGravity(Gravity.CENTER);
             
             WindowManager.LayoutParams params = window.getAttributes();
+            // Fixed 85% screen size, centered
             params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
-            params.height = (int) (getResources().getDisplayMetrics().heightPixels * 0.65);
-            params.x = 20;
-            params.y = 100;
+            params.height = (int) (getResources().getDisplayMetrics().heightPixels * 0.85);
             window.setAttributes(params);
         }
         
@@ -228,7 +227,7 @@ public class WebSocketChatFragment extends DialogFragment {
         if (targetUserName != null) {
             tvChatTitle.setText("Chat với " + targetUserName);
         } else {
-            tvChatTitle.setText("Chat với Admin");
+            tvChatTitle.setText("Hỗ trợ trực tuyến");
         }
     }
 

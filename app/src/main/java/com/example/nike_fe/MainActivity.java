@@ -324,6 +324,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (bottomNavigation != null) {
             bottomNavigation.setBackground(null); // Clear background for FAB curve
             bottomNavigation.getMenu().getItem(2).setEnabled(false); // Disable placeholder item for FAB
+            bottomNavigation.getMenu().getItem(3).setEnabled(false); // Disable placeholder2 item
 
             bottomNavigation.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
@@ -1066,6 +1067,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
                     // Clear chat data before logout
                     com.example.nike_fe.ui.chat.WebSocketChatFragment.clearChatHistory();
+                    com.example.nike_fe.ui.chat.ChatBoxFragment.clearChatHistory();
                     WebSocketChatManager.getInstance().disconnect();
 
                     RetrofitClient.getInstance(this).clearToken();

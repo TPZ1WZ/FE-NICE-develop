@@ -147,6 +147,30 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:exported="false" />
+
+        <!-- PrivacyPolicyActivity - Chính sách bảo mật -->
+        <activity
+            android:name=".ui.settings.PrivacyPolicyActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.settings.SettingsActivity" />
+
+        <!-- TermsOfServiceActivity - Điều khoản sử dụng -->
+        <activity
+            android:name=".ui.settings.TermsOfServiceActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.settings.SettingsActivity" />
+
+        <!-- HelpCenterActivity - Trung tâm hỗ trợ -->
+        <activity
+            android:name=".ui.settings.HelpCenterActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.settings.SettingsActivity" />
+
+        <!-- AboutAppActivity - Về ứng dụng -->
+        <activity
+            android:name=".ui.settings.AboutAppActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.settings.SettingsActivity" />
         
         <!-- AdminDashboardActivity - Admin Dashboard -->
         <activity

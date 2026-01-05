@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
+    android:layout_margin="12dp"
     app:cardCornerRadius="24dp"
     app:cardElevation="8dp">
 
@@ -36,17 +36,26 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
+                <!-- Support Icon -->
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_chat_support"
+                    android:contentDescription="Support Icon"
+                    app:tint="@android:color/white"/>
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
 
                     <TextView
                         android:id="@+id/tvChatTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chat với Admin"
+                        android:text="Hỗ trợ trực tuyến"
                         android:textColor="@android:color/white"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
@@ -55,7 +64,7 @@
                         android:id="@+id/tvStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Đang kết nối..."
+                        android:text="Đang hoạt động"
                         android:textColor="@android:color/white"
                         android:textSize="12sp"
                         android:alpha="0.8"/>

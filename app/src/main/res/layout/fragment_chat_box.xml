@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
+    android:layout_margin="12dp"
     app:cardCornerRadius="24dp"
     app:cardElevation="8dp">
 
@@ -54,7 +54,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nike AI Assistant"
+                        android:text="ChatBox Assistant"
                         android:textColor="@android:color/white"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
@@ -62,7 +62,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Trực tuyến"
+                        android:text="Đang hoạt động"
                         android:textColor="@android:color/white"
                         android:textSize="12sp"
                         android:alpha="0.8"/>
