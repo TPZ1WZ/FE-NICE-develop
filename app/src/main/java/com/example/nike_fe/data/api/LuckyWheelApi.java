@@ -8,6 +8,9 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+
+import java.util.Map;
 
 public interface LuckyWheelApi {
 
@@ -22,12 +25,21 @@ public interface LuckyWheelApi {
             @Header("Authorization") String authorization
     );
 
+    @POST("/api/v1/lucky-wheel/track-product/{productId}")
+    Call<Map<String, Object>> trackProductView(
+            @Header("Authorization") String authorization,
+            @Path("productId") Long productId
+    );
+
     class SpinStatusResponse {
         private int currentPoints;  // Backend field name
         private boolean hasFreeSpinToday;
         private int todaySpins;  // Backend field name
         private int spinCost;  // Backend field name
         private int totalCoinsWon;
+        private long productsViewedToday;  // NEW: số sản phẩm đã xem hôm nay
+        private int requiredProductViews;  // NEW: số sản phẩm cần xem (3)
+        private boolean wheelEnabled;  // NEW: vòng quay có được bật không
 
         public int getCurrentCoins() {
             return currentPoints;  // For backward compatibility
@@ -85,8 +97,32 @@ public interface LuckyWheelApi {
             this.totalCoinsWon = totalCoinsWon;
         }
 
+        public long getProductsViewedToday() {
+            return productsViewedToday;
+        }
+
+        public void setProductsViewedToday(long productsViewedToday) {
+            this.productsViewedToday = productsViewedToday;
+        }
+
+        public int getRequiredProductViews() {
+            return requiredProductViews;
+        }
+
+        public void setRequiredProductViews(int requiredProductViews) {
+            this.requiredProductViews = requiredProductViews;
+        }
+
+        public boolean isWheelEnabled() {
+            return wheelEnabled;
+        }
+
+        public void setWheelEnabled(boolean wheelEnabled) {
+            this.wheelEnabled = wheelEnabled;
+        }
+
         public int getMaxFreeSpins() {
-            return 999;  // Max daily spins from backend
+            return 1;  // Max daily spins = 1 (updated logic)
         }
     }
 }

@@ -10,9 +10,13 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.nike_fe.R;
 import com.example.nike_fe.data.api.LuckyWheelApi;
+import com.example.nike_fe.data.api.LuckyWheelAdminApi;
 import com.example.nike_fe.data.api.RetrofitClient;
+import com.example.nike_fe.data.model.LuckyWheelReward;
 import com.example.nike_fe.data.model.SpinRequest;
 import com.example.nike_fe.data.model.SpinResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,8 +28,11 @@ public class LuckyWheelActivity extends AppCompatActivity {
     private Button btnSpin;
     private TextView tvCoins;
     private TextView tvSpinCount;
+    private TextView tvProductViews;
     private android.widget.ProgressBar pbSpins;
+    private android.widget.ProgressBar pbProductViews;
     private LuckyWheelApi luckyWheelApi;
+    private LuckyWheelAdminApi adminApi;
     private boolean isSpinning = false;
     private boolean hasFreeSpinAvailable = false; // Track if user has free spin
 
@@ -39,7 +46,7 @@ public class LuckyWheelActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(""); // Title is now in the layout body
+            getSupportActionBar().setTitle("Vòng quay may mắn");
         }
 
         // Initialize views
@@ -47,16 +54,55 @@ public class LuckyWheelActivity extends AppCompatActivity {
         btnSpin = findViewById(R.id.btnSpin);
         tvCoins = findViewById(R.id.tvCoins);
         tvSpinCount = findViewById(R.id.tvSpinCount);
+        tvProductViews = findViewById(R.id.tvProductViews);
         pbSpins = findViewById(R.id.pbSpins);
+        pbProductViews = findViewById(R.id.pbProductViews);
 
         // Initialize API
         luckyWheelApi = RetrofitClient.getInstance(this).getLuckyWheelApi();
+        adminApi = RetrofitClient.getInstance(this).getLuckyWheelAdminApi();
 
+        // Load wheel rewards from admin API
+        loadWheelRewards();
+        
         // Load user data
         loadUserData();
 
         // Setup spin button
         btnSpin.setOnClickListener(v -> spinWheel());
+    }
+
+    private void loadWheelRewards() {
+        String token = RetrofitClient.getInstance(this).getToken();
+        if (token == null) return;
+
+        adminApi.getRewards("Bearer " + token).enqueue(new Callback<List<LuckyWheelReward>>() {
+            @Override
+            public void onResponse(Call<List<LuckyWheelReward>> call, Response<List<LuckyWheelReward>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<LuckyWheelReward> rewards = response.body();
+                    
+                    // Update wheel with full labels from admin API - MUST map by position
+                    String[] labels = new String[8];
+                    for (int i = 0; i < 8; i++) {
+                        labels[i] = ""; // Default empty
+                    }
+                    
+                    for (LuckyWheelReward reward : rewards) {
+                        int pos = reward.getPosition();
+                        if (pos >= 0 && pos < 8) {
+                            labels[pos] = reward.getLabel() != null ? reward.getLabel() : "";
+                        }
+                    }
+                    wheelView.setPrizes(labels);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LuckyWheelReward>> call, Throwable t) {
+                // Keep default prizes if API fails
+            }
+        });
     }
 
     private void loadUserData() {
@@ -73,21 +119,42 @@ public class LuckyWheelActivity extends AppCompatActivity {
                     Response<LuckyWheelApi.SpinStatusResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     LuckyWheelApi.SpinStatusResponse status = response.body();
-                    tvCoins.setText("Coins: " + status.getCurrentCoins());
+                    
+                    // Update coins
+                    tvCoins.setText("Nike Coins: " + status.getCurrentCoins());
+                    
+                    // Update product views
+                    long viewed = status.getProductsViewedToday();
+                    int required = status.getRequiredProductViews();
+                    tvProductViews.setText("Đã xem: " + viewed + "/" + required + " sản phẩm");
+                    if (pbProductViews != null) {
+                        pbProductViews.setMax(required);
+                        pbProductViews.setProgress((int) viewed);
+                    }
+                    
+                    // Update spin count
                     tvSpinCount.setText(
                             "Lượt quay hôm nay: " + status.getTodaySpinCount() + "/" + status.getMaxFreeSpins());
-
                     if (pbSpins != null) {
                         pbSpins.setMax(status.getMaxFreeSpins());
                         pbSpins.setProgress(status.getTodaySpinCount());
                     }
 
-                    // Update button text and track free spin status
+                    // Update button state
                     hasFreeSpinAvailable = status.isHasFreeSpinToday();
-                    if (status.isHasFreeSpinToday()) {
+                    boolean canSpin = status.isWheelEnabled() && hasFreeSpinAvailable && viewed >= required;
+                    
+                    btnSpin.setEnabled(canSpin);
+                    
+                    // Priority: Admin control > User conditions
+                    if (!status.isWheelEnabled()) {
+                        btnSpin.setText("VÒNG QUAY TẠM ĐÓNG");
+                    } else if (viewed < required) {
+                        btnSpin.setText("XEM THÊM " + (required - viewed) + " SẢN PHẨM");
+                    } else if (hasFreeSpinAvailable) {
                         btnSpin.setText("QUAY MIỄN PHÍ");
                     } else {
-                        btnSpin.setText("QUAY (" + status.getSpinCost() + " COINS)");
+                        btnSpin.setText("ĐÃ HẾT LƯỢT QUAY HÔM NAY");
                     }
                 }
             }
@@ -95,12 +162,19 @@ public class LuckyWheelActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<LuckyWheelApi.SpinStatusResponse> call, Throwable t) {
                 // Show default values
-                tvCoins.setText("Coins: 0");
-                tvSpinCount.setText("Lượt quay hôm nay: 0/3");
+                tvCoins.setText("Nike Coins: 0");
+                tvProductViews.setText("Đã xem: 0/3 sản phẩm");
+                tvSpinCount.setText("Lượt quay hôm nay: 0/1");
+                if (pbProductViews != null) {
+                    pbProductViews.setMax(3);
+                    pbProductViews.setProgress(0);
+                }
                 if (pbSpins != null) {
-                    pbSpins.setMax(3);
+                    pbSpins.setMax(1);
                     pbSpins.setProgress(0);
                 }
+                btnSpin.setEnabled(false);
+                btnSpin.setText("LỖI KẾT NỐI");
             }
         });
     }
@@ -132,13 +206,8 @@ public class LuckyWheelActivity extends AppCompatActivity {
                         // Animate wheel
                         wheelView.spinTo(spinResponse.getRewardPosition(), () -> {
                             // Show result message from server
-                            // DEBUG info included to help fix the prize array mismatch
-                            String debugMsg = spinResponse.getMessage() +
-                                    " (Pos: " + spinResponse.getRewardPosition() +
-                                    ", Coins: " + spinResponse.getCoinAmount() + ")";
-
                             Toast.makeText(LuckyWheelActivity.this,
-                                    debugMsg,
+                                    spinResponse.getMessage(),
                                     Toast.LENGTH_LONG).show();
 
                             // Update UI with new coin balance

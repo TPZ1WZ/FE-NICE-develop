@@ -19,6 +19,7 @@ import com.example.nike_fe.R;
 import com.example.nike_fe.adapter.ImageGalleryAdapter;
 import com.example.nike_fe.data.api.CartApi;
 import com.example.nike_fe.data.api.FavoriteApi;
+import com.example.nike_fe.data.api.LuckyWheelApi;
 import com.example.nike_fe.data.api.ProductApi;
 import com.example.nike_fe.data.api.RetrofitClient;
 import com.example.nike_fe.data.model.AddToCartRequest;
@@ -71,6 +72,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private CartApi cartApi;
     private FavoriteApi favoriteApi;
     private UserReviewApi userReviewApi;
+    private LuckyWheelApi luckyWheelApi;
     private String token;
     private boolean isFavorite = false;
     private Long productId;
@@ -180,6 +182,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         favoriteApi = retrofitClient.getFavoriteApi();
         cartApi = retrofitClient.getCartApi();
         userReviewApi = retrofitClient.getUserReviewApi();
+        luckyWheelApi = retrofitClient.getLuckyWheelApi();
         String rawToken = retrofitClient.getToken();
         token = (rawToken != null && !rawToken.startsWith("Bearer ")) ? "Bearer " + rawToken : rawToken;
     }
@@ -294,6 +297,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     productDetail = response.body();
                     displayProductDetail();
+                    
+                    // Track product view for lucky wheel (xem sản phẩm → kiếm lượt quay)
+                    trackProductView();
                 } else {
                     Toast.makeText(ProductDetailActivity.this, "Lỗi tải sản phẩm", Toast.LENGTH_SHORT).show();
                 }
@@ -617,5 +623,55 @@ public class ProductDetailActivity extends AppCompatActivity {
             ivFavorite.setImageResource(R.drawable.ic_heart_outline);
             ivFavorite.clearColorFilter();
         }
+    }
+
+    /**
+     * Track product view for lucky wheel
+     * Logic: Xem chi tiết ít nhất 3 sản phẩm khác nhau trong ngày → có 1 lượt quay miễn phí
+     */
+    private void trackProductView() {
+        // Chỉ track nếu user đã đăng nhập
+        if (token == null || token.isEmpty()) {
+            android.util.Log.d("ProductDetail", "⏭️ Skip tracking - User not logged in");
+            return;
+        }
+
+        if (productId == null || productId <= 0) {
+            android.util.Log.w("ProductDetail", "⚠️ Invalid product ID for tracking");
+            return;
+        }
+
+        android.util.Log.d("ProductDetail", "👁️ Tracking product view - ProductId: " + productId);
+
+        luckyWheelApi.trackProductView(token, productId).enqueue(new Callback<java.util.Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<java.util.Map<String, Object>> call,
+                    Response<java.util.Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    java.util.Map<String, Object> result = response.body();
+                    android.util.Log.d("ProductDetail", "✅ Product view tracked successfully: " + result);
+                    
+                    // Hiển thị thông báo nếu đủ điều kiện quay (optional)
+                    Object canSpinObj = result.get("canSpin");
+                    Object viewedObj = result.get("productsViewedToday");
+                    if (canSpinObj instanceof Boolean && viewedObj != null) {
+                        boolean canSpin = (Boolean) canSpinObj;
+                        if (canSpin) {
+                            Toast.makeText(ProductDetailActivity.this, 
+                                    "🎉 Bạn đã xem đủ 3 sản phẩm! Mở vòng quay để nhận thưởng", 
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    android.util.Log.w("ProductDetail", "⚠️ Track product view failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                // Silent fail - không ảnh hưởng trải nghiệm xem sản phẩm
+                android.util.Log.e("ProductDetail", "❌ Track product view error", t);
+            }
+        });
     }
 }

@@ -22,19 +22,19 @@ public class WheelView extends View {
     private float currentRotation = 0f;
     private boolean isSpinning = false;
 
-    // Wheel prizes - matching backend rewards (8 positions)
-    private final String[] prizes = { "1000", "☹", "2000", "500", "100", "1500", "50", "10K" };
+    // Wheel prizes - will be loaded from API (default 8 empty slots)
+    private String[] prizes = { "", "", "", "", "", "", "", "" };
 
-    // Premium Colors (8 colors for 8 positions)
+    // Premium Colors (8 colors for 8 positions) - Vibrant & Diverse Palette
     private final int[] colors = {
-            Color.parseColor("#6200EA"), // Purple - 1000
-            Color.parseColor("#FFD700"), // Gold - NOTHING
-            Color.parseColor("#1A237E"), // Navy - 2000
-            Color.parseColor("#FFD700"), // Gold - 500
-            Color.parseColor("#6200EA"), // Purple - 100
-            Color.parseColor("#1A237E"), // Navy - 1500
-            Color.parseColor("#FFD700"), // Gold - 50
-            Color.parseColor("#6200EA") // Purple - 10000
+            Color.parseColor("#FF6B35"), // Vibrant Orange - 1000
+            Color.parseColor("#F7B801"), // Golden Yellow - NOTHING
+            Color.parseColor("#6A0572"), // Deep Purple - 2000
+            Color.parseColor("#00D9FF"), // Bright Cyan - 500
+            Color.parseColor("#FF1744"), // Red - 100
+            Color.parseColor("#00E676"), // Green - 1500
+            Color.parseColor("#3D5AFE"), // Blue - 50
+            Color.parseColor("#FFD600") // Yellow - 10000
     };
 
     private Runnable onSpinComplete;
@@ -105,33 +105,68 @@ public class WheelView extends View {
             paint.setColor(colors[i]);
             canvas.drawArc(rectF, i * sweepAngle, sweepAngle, true, paint);
 
-            // Determine text color based on background
-            // Gold background -> Black text, Dark background -> Gold/White text
-            if (colors[i] == Color.parseColor("#FFD700")) {
+            // Determine text color based on background brightness
+            int color = colors[i];
+            int brightness = (Color.red(color) + Color.green(color) + Color.blue(color)) / 3;
+            
+            if (brightness > 180) { // Bright background
                 textPaint.setColor(Color.BLACK);
-                textPaint.setShadowLayer(0f, 0f, 0f, 0); // Remove shadow for black text
-            } else {
+                textPaint.setShadowLayer(2f, 1f, 1f, Color.parseColor("#40FFFFFF")); // Light shadow
+            } else { // Dark background
                 textPaint.setColor(Color.WHITE);
-                textPaint.setShadowLayer(4f, 2f, 2f, Color.parseColor("#80000000"));
+                textPaint.setShadowLayer(4f, 2f, 2f, Color.parseColor("#80000000")); // Dark shadow
             }
+
+            // Auto-adjust font size based on text length
+            String text = prizes[i];
+            float baseFontSize = 50f;
+            float fontSize = baseFontSize;
+            
+            // Reduce font size for longer text
+            if (text.length() > 15) {
+                fontSize = baseFontSize * 0.5f; // Very long text
+            } else if (text.length() > 10) {
+                fontSize = baseFontSize * 0.65f; // Long text
+            } else if (text.length() > 6) {
+                fontSize = baseFontSize * 0.8f; // Medium text
+            }
+            
+            textPaint.setTextSize(fontSize);
 
             // Draw text
             float angle = (float) Math.toRadians(i * sweepAngle + sweepAngle / 2);
-            float textRadius = radius * 0.7f; // Push text slightly further out
+            float textRadius = radius * 0.7f;
             float textX = centerX + textRadius * (float) Math.cos(angle);
             float textY = centerY + textRadius * (float) Math.sin(angle);
 
-            // Adjust textY for vertical centering (approximate)
+            // Adjust textY for vertical centering
             float textHeight = textPaint.descent() - textPaint.ascent();
             float textOffset = (textHeight / 2) - textPaint.descent();
             textY += textOffset;
 
             canvas.save();
-            // Radial rotation: Rotate so text points outwards/inwards.
-            // i * sweepAngle + sweepAngle / 2 is the angle of the slice center.
-            // Adding 0 makes it radial outwards (text bottom to center).
             canvas.rotate(i * sweepAngle + sweepAngle / 2, textX, textY);
-            canvas.drawText(prizes[i], textX, textY, textPaint);
+            
+            // For very long text, break into multiple lines
+            if (text.length() > 15) {
+                String[] words = text.split(" ");
+                if (words.length > 2) {
+                    // Draw first part above center
+                    String line1 = words[0] + " " + words[1];
+                    canvas.drawText(line1, textX, textY - fontSize * 0.5f, textPaint);
+                    // Draw second part below center
+                    String line2 = "";
+                    for (int j = 2; j < words.length; j++) {
+                        line2 += words[j] + (j < words.length - 1 ? " " : "");
+                    }
+                    canvas.drawText(line2, textX, textY + fontSize * 0.5f, textPaint);
+                } else {
+                    canvas.drawText(text, textX, textY, textPaint);
+                }
+            } else {
+                canvas.drawText(text, textX, textY, textPaint);
+            }
+            
             canvas.restore();
         }
 
@@ -149,21 +184,27 @@ public class WheelView extends View {
 
         canvas.restore();
 
-        // Draw outer border
+        // Draw outer border with gold color
+        borderPaint.setColor(Color.parseColor("#FFD700")); // Gold border
+        borderPaint.setStrokeWidth(8f);
         canvas.drawCircle(centerX, centerY, radius, borderPaint);
 
-        // Draw center circle (The "Hub")
-        // Outer ring of hub
-        paint.setColor(Color.WHITE);
-        canvas.drawCircle(centerX, centerY, radius * 0.18f, paint);
-
-        // Inner hub
-        paint.setColor(Color.parseColor("#1A103C")); // Dark center
-        canvas.drawCircle(centerX, centerY, radius * 0.15f, paint);
-
-        // Gold center point
+        // Draw center circle (The "Hub") - Multi-layer design
+        // Outer ring of hub - Gold
         paint.setColor(Color.parseColor("#FFD700"));
-        canvas.drawCircle(centerX, centerY, radius * 0.05f, paint);
+        canvas.drawCircle(centerX, centerY, radius * 0.20f, paint);
+        
+        // Middle ring - White
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(centerX, centerY, radius * 0.17f, paint);
+
+        // Inner hub - Dark purple gradient effect
+        paint.setColor(Color.parseColor("#6A0572"));
+        canvas.drawCircle(centerX, centerY, radius * 0.14f, paint);
+
+        // Gold center point with glow
+        paint.setColor(Color.parseColor("#FFD600"));
+        canvas.drawCircle(centerX, centerY, radius * 0.06f, paint);
     }
 
     public void spinTo(int prizeIndex, Runnable callback) {
@@ -206,6 +247,13 @@ public class WheelView extends View {
             }
         });
         animator.start();
+    }
+
+    public void setPrizes(String[] newPrizes) {
+        if (newPrizes != null && newPrizes.length == 8) {
+            this.prizes = newPrizes;
+            invalidate(); // Redraw with new prizes
+        }
     }
 
     public boolean isSpinning() {

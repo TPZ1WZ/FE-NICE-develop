@@ -324,7 +324,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (bottomNavigation != null) {
             bottomNavigation.setBackground(null); // Clear background for FAB curve
             bottomNavigation.getMenu().getItem(2).setEnabled(false); // Disable placeholder item for FAB
-            bottomNavigation.getMenu().getItem(3).setEnabled(false); // Disable placeholder2 item
 
             bottomNavigation.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
@@ -332,6 +331,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     return true;
                 } else if (id == R.id.nav_favorites) {
                     startActivity(new Intent(this, com.example.nike_fe.ui.favorite.FavoriteActivity.class));
+                    return true;
+                } else if (id == R.id.nav_lucky_wheel) {
+                    startActivity(new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class));
                     return true;
                 } else if (id == R.id.nav_profile) {
                     startActivity(new Intent(this, ProfileActivity.class));
@@ -343,13 +345,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (fabCart != null) {
             fabCart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
-        }
-
-        // Lucky Wheel FAB
-        FloatingActionButton fabLuckyWheel = findViewById(R.id.fabLuckyWheel);
-        if (fabLuckyWheel != null) {
-            fabLuckyWheel.setOnClickListener(v -> startActivity(
-                    new Intent(this, com.example.nike_fe.ui.luckywheel.LuckyWheelActivity.class)));
         }
     }
 

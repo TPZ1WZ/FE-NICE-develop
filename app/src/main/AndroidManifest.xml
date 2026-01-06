@@ -177,6 +177,12 @@
             android:name=".ui.admin.AdminDashboardActivity"
             android:exported="false" />
         
+        <!-- LuckyWheelManagementActivity - Admin Lucky Wheel Management -->
+        <activity
+            android:name=".ui.admin.LuckyWheelManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.admin.AdminDashboardActivity" />
+        
         <!-- AdminProductsActivity - Admin Product Management -->
         <activity
             android:name=".ui.admin.AdminProductsActivity"

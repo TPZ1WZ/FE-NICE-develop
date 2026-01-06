@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">nike-fe</string>
+    
+    <!-- Lucky Wheel Reward Types -->
+    <string-array name="reward_types">
+        <item>COIN</item>
+        <item>NOTHING</item>
+    </string-array>
 </resources>

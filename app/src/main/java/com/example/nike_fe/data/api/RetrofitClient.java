@@ -138,4 +138,8 @@ public class RetrofitClient {
     public LuckyWheelApi getLuckyWheelApi() {
         return retrofit.create(LuckyWheelApi.class);
     }
+
+    public LuckyWheelAdminApi getLuckyWheelAdminApi() {
+        return retrofit.create(LuckyWheelAdminApi.class);
+    }
 }
