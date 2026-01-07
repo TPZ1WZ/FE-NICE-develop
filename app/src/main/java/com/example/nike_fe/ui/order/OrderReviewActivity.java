@@ -299,6 +299,9 @@ public class OrderReviewActivity extends AppCompatActivity implements OrderRevie
                     Toast.makeText(OrderReviewActivity.this, message, Toast.LENGTH_LONG).show();
                     item.setReviewed(true);
                     adapter.notifyDataSetChanged();
+                    
+                    // Check if all items are reviewed, then go back
+                    checkAndFinishIfAllReviewed();
                 } else {
                     // Parse error message from backend
                     String errorMessage = "Đã có lỗi xảy ra";
@@ -332,5 +335,30 @@ public class OrderReviewActivity extends AppCompatActivity implements OrderRevie
                 Toast.makeText(OrderReviewActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    /**
+     * Kiểm tra xem đã đánh giá hết tất cả sản phẩm chưa
+     * Nếu rồi thì tự động quay lại màn hình trước
+     */
+    private void checkAndFinishIfAllReviewed() {
+        boolean allReviewed = true;
+        
+        for (OrderItem item : orderItems) {
+            if (!item.isReviewed()) {
+                allReviewed = false;
+                break;
+            }
+        }
+        
+        if (allReviewed && !orderItems.isEmpty()) {
+            // Delay 1 giây để user đọc được toast message
+            new android.os.Handler().postDelayed(() -> {
+                Toast.makeText(OrderReviewActivity.this, 
+                        "Đã hoàn thành đánh giá tất cả sản phẩm!", 
+                        Toast.LENGTH_SHORT).show();
+                finish(); // Quay lại màn hình trước
+            }, 1000);
+        }
     }
 }
