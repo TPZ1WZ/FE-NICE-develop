@@ -487,6 +487,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bannerList = new java.util.ArrayList<>();
 
         // Dummy Data - Mimicking the original design
+        // Dummy Data - Mimicking the original design
         bannerList.add(new com.example.nike_fe.data.model.Banner(
                 R.drawable.banner_background,
                 "25%",

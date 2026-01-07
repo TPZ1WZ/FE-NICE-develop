@@ -30,7 +30,7 @@ import retrofit2.Response;
 public class VerifyOtpActivity extends AppCompatActivity {
 
     private TextView tvEmail, tvOtpError;
-    private EditText etOtp1, etOtp2, etOtp3, etOtp4, etOtp5, etOtp6;
+    private EditText etOtp; // Single OTP field
     private Button btnVerify, btnBack;
     private TextView tvResendOtp;
 
@@ -65,23 +65,14 @@ public class VerifyOtpActivity extends AppCompatActivity {
         // Initialize views
         tvEmail = findViewById(R.id.tvEmail);
         tvOtpError = findViewById(R.id.tvOtpError);
-
-        etOtp1 = findViewById(R.id.etOtp1);
-        etOtp2 = findViewById(R.id.etOtp2);
-        etOtp3 = findViewById(R.id.etOtp3);
-        etOtp4 = findViewById(R.id.etOtp4);
-        etOtp5 = findViewById(R.id.etOtp5);
-        etOtp6 = findViewById(R.id.etOtp6);
-
+        etOtp = findViewById(R.id.etOtp); // Single field
+        
         btnVerify = findViewById(R.id.btnVerify);
         btnBack = findViewById(R.id.btnBack);
         tvResendOtp = findViewById(R.id.tvResendOtp);
 
         // Display email
         tvEmail.setText(email);
-
-        // Setup OTP auto-focus
-        setupOtpAutoFocus();
 
         // Verify button click
         btnVerify.setOnClickListener(new View.OnClickListener() {
@@ -103,59 +94,76 @@ public class VerifyOtpActivity extends AppCompatActivity {
         tvResendOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Implement resend OTP (call register-with-otp again)
-                Toast.makeText(VerifyOtpActivity.this,
-                        "Tính năng gửi lại OTP đang phát triển",
-                        Toast.LENGTH_SHORT).show();
+                if (System.currentTimeMillis() - mLastClickTime < 1000) {
+                    return;
+                }
+                mLastClickTime = System.currentTimeMillis();
+                resendOtp();
             }
         });
 
-        // Auto-focus first OTP field
-        etOtp1.requestFocus();
+        // Start countdown timer immediately
+        startResendTimer(30000);
+
+        // Auto-focus OTP field
+        etOtp.requestFocus();
     }
 
-    /**
-     * Setup auto-focus between OTP fields
-     */
-    private void setupOtpAutoFocus() {
-        EditText[] otpFields = { etOtp1, etOtp2, etOtp3, etOtp4, etOtp5, etOtp6 };
+    private void resendOtp() {
+        setLoading(true);
+        
+        java.util.Map<String, String> request = new java.util.HashMap<>();
+        request.put("email", email);
 
-        for (int i = 0; i < otpFields.length; i++) {
-            final int index = i;
-            final EditText currentField = otpFields[i];
-
-            // Auto-focus next field on text input
-            currentField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (s.length() == 1 && index < otpFields.length - 1) {
-                        otpFields[index + 1].requestFocus();
+        authApi.resendRegistrationOtp(request).enqueue(new Callback<com.example.nike_fe.data.model.RegisterResponse>() {
+            @Override
+            public void onResponse(Call<com.example.nike_fe.data.model.RegisterResponse> call, Response<com.example.nike_fe.data.model.RegisterResponse> response) {
+                setLoading(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(VerifyOtpActivity.this, "Mã OTP mới đã được gửi!", Toast.LENGTH_LONG).show();
+                    startResendTimer(30000);
+                } else {
+                    String message = "Gửi lại thất bại. Vui lòng thử lại.";
+                    if (response.code() == 409) {
+                        message = "Email đã đăng ký. Vui lòng đăng nhập.";
                     }
+                    Toast.makeText(VerifyOtpActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
+            }
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
+            @Override
+            public void onFailure(Call<com.example.nike_fe.data.model.RegisterResponse> call, Throwable t) {
+                setLoading(false);
+                Toast.makeText(VerifyOtpActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-            // Handle backspace to go to previous field
-            currentField.setOnKeyListener(new View.OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (currentField.getText().toString().isEmpty() && index > 0) {
-                            otpFields[index - 1].requestFocus();
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            });
+    private android.os.CountDownTimer resendTimer;
+    private long mLastClickTime = 0;
+
+    private void startResendTimer(long durationMillis) {
+        if (resendTimer != null) {
+            resendTimer.cancel();
         }
+
+        tvResendOtp.setEnabled(false);
+        tvResendOtp.setTextColor(android.graphics.Color.WHITE); // Ensure white text
+        
+        resendTimer = new android.os.CountDownTimer(durationMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long seconds = millisUntilFinished / 1000;
+                String timeString = String.format("00:%02d", seconds);
+                tvResendOtp.setText("Gửi lại mã OTP (" + timeString + ")");
+            }
+
+            @Override
+            public void onFinish() {
+                tvResendOtp.setEnabled(true);
+                tvResendOtp.setText("Gửi lại mã OTP");
+            }
+        }.start();
     }
 
     /**
@@ -165,24 +173,16 @@ public class VerifyOtpActivity extends AppCompatActivity {
         // Hide error
         tvOtpError.setVisibility(View.GONE);
 
-        // Get OTP from 6 fields
-        String otp1 = etOtp1.getText().toString().trim();
-        String otp2 = etOtp2.getText().toString().trim();
-        String otp3 = etOtp3.getText().toString().trim();
-        String otp4 = etOtp4.getText().toString().trim();
-        String otp5 = etOtp5.getText().toString().trim();
-        String otp6 = etOtp6.getText().toString().trim();
+        // Get OTP from single field
+        String otpString = etOtp.getText().toString().trim();
 
         // Validate OTP
-        if (otp1.isEmpty() || otp2.isEmpty() || otp3.isEmpty() ||
-                otp4.isEmpty() || otp5.isEmpty() || otp6.isEmpty()) {
+        if (otpString.length() != 6) {
             tvOtpError.setText("Vui lòng nhập đủ 6 chữ số OTP");
             tvOtpError.setVisibility(View.VISIBLE);
             return;
         }
 
-        // Combine OTP
-        String otpString = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
         long otp;
         try {
             otp = Long.parseLong(otpString);
@@ -273,13 +273,8 @@ public class VerifyOtpActivity extends AppCompatActivity {
      * Clear all OTP fields
      */
     private void clearOtpFields() {
-        etOtp1.setText("");
-        etOtp2.setText("");
-        etOtp3.setText("");
-        etOtp4.setText("");
-        etOtp5.setText("");
-        etOtp6.setText("");
-        etOtp1.requestFocus();
+        etOtp.setText("");
+        etOtp.requestFocus();
     }
 
     /**
@@ -292,11 +287,6 @@ public class VerifyOtpActivity extends AppCompatActivity {
         btnBack.setEnabled(!isLoading);
         tvResendOtp.setEnabled(!isLoading);
 
-        etOtp1.setEnabled(!isLoading);
-        etOtp2.setEnabled(!isLoading);
-        etOtp3.setEnabled(!isLoading);
-        etOtp4.setEnabled(!isLoading);
-        etOtp5.setEnabled(!isLoading);
-        etOtp6.setEnabled(!isLoading);
+        etOtp.setEnabled(!isLoading);
     }
 }

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Blue background for sent messages -->
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Green background for sent messages - User sends -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#0084FF"/>
+    <solid android:color="#10B981"/>
     <corners android:radius="18dp"/>
 </shape>

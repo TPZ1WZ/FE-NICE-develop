@@ -132,6 +132,10 @@ public class ProfileActivity extends AppCompatActivity {
                     .setTitle("Sign Out")
                     .setMessage("Are you sure you want to sign out?")
                     .setPositiveButton("Sign Out", (dialog, which) -> {
+                        // Clear chat data
+                        com.example.nike_fe.service.WebSocketChatManager.getInstance().disconnect();
+                        com.example.nike_fe.ui.chat.WebSocketChatFragment.clearChatHistory();
+                        
                         RetrofitClient.getInstance(this).clearToken();
                         navigateToLogin();
                     })
@@ -271,6 +275,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void updateProfileName(String newName) {
         UpdateProfileRequest request = new UpdateProfileRequest(newName);
+        
+        String newPassword = etPassword.getText().toString().trim();
+        if (!newPassword.isEmpty()) {
+            request.setPassword(newPassword);
+        }
 
         userApi.updateProfile("Bearer " + token, request).enqueue(new Callback<User>() {
             @Override
