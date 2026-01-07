@@ -68,10 +68,16 @@ public class WebSocketChatManager {
         webSocketService.connect(user.getId(), user.getFullName(), new ChatWebSocketService.ChatListener() {
             @Override
             public void onMessageReceived(ChatMessage message) {
-                Log.d(TAG, "📩 New message received: " + message.getContent());
+                Log.d(TAG, "📩 NEW MESSAGE RECEIVED in WebSocketChatManager");
+                Log.d(TAG, "  - Content: " + message.getContent());
+                Log.d(TAG, "  - SenderId: " + message.getSenderId());
+                Log.d(TAG, "  - ReceiverId: " + message.getReceiverId());
+                Log.d(TAG, "  - CurrentUserId: " + (currentUser != null ? currentUser.getId() : "null"));
+                Log.d(TAG, "  - Is from me: " + (currentUser != null && message.getSenderId().equals(currentUser.getId())));
                 
                 // Always add message to allMessages list
                 allMessages.add(message);
+                Log.d(TAG, "  - ✅ Added to allMessages. Total messages: " + allMessages.size());
                 
                 // If message is from others (not current user)
                 if (!message.getSenderId().equals(currentUser.getId())) {
@@ -87,10 +93,15 @@ public class WebSocketChatManager {
                         unreadCount++;
                         notifyUnreadCountChanged();
                     }
+                    Log.d(TAG, "  - Message from other user, updated unread counts");
+                } else {
+                    Log.d(TAG, "  - Message from me (current user), skipping unread tracking");
                 }
                 
                 // Notify all listeners
+                Log.d(TAG, "  - 📢 Notifying " + listeners.size() + " listeners");
                 notifyNewMessage(message);
+                Log.d(TAG, "  - ✅ Listeners notified");
             }
             
             @Override

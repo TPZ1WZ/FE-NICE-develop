@@ -174,6 +174,48 @@ public class ChatWebSocketService {
     }
 
     /**
+     * Admin sends message to specific user
+     */
+    public void sendMessageToUser(Long targetUserId, String targetUserName, String content, ChatListener listener) {
+        if (!isConnected) {
+            Log.w(TAG, "Not connected to WebSocket");
+            if (listener != null) {
+                listener.onError("Not connected");
+            }
+            return;
+        }
+
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("senderId", currentUserId); // Admin ID
+        messageMap.put("senderName", currentUserName); // Admin name
+        messageMap.put("receiverId", targetUserId); // Target user ID
+        messageMap.put("receiverName", targetUserName); // Target user name
+        messageMap.put("content", content);
+        messageMap.put("type", "TEXT");
+
+        String jsonMessage = gson.toJson(messageMap);
+
+        Log.d(TAG, "💬 Admin sending message to user " + targetUserId + ": " + jsonMessage);
+
+        Disposable sendDisposable = stompClient.send("/app/chat.sendToUser", jsonMessage)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        () -> {
+                            Log.d(TAG, "✅ Message sent successfully to user " + targetUserId);
+                        },
+                        throwable -> {
+                            Log.e(TAG, "❌ Error sending message to user", throwable);
+                            if (listener != null) {
+                                listener.onError("Failed to send message");
+                            }
+                        }
+                );
+
+        compositeDisposable.add(sendDisposable);
+    }
+
+    /**
      * Send connection notification
      */
     private void sendConnectNotification() {

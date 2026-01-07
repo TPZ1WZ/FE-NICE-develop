@@ -226,17 +226,23 @@ public class WebSocketChatFragment extends DialogFragment {
         
         // Filter messages if we are chatting with a specific user (Admin mode)
         if (targetUserId != null) {
+            android.util.Log.d("WebSocketChat", "🎯 ADMIN MODE: Filtering for targetUserId=" + targetUserId);
+            
             for (ChatMessage msg : allMessages) {
                 Long senderId = msg.getSenderId();
                 Long receiverId = msg.getReceiverId();
                 
-                // Show message if it matches target user (sent by them OR sent to them)
-                if ((senderId != null && senderId.equals(targetUserId)) || 
-                    (receiverId != null && receiverId.equals(targetUserId))) {
+                // ADMIN MODE: Show ALL messages between admin and target user
+                // Show if message involves target user (sent by them OR sent to them)
+                boolean isFromTargetUser = senderId != null && senderId.equals(targetUserId);
+                boolean isToTargetUser = receiverId != null && receiverId.equals(targetUserId);
+                
+                if (isFromTargetUser || isToTargetUser) {
                     displayMessages.add(msg);
+                    android.util.Log.d("WebSocketChat", "✅ Added msg: sender=" + senderId + ", receiver=" + receiverId);
                 }
             }
-            android.util.Log.d("WebSocketChat", "Filtered " + displayMessages.size() + " messages for target user: " + targetUserId);
+            android.util.Log.d("WebSocketChat", "📊 Filtered " + displayMessages.size() + " messages for target user: " + targetUserId);
         } else {
             // User mode - show all messages (assuming user only receives their own messages from backend anyway)
             // Or if we want strict filtering for User too:
@@ -343,21 +349,34 @@ public class WebSocketChatFragment extends DialogFragment {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         if (adapter != null) {
+                            android.util.Log.d("WebSocketChat", "📨 Received message: senderId=" + message.getSenderId() + 
+                                ", receiverId=" + message.getReceiverId() + ", content=" + message.getContent());
+                            
                             // Filter real-time messages
                             boolean shouldAdd = true;
                             if (targetUserId != null) {
                                 Long senderId = message.getSenderId();
                                 Long receiverId = message.getReceiverId();
-                                // Only add if matches target user
-                                if (!((senderId != null && senderId.equals(targetUserId)) || 
-                                      (receiverId != null && receiverId.equals(targetUserId)))) {
-                                    shouldAdd = false;
-                                }
+                                
+                                android.util.Log.d("WebSocketChat", "🔍 Filtering for targetUserId=" + targetUserId);
+                                
+                                // ADMIN MODE: Show ALL messages involving target user
+                                // Show if: (senderId == targetUserId) OR (receiverId == targetUserId)
+                                boolean isFromTargetUser = senderId != null && senderId.equals(targetUserId);
+                                boolean isToTargetUser = receiverId != null && receiverId.equals(targetUserId);
+                                
+                                shouldAdd = isFromTargetUser || isToTargetUser;
+                                
+                                android.util.Log.d("WebSocketChat", "✅ Filter result: shouldAdd=" + shouldAdd + 
+                                    " (isFromTarget=" + isFromTargetUser + ", isToTarget=" + isToTargetUser + ")");
                             }
                             
                             if (shouldAdd) {
+                                android.util.Log.d("WebSocketChat", "➕ Adding message to adapter: " + message.getContent());
                                 adapter.addMessage(message);
                                 rvMessages.scrollToPosition(adapter.getItemCount() - 1);
+                            } else {
+                                android.util.Log.d("WebSocketChat", "🚫 Message filtered out: " + message.getContent());
                             }
                         }
                     });
@@ -433,25 +452,52 @@ public class WebSocketChatFragment extends DialogFragment {
         // Clear input immediately
         etMessage.setText("");
         
-        // Send message - no callback needed, will receive via WebSocket subscription
-        chatWebSocketService.sendMessageToAdmin(message, new ChatWebSocketService.ChatListener() {
-            @Override
-            public void onMessageReceived(ChatMessage msg) {
-                // No-op: message will be received via main subscription to /topic/admin/messages
-            }
+        android.util.Log.d("WebSocketChat", "📤 Sending message: targetUserId=" + targetUserId + ", message=" + message);
+        
+        // Check if this is admin mode (chatting with specific user) or user mode (chatting with admin)
+        if (targetUserId != null && targetUserName != null) {
+            // ADMIN MODE: Send to specific user
+            android.util.Log.d("WebSocketChat", "👨‍💼 Admin sending to user " + targetUserId);
+            chatWebSocketService.sendMessageToUser(targetUserId, targetUserName, message, new ChatWebSocketService.ChatListener() {
+                @Override
+                public void onMessageReceived(ChatMessage msg) {
+                    // Message will be received via WebSocket subscription
+                }
 
-            @Override
-            public void onConnectionStatus(boolean isConnected) {
-                // Not used in send callback
-            }
+                @Override
+                public void onConnectionStatus(boolean isConnected) {
+                    // Not used
+                }
 
-            @Override
-            public void onError(String error) {
-                requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(), "Gửi thất bại: " + error, Toast.LENGTH_SHORT).show();
-                });
-            }
-        });
+                @Override
+                public void onError(String error) {
+                    requireActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(), "Gửi thất bại: " + error, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        } else {
+            // USER MODE: Send to admin
+            android.util.Log.d("WebSocketChat", "👤 User sending to admin");
+            chatWebSocketService.sendMessageToAdmin(message, new ChatWebSocketService.ChatListener() {
+                @Override
+                public void onMessageReceived(ChatMessage msg) {
+                    // Message will be received via WebSocket subscription
+                }
+
+                @Override
+                public void onConnectionStatus(boolean isConnected) {
+                    // Not used
+                }
+
+                @Override
+                public void onError(String error) {
+                    requireActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(), "Gửi thất bại: " + error, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        }
     }
 
     @Override
