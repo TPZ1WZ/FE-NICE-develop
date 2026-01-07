@@ -178,9 +178,8 @@ public class WebSocketChatManager {
             webSocketService.disconnect();
             webSocketService = null;
         }
+        clearChatData(); // Ensure data is cleared on disconnect
         currentUser = null;
-        unreadCount = 0;
-        unreadPerUser.clear();
         listeners.clear();
     }
     

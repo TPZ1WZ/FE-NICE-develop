@@ -18,7 +18,7 @@ import com.example.nike_fe.ui.auth.LoginActivity;
 public class SettingsActivity extends AppCompatActivity {
 
     private ImageView ivBack;
-    private LinearLayout layoutEditProfile, layoutChangePassword;
+    private LinearLayout layoutEditProfile;
     private LinearLayout layoutPrivacy, layoutTerms;
     private LinearLayout layoutHelp, layoutAbout, layoutLogout;
     private Switch switchNotifications;
@@ -36,7 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void initViews() {
         ivBack = findViewById(R.id.ivBack);
         layoutEditProfile = findViewById(R.id.layoutEditProfile);
-        layoutChangePassword = findViewById(R.id.layoutChangePassword);
+
         layoutPrivacy = findViewById(R.id.layoutPrivacy);
         layoutTerms = findViewById(R.id.layoutTerms);
         layoutHelp = findViewById(R.id.layoutHelp);
@@ -62,12 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
             });
         }
 
-        if (layoutChangePassword != null) {
-            layoutChangePassword.setOnClickListener(v -> {
-                // TODO: Implement change password
-                Toast.makeText(this, "Tính năng đổi mật khẩu đang phát triển", Toast.LENGTH_SHORT).show();
-            });
-        }
+
 
         if (layoutPrivacy != null) {
             layoutPrivacy.setOnClickListener(v -> {
@@ -115,6 +110,10 @@ public class SettingsActivity extends AppCompatActivity {
                 .setTitle("Đăng xuất")
                 .setMessage("Bạn có chắc chắn muốn đăng xuất?")
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
+                    // Clear chat data
+                    com.example.nike_fe.service.WebSocketChatManager.getInstance().disconnect();
+                    com.example.nike_fe.ui.chat.WebSocketChatFragment.clearChatHistory();
+                    
                     RetrofitClient.getInstance(this).clearToken();
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

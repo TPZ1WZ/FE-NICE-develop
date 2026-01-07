@@ -634,6 +634,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        // Clear chat data
+        com.example.nike_fe.service.WebSocketChatManager.getInstance().disconnect();
+        com.example.nike_fe.ui.chat.WebSocketChatFragment.clearChatHistory();
+        
         RetrofitClient.getInstance(this).clearToken();
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

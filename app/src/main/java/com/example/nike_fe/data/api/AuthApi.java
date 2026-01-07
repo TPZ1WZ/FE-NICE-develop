@@ -57,6 +57,14 @@ public interface AuthApi {
     @POST("api/v1/auth/verify-registration-otp")
     Call<VerifyOtpResponse> verifyRegistrationOtp(@Body VerifyOtpRequest request);
 
+    /**
+     * POST /api/v1/auth/resend-registration-otp
+     * Request: { "email": "email@example.com" }
+     * Response: { "success": true, "message": "New OTP sent...", "email": "..." }
+     */
+    @POST("api/v1/auth/resend-registration-otp")
+    Call<RegisterResponse> resendRegistrationOtp(@Body java.util.Map<String, String> request);
+
     // ============================================
     // 🔐 Forgot Password APIs
     // ============================================

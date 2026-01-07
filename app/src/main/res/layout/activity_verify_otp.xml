@@ -59,25 +59,24 @@
             android:textStyle="bold"
             android:layout_marginBottom="32dp" />
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/etOtp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_otp_rounded_white"
+            android:elevation="4dp"
+            android:fontFamily="monospace"
             android:gravity="center"
-            android:layout_marginBottom="24dp">
-
-            <EditText android:id="@+id/etOtp1" style="@style/OtpBoxStyle" />
-            <Space android:layout_width="8dp" android:layout_height="wrap_content" />
-            <EditText android:id="@+id/etOtp2" style="@style/OtpBoxStyle" />
-            <Space android:layout_width="8dp" android:layout_height="wrap_content" />
-            <EditText android:id="@+id/etOtp3" style="@style/OtpBoxStyle" />
-            <Space android:layout_width="8dp" android:layout_height="wrap_content" />
-            <EditText android:id="@+id/etOtp4" style="@style/OtpBoxStyle" />
-            <Space android:layout_width="8dp" android:layout_height="wrap_content" />
-            <EditText android:id="@+id/etOtp5" style="@style/OtpBoxStyle" />
-            <Space android:layout_width="8dp" android:layout_height="wrap_content" />
-            <EditText android:id="@+id/etOtp6" style="@style/OtpBoxStyle" />
-        </LinearLayout>
+            android:hint="------"
+            android:inputType="number"
+            android:letterSpacing="0.8"
+            android:maxLength="6"
+            android:padding="8dp"
+            android:textColor="#000000"
+            android:textColorHint="#999999"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp" />
 
         <TextView
             android:id="@+id/tvOtpError"

@@ -134,7 +134,25 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 } else {
                     // HTTP error (400, 409, 500...)
-                    handleErrorResponse(response.code());
+                    String errorMessage = "Đăng ký thất bại. Vui lòng thử lại.";
+                    
+                    if (response.code() == 409) {
+                         // Always warn about both possibilities on Conflict, as per user request
+                         errorMessage = "Email hoặc số điện thoại đã tồn tại.";
+                    } else {
+                        try {
+                            if (response.errorBody() != null) {
+                                String errorBody = response.errorBody().string();
+                                if (errorBody.contains("message")) {
+                                    // simple parse attempt or just keep generic
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 }
             }
 

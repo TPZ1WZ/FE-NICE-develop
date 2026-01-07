@@ -94,24 +94,9 @@ public class WebSocketChatFragment extends DialogFragment {
     }
     
     private void loadCurrentUser() {
-        try {
-            // Try to get from SharedPreferences first
-            android.content.SharedPreferences prefs = requireContext().getSharedPreferences("MyAppPrefs", android.content.Context.MODE_PRIVATE);
-            String userJson = prefs.getString("current_user", null);
-            
-            if (userJson != null && !userJson.isEmpty()) {
-                Gson gson = new Gson();
-                currentUser = gson.fromJson(userJson, User.class);
-                android.util.Log.d("WebSocketChat", "Loaded user from SharedPreferences: " + currentUser.getId());
-            } else {
-                // Fallback: Load from API if not in SharedPreferences
-                android.util.Log.d("WebSocketChat", "User not in SharedPreferences, loading from API...");
-                loadUserFromApi();
-            }
-        } catch (Exception e) {
-            android.util.Log.e("WebSocketChat", "Error loading user", e);
-            loadUserFromApi();
-        }
+        // ALWAYS load fresh user data from API to avoid stale cached data
+        android.util.Log.d("WebSocketChat", "Loading current user from API...");
+        loadUserFromApi();
     }
     
     private void loadUserFromApi() {
@@ -133,20 +118,23 @@ public class WebSocketChatFragment extends DialogFragment {
                                      retrofit2.Response<com.example.nike_fe.data.model.User> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         currentUser = response.body();
-                        android.util.Log.d("WebSocketChat", "Loaded user from API: " + currentUser.getId());
+                        android.util.Log.d("WebSocketChat", "✅ Loaded user from API: ID=" + currentUser.getId() + ", Name=" + currentUser.getFullName());
                         
-                        // Save to SharedPreferences for next time
-                        try {
-                            android.content.SharedPreferences prefs = requireContext()
-                                .getSharedPreferences("MyAppPrefs", android.content.Context.MODE_PRIVATE);
-                            Gson gson = new Gson();
-                            prefs.edit().putString("current_user", gson.toJson(currentUser)).apply();
-                        } catch (Exception e) {
-                            android.util.Log.e("WebSocketChat", "Error saving user", e);
+                        // IMPORTANT: Update adapter with the actual currentUserId AND Role
+                        if (adapter != null) {
+                            String role = currentUser.getRole();
+                            if (role == null) role = "MEMBER"; // Default role
+                            adapter.setCurrentUser(currentUser.getId(), role);
                         }
                         
                         // Connect WebSocket after user loaded
                         connectWebSocket();
+                        
+                        // Also load chat history if not already done (in case it was skipped in onViewCreated)
+                        if (!historyLoaded) {
+                            loadChatHistory();
+                            historyLoaded = true;
+                        }
                     } else {
                         android.util.Log.e("WebSocketChat", "Failed to load user: " + response.code());
                     }
@@ -234,9 +222,34 @@ public class WebSocketChatFragment extends DialogFragment {
     private void setupRecyclerView() {
         // Get messages from WebSocketManager
         List<ChatMessage> allMessages = WebSocketChatManager.getInstance().getAllMessages();
+        List<ChatMessage> displayMessages = new ArrayList<>();
+        
+        // Filter messages if we are chatting with a specific user (Admin mode)
+        if (targetUserId != null) {
+            for (ChatMessage msg : allMessages) {
+                Long senderId = msg.getSenderId();
+                Long receiverId = msg.getReceiverId();
+                
+                // Show message if it matches target user (sent by them OR sent to them)
+                if ((senderId != null && senderId.equals(targetUserId)) || 
+                    (receiverId != null && receiverId.equals(targetUserId))) {
+                    displayMessages.add(msg);
+                }
+            }
+            android.util.Log.d("WebSocketChat", "Filtered " + displayMessages.size() + " messages for target user: " + targetUserId);
+        } else {
+            // User mode - show all messages (assuming user only receives their own messages from backend anyway)
+            // Or if we want strict filtering for User too:
+            if (currentUser != null) {
+                // Normally user only gets their own messages, but filtering adds safety
+                 displayMessages.addAll(allMessages);
+            } else {
+                 displayMessages.addAll(allMessages);
+            }
+        }
         
         Long userId = currentUser != null ? currentUser.getId() : null;
-        adapter = new ChatMessageAdapter(allMessages, userId);
+        adapter = new ChatMessageAdapter(displayMessages, userId);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setStackFromEnd(true);
         rvMessages.setLayoutManager(layoutManager);
@@ -330,8 +343,22 @@ public class WebSocketChatFragment extends DialogFragment {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         if (adapter != null) {
-                            adapter.addMessage(message);
-                            rvMessages.scrollToPosition(adapter.getItemCount() - 1);
+                            // Filter real-time messages
+                            boolean shouldAdd = true;
+                            if (targetUserId != null) {
+                                Long senderId = message.getSenderId();
+                                Long receiverId = message.getReceiverId();
+                                // Only add if matches target user
+                                if (!((senderId != null && senderId.equals(targetUserId)) || 
+                                      (receiverId != null && receiverId.equals(targetUserId)))) {
+                                    shouldAdd = false;
+                                }
+                            }
+                            
+                            if (shouldAdd) {
+                                adapter.addMessage(message);
+                                rvMessages.scrollToPosition(adapter.getItemCount() - 1);
+                            }
                         }
                     });
                 }
