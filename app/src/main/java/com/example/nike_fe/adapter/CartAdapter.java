@@ -89,16 +89,34 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             // Load image
             if (item.getProduct().getImages() != null && !item.getProduct().getImages().isEmpty()) {
                 String imageUrl = item.getProduct().getImages().get(0);
-                if (!imageUrl.startsWith("http")) {
+                
+                // Check if it's a base64 string
+                if (imageUrl != null && imageUrl.startsWith("data:image")) {
+                    // It's base64, load directly
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_products)
+                            .error(R.drawable.ic_products)
+                            .centerCrop()
+                            .into(ivProductImage);
+                } else if (imageUrl != null && !imageUrl.startsWith("http")) {
+                    // It's a relative URL, prepend server address
                     imageUrl = "http://10.0.2.2:8080" + imageUrl;
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_products)
+                            .error(R.drawable.ic_products)
+                            .centerCrop()
+                            .into(ivProductImage);
+                } else {
+                    // It's already a full URL
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_products)
+                            .error(R.drawable.ic_products)
+                            .centerCrop()
+                            .into(ivProductImage);
                 }
-
-                Glide.with(context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_products)
-                        .error(R.drawable.ic_products)
-                        .centerCrop()
-                        .into(ivProductImage);
             } else {
                 ivProductImage.setImageResource(R.drawable.ic_products);
             }
